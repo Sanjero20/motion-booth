@@ -1,0 +1,14 @@
+# frontend
+node_modules/
+dist/
+.env
+.env.local
+
+# backend
+bin/
+obj/
+.vs/
+appsettings.Development.json
+
+# misc
+.DS_Store
