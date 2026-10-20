@@ -7,7 +7,7 @@ function Sharing() {
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <SectionHeading
           eyebrow="Sharing"
-          title="From boooth to feed in one scan."
+          title="From booth to feed in one scan."
           body="Guests leave with the moment on their phone before they've left the backdrop"
         />
 
