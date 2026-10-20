@@ -1,6 +1,5 @@
 import { Aperture, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
 
 const SECTIONS = [
   { href: "#how", label: "How it works" },
@@ -26,12 +25,12 @@ function Header() {
         {/* Navigation */}
         <nav className="hidden space-x-6 text-sm transition-colors md:block">
           {SECTIONS.map((section) => (
-            <Link
-              to={section.href}
+            <a
+              href={section.href}
               className="text-muted-foreground hover:text-foreground"
             >
               {section.label}
-            </Link>
+            </a>
           ))}
         </nav>
 
