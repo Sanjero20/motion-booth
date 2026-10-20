@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 
 const SECTIONS = [
-  { href: "#how-it-works", label: "How it works" },
+  { href: "#how", label: "How it works" },
   { href: "#templates", label: "Templates" },
   { href: "#sharing", label: "Sharing" },
   { href: "#faq", label: "FAQ" },
@@ -24,7 +24,7 @@ function Header() {
         </div>
 
         {/* Navigation */}
-        <nav className="space-x-6 text-sm transition-colors">
+        <nav className="hidden space-x-6 text-sm transition-colors md:block">
           {SECTIONS.map((section) => (
             <Link
               to={section.href}
