@@ -11,7 +11,7 @@ const SECTIONS = [
 
 function Header() {
   return (
-    <header className="border-border/60 bg-background/70 sticky top-0 z-50 border-b backdrop-blur-md">
+    <header className="border-border/60 bg-background/70 sticky top-0 z-50 border-b px-4 backdrop-blur-md md:px-0">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between">
         {/* Logo */}
         <div className="flex items-center gap-2">

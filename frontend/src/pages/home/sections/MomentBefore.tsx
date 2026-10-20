@@ -3,7 +3,7 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 function MomentBefore() {
   return (
     <section>
-      <div className="mx-auto max-w-6xl py-20">
+      <div className="mx-auto max-w-6xl px-4 py-20 md:px-0">
         <div className="grid items-center gap-8 md:grid-cols-2">
           {/* Left */}
           <SectionHeading

@@ -3,7 +3,7 @@ import { STEPS } from "@/data/landing";
 
 function HowItWorks() {
   return (
-    <section id="how" className="bg-card py-20">
+    <section id="how" className="bg-card px-4 py-20 md:px-0">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <SectionHeading
           eyebrow="How It Works"

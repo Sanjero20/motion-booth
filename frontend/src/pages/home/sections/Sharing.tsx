@@ -3,7 +3,7 @@ import { EVENTS, SHARING_FEATURES } from "@/data/landing";
 
 function Sharing() {
   return (
-    <section id="sharing" className="py-20">
+    <section id="sharing" className="px-4 py-20 md:px-0">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <SectionHeading
           eyebrow="Sharing"

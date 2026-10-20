@@ -6,7 +6,7 @@ import { Camera } from "lucide-react";
 function Hero() {
   return (
     <section id="hero" className="border-b">
-      <div className="mx-auto grid max-w-6xl gap-12 py-12 lg:grid-cols-[1.1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-0 lg:grid-cols-[1.1fr_1fr]">
         {/* Left  */}
         <div className="flex flex-col gap-5">
           <span className="bg-card text-muted-foreground flex w-fit items-center gap-2 rounded-full border px-3 py-1 font-mono text-xs">

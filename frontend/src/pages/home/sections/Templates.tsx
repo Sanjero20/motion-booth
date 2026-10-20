@@ -9,7 +9,7 @@ const TEMPLATES = [
 
 function Templates() {
   return (
-    <section id="templates" className="bg-secondary py-20">
+    <section id="templates" className="bg-secondary px-4 py-20 md:px-0">
       <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <SectionHeading
           eyebrow="Templates"
