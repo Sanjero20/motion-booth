@@ -2,6 +2,7 @@ import Footer from "@/layouts/Footer";
 import Header from "@/layouts/Header";
 
 import Hero from "./sections/Hero";
+import HowItWorks from "./sections/HowItWorks";
 
 function HomePage() {
   return (
@@ -10,7 +11,7 @@ function HomePage() {
 
       <main>
         <Hero />
-        {/* How it works */}
+        <HowItWorks />
         {/* The moment before */}
         {/* Templates */}
         {/* Sharing */}
