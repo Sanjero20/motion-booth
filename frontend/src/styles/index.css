@@ -3,11 +3,10 @@
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/dm-sans";
 @import "@fontsource-variable/noto-serif-georgian";
-
-@custom-variant dark (&:is(.dark *));
+@import "@fontsource-variable/fraunces/wght.css";
+@import "@fontsource-variable/fraunces/wght-italic.css";
 
 :root {
-  /* Motion Booth — Darkroom & Flash */
   --background: #f5f0e8;
   --foreground: #191916;
 
@@ -19,6 +18,7 @@
 
   --primary: #f4512a;
   --primary-foreground: #191916;
+  --primary-strong: #b8330c;
 
   --secondary: #eae3d8;
   --secondary-foreground: #191916;
@@ -55,56 +55,10 @@
   --sidebar-ring: #f4512a;
 }
 
-.dark {
-  /* Optional darkroom theme */
-  --background: #191916;
-  --foreground: #f5f0e8;
-
-  --card: #24231f;
-  --card-foreground: #f5f0e8;
-
-  --popover: #24231f;
-  --popover-foreground: #f5f0e8;
-
-  --primary: #ff7048;
-  --primary-foreground: #191916;
-
-  --secondary: #302f29;
-  --secondary-foreground: #f5f0e8;
-
-  --muted: #302f29;
-  --muted-foreground: #c0b8aa;
-
-  --accent: #344333;
-  --accent-foreground: #e1eadb;
-
-  --destructive: #e05245;
-  --destructive-foreground: #ffffff;
-
-  --border: #454239;
-  --input: #454239;
-  --ring: #ff7048;
-
-  --chart-1: #ff7048;
-  --chart-2: #b5c8a9;
-  --chart-3: #c0b8aa;
-  --chart-4: #d9b98b;
-  --chart-5: #e1eadb;
-
-  --sidebar: #24231f;
-  --sidebar-foreground: #f5f0e8;
-  --sidebar-primary: #ff7048;
-  --sidebar-primary-foreground: #191916;
-  --sidebar-accent: #344333;
-  --sidebar-accent-foreground: #e1eadb;
-  --sidebar-border: #454239;
-  --sidebar-ring: #ff7048;
-}
-
 @theme inline {
   --font-sans: "DM Sans Variable", sans-serif;
   --font-heading: "Noto Serif Georgian Variable", serif;
-  --font-display: "";
+  --font-display: "Fraunces Variable", serif;
 
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -134,6 +88,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-strong: var(--primary-strong);
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
@@ -158,12 +113,19 @@
 
   html {
     @apply font-sans;
-    scroll-behavior: smooth;
+    /* Sticky header is h-16, so anchor jumps don't hide under it */
+    scroll-padding-top: 4rem;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   body {
     @apply bg-background text-foreground;
-    min-height: 100vh;
+    min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
