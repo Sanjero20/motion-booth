@@ -1,48 +1,5 @@
 import { SectionHeading } from "@/components/shared/SectionHeading";
-import {
-  Heart,
-  Cake,
-  Building2,
-  PartyPopper,
-  GraduationCap,
-  Music,
-  Film,
-  Download,
-  QrCode,
-  Smartphone,
-} from "lucide-react";
-
-const SHARING_FEATURES = [
-  {
-    icon: Film,
-    title: "8-second motion video",
-    body: "5 seconds of build-up, then a 3-second hold on the final shot. Under 10s — made for Reels, TikTok and Stories.",
-  },
-  {
-    icon: Download,
-    title: "Print-ready photo",
-    body: "A crisp, high-resolution PNG of the finished template, ready for the printer or the fridge.",
-  },
-  {
-    icon: QrCode,
-    title: "Scan to save",
-    body: "Every session gets its own QR code and link. Guests grab their moments without typing a thing.",
-  },
-  {
-    icon: Smartphone,
-    title: "No app needed",
-    body: "Opens right in the phone browser. The link stays active for 30 days.",
-  },
-];
-
-const EVENTS = [
-  { icon: Heart, label: "Weddings" },
-  { icon: Cake, label: "Birthdays" },
-  { icon: Building2, label: "Brand activations" },
-  { icon: PartyPopper, label: "Office parties" },
-  { icon: GraduationCap, label: "Graduations" },
-  { icon: Music, label: "Festivals & concerts" },
-];
+import { EVENTS, SHARING_FEATURES } from "@/data/landing";
 
 function Sharing() {
   return (

@@ -1,23 +1,5 @@
 import { SectionHeading } from "@/components/shared/SectionHeading";
-import { Camera, QrCode, LayoutTemplate } from "lucide-react";
-
-const STEPS = [
-  {
-    icon: LayoutTemplate,
-    title: "Pick a template",
-    body: "Classic strip, 2 × 2 grid or a 9:16 story — chosen before the first flash.",
-  },
-  {
-    icon: Camera,
-    title: "Strike four poses",
-    body: "A 3-2-1 countdown for each shot. The booth quietly keeps the 5 seconds before every click.",
-  },
-  {
-    icon: QrCode,
-    title: "Take it home",
-    body: "Scan the QR or download on the spot — an 8-second motion video and a print-ready photo.",
-  },
-];
+import { STEPS } from "@/data/landing";
 
 function HowItWorks() {
   return (

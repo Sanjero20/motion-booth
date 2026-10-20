@@ -1,6 +1,6 @@
 import TemplatePicker from "@/components/shared/TemplatePicker";
 import { Button } from "@/components/ui/button";
-import { stats } from "@/data/landing";
+import { STATS } from "@/data/landing";
 import { Camera } from "lucide-react";
 
 function Hero() {
@@ -48,7 +48,7 @@ function Hero() {
           </div>
 
           <dl className="grid max-w-md grid-cols-3 gap-4 border-t pt-6">
-            {stats.map((s) => (
+            {STATS.map((s) => (
               <div key={s.label} className="flex flex-col gap-1">
                 <dt className="sr-only">{s.label}</dt>
                 <dd className="font-display text-4xl font-medium tracking-tight">
