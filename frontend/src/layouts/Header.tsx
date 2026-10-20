@@ -1,5 +1,6 @@
-import { Aperture, Camera } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/shared/Logo";
 
 const SECTIONS = [
   { href: "#how", label: "How it works" },
@@ -12,20 +13,15 @@ function Header() {
   return (
     <header className="border-border/60 bg-background/70 sticky top-0 z-50 border-b px-4 backdrop-blur-md md:px-0">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <Button size="icon" className="rounded-md">
-            <Aperture size={64} />
-          </Button>
-          <h2 className="font-bold">
-            Motion <span className="text-primary italic">Booth</span>
-          </h2>
-        </div>
+        <Logo />
 
-        {/* Navigation */}
-        <nav className="hidden space-x-6 text-sm transition-colors md:block">
+        <nav
+          aria-label="Primary"
+          className="hidden space-x-6 text-sm transition-colors md:block"
+        >
           {SECTIONS.map((section) => (
             <a
+              key={section.href}
               href={section.href}
               className="text-muted-foreground hover:text-foreground"
             >
@@ -34,7 +30,6 @@ function Header() {
           ))}
         </nav>
 
-        {/* CTA */}
         <Button className="px-4">
           <Camera />
           Start
