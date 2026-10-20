@@ -5,6 +5,7 @@ import Hero from "./sections/Hero";
 import HowItWorks from "./sections/HowItWorks";
 import MomentBefore from "./sections/MomentBefore";
 import Templates from "./sections/Templates";
+import Sharing from "./sections/Sharing";
 
 function HomePage() {
   return (
@@ -16,7 +17,7 @@ function HomePage() {
         <HowItWorks />
         <MomentBefore />
         <Templates />
-        {/* Sharing */}
+        <Sharing />
         {/* Faq */}
         {/* CTA Banner */}
       </main>
