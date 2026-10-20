@@ -14,7 +14,7 @@ export function SectionHeading({
   const centered = align === "center";
   return (
     <div
-      className={`flex max-w-xl flex-col gap-3 ${centered ? "mx-auto items-center text-center" : ""}`}
+      className={`flex max-w-180 flex-col gap-3 ${centered ? "mx-auto items-center text-center" : ""}`}
     >
       <span className="text-primary font-mono text-xs tracking-[0.2em] uppercase">
         {eyebrow}
