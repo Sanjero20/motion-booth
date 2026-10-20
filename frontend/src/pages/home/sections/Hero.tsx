@@ -17,7 +17,7 @@ function Hero() {
             A DIFFERENT KIND OF PHOTOBOOTH
           </span>
 
-          <h1 className="font-display text-5xl leading-[1.02] font-bold tracking-tight lg:text-7xl">
+          <h1 className="font-display text-5xl leading-[1.02] font-medium tracking-tight lg:text-6xl">
             Catch the moment
             <br />
             <em className="text-primary">before the snap.</em>

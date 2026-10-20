@@ -8,7 +8,7 @@ function CTABanner() {
         <span className="text-primary font-mono text-xs tracking-[0.2em] uppercase">
           Ready when you are
         </span>
-        <h2 className="font-display max-w-2xl text-4xl font-bold tracking-tight lg:text-6xl">
+        <h2 className="font-display max-w-2xl text-4xl font-medium tracking-tight lg:text-5xl">
           Step in. <em className="text-primary">We'll catch the rest.</em>
         </h2>
         <p className="text-background/70 max-w-md text-base">
