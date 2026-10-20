@@ -14,18 +14,18 @@ function Hero() {
               className="bg-primary size-1.5 animate-pulse rounded-full"
               aria-hidden="true"
             />
-            Every photo comes with its moment
+            A DIFFERENT KIND OF PHOTOBOOTH
           </span>
 
-          <h1 className="font-display text-5xl leading-[1.02] font-medium tracking-tight lg:text-7xl">
-            Catch the laugh
+          <h1 className="font-display text-5xl leading-[1.02] font-bold tracking-tight lg:text-7xl">
+            Catch the moment
             <br />
-            <em className="text-primary">before the pose.</em>
+            <em className="text-primary">before the snap.</em>
           </h1>
           <p className="text-muted-foreground max-w-md text-base">
-            Motion Booth keeps the 5 seconds leading up to each shot and plays
-            them back inside your print — so you keep the build-up, not just the
-            smile.
+            Five seconds of laughter, movement, and everything in between.
+            Motion Booth turns those fleeting moments into a photostrip you can
+            replay, save, and share.
           </p>
 
           <div className="flex max-w-md flex-col gap-3">
