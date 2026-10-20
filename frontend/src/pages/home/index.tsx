@@ -1,13 +1,15 @@
 import Footer from "@/layouts/Footer";
 import Header from "@/layouts/Header";
 
+import Hero from "./sections/Hero";
+
 function HomePage() {
   return (
     <div className="">
       <Header />
 
       <main>
-        {/* Hero */}
+        <Hero />
         {/* How it works */}
         {/* The moment before */}
         {/* Templates */}
