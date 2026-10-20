@@ -14,8 +14,26 @@ function MomentBefore() {
 
           {/* Template Showcase */}
           <div className="grid w-full grid-cols-2 gap-6">
-            <div className="bg-secondary h-96 w-full rounded-2xl"></div>
-            <div className="bg-secondary h-96 w-full rounded-2xl"></div>
+            <div className="space-y-2">
+              <div className="bg-secondary aspect-3/4 w-full rounded-2xl"></div>
+              <div className="flex justify-between text-sm">
+                <span className="font-medium">Regular booth</span>
+                <span className="text-muted-foreground font-mono text-xs">
+                  1 frame
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              <div className="bg-secondary border-primary aspect-3/4 w-full rounded-2xl border-2"></div>
+              <div className="flex justify-between">
+                <span className="font-medium">Motion Booth</span>
+                <span className="text-primary font-mono text-xs">
+                  60 frames
+                </span>
+              </div>
+            </div>
+            {/* End of template showcase */}
           </div>
         </div>
       </div>
