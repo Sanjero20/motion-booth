@@ -14,12 +14,12 @@ export function SectionHeading({
   const centered = align === "center";
   return (
     <div
-      className={`flex max-w-2xl flex-col gap-3 ${centered ? "mx-auto items-center text-center" : ""}`}
+      className={`flex max-w-xl flex-col gap-3 ${centered ? "mx-auto items-center text-center" : ""}`}
     >
       <span className="text-primary font-mono text-xs tracking-[0.2em] uppercase">
         {eyebrow}
       </span>
-      <h2 className="font-display text-4xl leading-[1.05] font-medium tracking-tight lg:text-5xl">
+      <h2 className="font-display text-4xl leading-[1.05] font-bold tracking-tight lg:text-5xl">
         {title}
       </h2>
       {body && <p className="text-muted-foreground text-base">{body}</p>}

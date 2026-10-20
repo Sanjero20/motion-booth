@@ -3,6 +3,7 @@ import Header from "@/layouts/Header";
 
 import Hero from "./sections/Hero";
 import HowItWorks from "./sections/HowItWorks";
+import MomentBefore from "./sections/MomentBefore";
 
 function HomePage() {
   return (
@@ -12,7 +13,7 @@ function HomePage() {
       <main>
         <Hero />
         <HowItWorks />
-        {/* The moment before */}
+        <MomentBefore />
         {/* Templates */}
         {/* Sharing */}
         {/* Faq */}

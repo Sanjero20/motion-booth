@@ -22,7 +22,7 @@ const STEPS = [
 function HowItWorks() {
   return (
     <section id="how" className="bg-card py-20">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8">
         <SectionHeading
           eyebrow="How It Works"
           title="Three steps, twenty-five seconds."
