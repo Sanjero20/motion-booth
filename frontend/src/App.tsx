@@ -1,8 +1,12 @@
+import { Route, Routes } from "react-router";
+
+import HomePage from "./pages/home";
+
 function App() {
   return (
-    <div className="bg-background flex min-h-screen items-center justify-center">
-      <h1>Motion Booth</h1>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+    </Routes>
   );
 }
 
