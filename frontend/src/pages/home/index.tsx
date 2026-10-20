@@ -7,6 +7,7 @@ import MomentBefore from "./sections/MomentBefore";
 import Templates from "./sections/Templates";
 import Sharing from "./sections/Sharing";
 import FAQ from "./sections/FAQ";
+import CTABanner from "./sections/CTABanner";
 
 function HomePage() {
   return (
@@ -20,7 +21,7 @@ function HomePage() {
         <Templates />
         <Sharing />
         <FAQ />
-        {/* CTA Banner */}
+        <CTABanner />
       </main>
 
       <Footer />
