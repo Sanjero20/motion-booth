@@ -17,7 +17,7 @@ function Hero() {
             Every photo comes with its moment
           </span>
 
-          <h1 className="font-serif text-5xl leading-[1.02] font-medium tracking-tight lg:text-7xl">
+          <h1 className="font-display text-5xl leading-[1.02] font-medium tracking-tight lg:text-7xl">
             Catch the laugh
             <br />
             <em className="text-primary">before the pose.</em>
@@ -51,7 +51,7 @@ function Hero() {
             {stats.map((s) => (
               <div key={s.label} className="flex flex-col gap-1">
                 <dt className="sr-only">{s.label}</dt>
-                <dd className="font-serif text-4xl font-medium tracking-tight">
+                <dd className="font-display text-4xl font-medium tracking-tight">
                   {s.value}
                 </dd>
                 <dd className="text-muted-foreground text-xs">{s.label}</dd>
@@ -61,7 +61,7 @@ function Hero() {
         </div>
 
         {/* Right */}
-        <div className="bg-secondary rounded-lg p-4"></div>
+        <div className="bg-secondary min-h-[70vh] rounded-lg p-4"></div>
       </div>
     </section>
   );
