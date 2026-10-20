@@ -6,6 +6,7 @@ import HowItWorks from "./sections/HowItWorks";
 import MomentBefore from "./sections/MomentBefore";
 import Templates from "./sections/Templates";
 import Sharing from "./sections/Sharing";
+import FAQ from "./sections/FAQ";
 
 function HomePage() {
   return (
@@ -18,7 +19,7 @@ function HomePage() {
         <MomentBefore />
         <Templates />
         <Sharing />
-        {/* Faq */}
+        <FAQ />
         {/* CTA Banner */}
       </main>
 

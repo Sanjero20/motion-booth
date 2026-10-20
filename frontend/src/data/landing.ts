@@ -70,3 +70,27 @@ export const EVENTS = [
   { icon: GraduationCap, label: "Graduations" },
   { icon: Music, label: "Festivals & concerts" },
 ];
+
+// FAQ section
+export const FAQ_ITEMS = [
+  {
+    q: "What makes Motion Booth different from a regular photobooth?",
+    a: "Motion Booth captures the moments leading up to each shot, not just the final pose. Those little laughs, movements, and candid reactions become part of a living photostrip you can replay and share.",
+  },
+  {
+    q: "What do I get after my session?",
+    a: "You get your finished photostrip, with a motion preview that brings the moments before your shots to life. You can scan the QR code to open your photos on your phone and save them.",
+  },
+  {
+    q: "Do I need to download an app?",
+    a: "No app required. Scan the session's QR code and open your photos in your phone's browser, then save them to your device.",
+  },
+  {
+    q: "Can other people see my photos?",
+    a: "Your photos are accessed through your session link. Anyone with access to that link may be able to view them, so avoid sharing it publicly if you want to keep your photos private.",
+  },
+  {
+    q: "What if the camera isn't working?",
+    a: "If the camera is unavailable, a demo experience can help you explore the templates and see how the photobooth works. Live photo capture requires a working, supported camera.",
+  },
+];
