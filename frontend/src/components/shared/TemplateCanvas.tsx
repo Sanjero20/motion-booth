@@ -30,11 +30,11 @@ function TemplateCanvas({ layout, className }: Props) {
 
     // Branding
     ctx.fillStyle = "#191916";
-    ctx.font = `600 ${width * 0.035}px sans-serif`;
+    ctx.font = `600 ${width * 0.035}px "Fraunces", serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-    ctx.fillText(branding.toUpperCase(), width / 2, height * 0.95);
+    ctx.fillText(branding.toUpperCase(), width / 2, height * 0.92);
   }, [layout]);
 
   return (
