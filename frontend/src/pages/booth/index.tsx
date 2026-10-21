@@ -8,7 +8,8 @@ const LIMIT = 4;
 
 function BoothPage() {
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-6xl flex-col gap-3 overflow-hidden p-3 sm:gap-4 sm:p-5">
+    // Mobile: page scrolls. md and up: page is locked to the screen height.
+    <main className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-3 p-3 sm:gap-4 sm:p-5 md:h-dvh md:overflow-hidden">
       {/* Header */}
       <header className="relative flex shrink-0 items-center justify-center">
         <Link
@@ -16,28 +17,29 @@ function BoothPage() {
           aria-label="Back to landing page"
           className="absolute left-0"
         >
-          <Button variant="ghost">
+          <Button variant="ghost" size="sm">
             <ArrowLeft className="size-4" />
-            Go back
+            <span className="hidden sm:inline">Go back</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </Link>
 
         <Logo />
-
-        <span></span>
       </header>
 
-      {/* Camera and outputs */}
-      <section className="grid grid-cols-6 gap-4">
-        <div className="col-span-5 w-full">
-          {/* Camera preview: always 4:3 */}
-          <div className="bg-secondary border-border relative aspect-4/3 w-full shrink rounded-md border-2">
+      {/* Camera and outputs: stacked on mobile, side by side from md */}
+      <section className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4 md:flex-row md:items-start md:justify-center">
+        {/* Camera preview: always 4:3.
+            From md, the width is capped by the available height so the
+            preview never grows taller than the screen. */}
+        <div className="w-full md:max-w-[calc((100dvh-7rem)*4/3)] md:flex-1">
+          <div className="bg-secondary border-border relative aspect-4/3 w-full rounded-md border-2">
             {/* Camera feed */}
           </div>
         </div>
 
-        {/* Photo outputs */}
-        <aside className="flex flex-col gap-4">
+        {/* Photo outputs: a row of 4 on mobile, a column from md */}
+        <aside className="grid shrink-0 grid-cols-4 gap-2 sm:gap-3 md:max-h-full md:w-28 md:grid-cols-1 md:overflow-y-auto lg:w-40">
           {Array.from({ length: LIMIT }).map((_, index) => (
             <div
               key={index}
