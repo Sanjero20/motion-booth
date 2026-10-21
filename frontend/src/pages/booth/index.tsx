@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import CapturedPhotos from "./sections/CapturedPhotos";
 
 import type { Photo } from "@/types/booth";
+import CameraPreview from "./sections/CameraPreview";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
@@ -178,31 +179,12 @@ function BoothPage() {
       <section className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4 md:flex-row md:items-start md:justify-center">
         <div className="flex w-full flex-col gap-3 md:max-w-[calc((100dvh-11rem)*4/3)] md:flex-1">
           {/* Camera preview */}
-          <div className="bg-secondary border-border relative aspect-4/3 w-full overflow-hidden rounded-md border-2">
-            <video
-              ref={videoRef}
-              autoPlay
-              muted
-              playsInline
-              className="absolute inset-0 size-full -scale-x-100 object-cover"
-            />
-
-            {cameraError && (
-              <div className="absolute inset-0 flex items-center justify-center p-4 text-center">
-                <p className="text-muted-foreground text-sm">{cameraError}</p>
-              </div>
-            )}
-
-            {countdown !== null && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                <span className="font-mono text-7xl font-bold text-white drop-shadow-lg">
-                  {countdown}
-                </span>
-              </div>
-            )}
-
-            <canvas ref={canvasRef} className="hidden" />
-          </div>
+          <CameraPreview
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            cameraError={cameraError}
+            countdown={countdown}
+          />
 
           <Button
             size="lg"
