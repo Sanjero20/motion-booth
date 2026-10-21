@@ -13,3 +13,8 @@ export type TemplateLayout = {
   slots: Rect[];
   branding: string;
 };
+
+export type Photo = {
+  id: number;
+  src: string;
+};
