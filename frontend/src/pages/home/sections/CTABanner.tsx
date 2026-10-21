@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
+import { Link } from "react-router";
 
 function CTABanner() {
   return (
@@ -14,14 +15,16 @@ function CTABanner() {
         <p className="text-background/70 max-w-md text-base">
           Four shots, five seconds of build-up each, one scan to take it home.
         </p>
-        <Button
-          size="lg"
-          onClick={() => {}}
-          className="mt-2 h-14 gap-2 rounded-full px-8 text-base"
-        >
-          <Camera className="size-5" aria-hidden="true" />
-          Tap to start
-        </Button>
+        <Link to="/booth">
+          <Button
+            size="lg"
+            onClick={() => {}}
+            className="mt-2 h-14 gap-2 rounded-full px-8 text-base"
+          >
+            <Camera className="size-5" aria-hidden="true" />
+            Tap to start
+          </Button>
+        </Link>
       </div>
     </section>
   );

@@ -2,6 +2,7 @@ import TemplatePicker from "@/components/shared/TemplatePicker";
 import { Button } from "@/components/ui/button";
 import { STATS } from "@/data/landing";
 import { Camera } from "lucide-react";
+import { Link } from "react-router";
 
 function Hero() {
   return (
@@ -34,14 +35,16 @@ function Hero() {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button
-              size="lg"
-              onClick={() => {}}
-              className="h-14 gap-2 rounded-full px-8 text-base"
-            >
-              <Camera className="size-5" aria-hidden="true" />
-              Tap to start
-            </Button>
+            <Link to="/booth">
+              <Button
+                size="lg"
+                onClick={() => {}}
+                className="h-14 gap-2 rounded-full px-8 text-base"
+              >
+                <Camera className="size-5" aria-hidden="true" />
+                Tap to start
+              </Button>
+            </Link>
             <span className="text-muted-foreground text-xs">
               4 shots · about 25 seconds
             </span>
