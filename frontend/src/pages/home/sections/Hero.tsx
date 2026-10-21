@@ -1,10 +1,18 @@
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import TemplatePicker from "@/components/shared/TemplatePicker";
 import { Button } from "@/components/ui/button";
 import { STATS } from "@/data/landing";
+import { templates } from "@/data/templates";
 import { Camera } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router";
 
 function Hero() {
+  const [selectedId, setSelectedId] = useState<string[]>([templates[0].id]);
+
+  const selectedTemplate =
+    templates.find((template) => template.id === selectedId[0]) ?? templates[0];
+
   return (
     <section id="hero" className="border-b">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-0 lg:grid-cols-[1.1fr_1fr]">
@@ -31,7 +39,7 @@ function Hero() {
 
           <div className="flex max-w-md flex-col gap-3">
             <span className="text-sm font-medium">Pick your template</span>
-            <TemplatePicker />
+            <TemplatePicker selectedId={selectedId} onSelect={setSelectedId} />
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -64,7 +72,16 @@ function Hero() {
         </div>
 
         {/* Right */}
-        <div className="bg-secondary min-h-[70vh] rounded-lg p-4"></div>
+        <div className="bg-secondary min-h-[70vh] rounded-lg p-4">
+          <div className="flex h-full min-h-0 w-full min-w-0 items-center justify-center">
+            <div className="flex h-full max-h-130 w-full max-w-96 items-center justify-center">
+              <TemplateCanvas
+                layout={selectedTemplate}
+                className="max-h-full max-w-full drop-shadow-lg"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

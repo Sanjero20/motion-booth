@@ -1,36 +1,42 @@
-import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { GalleryVerticalIcon, Grid2X2, Smartphone } from "lucide-react";
+import { templates } from "@/data/templates";
 
-const TEMPLATES = [
-  { icon: GalleryVerticalIcon, label: "Classic" },
-  { icon: Grid2X2, label: "Grid" },
-  { icon: Smartphone, label: "Story" },
-];
+const TEMPLATE_ICONS = {
+  "classic-strip": GalleryVerticalIcon,
+  grid: Grid2X2,
+  single: Smartphone,
+};
 
-function TemplatePicker() {
-  const [selected, setSelected] = useState<string[]>(["Classic"]);
+type TemplatePickerProps = {
+  selectedId: string[];
+  onSelect: (id: string[]) => void;
+};
 
+function TemplatePicker({ selectedId, onSelect }: TemplatePickerProps) {
   return (
     <ToggleGroup
-      value={selected}
+      value={selectedId}
       onValueChange={(value) => {
-        if (value) setSelected(value);
+        if (value.length > 0) {
+          onSelect([value[value.length - 1]]);
+        }
       }}
       className="grid w-full grid-cols-3 gap-3"
     >
-      {TEMPLATES.map((template) => {
-        const TemplateIcon = template.icon;
+      {templates.map((template) => {
+        const TemplateIcon =
+          TEMPLATE_ICONS[template.id as keyof typeof TEMPLATE_ICONS];
 
         return (
           <ToggleGroupItem
-            key={template.label}
-            value={template.label}
-            aria-label={template.label}
+            key={template.id}
+            value={template.id}
+            aria-label={template.name}
             className="bg-card aria-pressed:border-primary aria-pressed:bg-card aria-pressed:text-foreground flex h-auto flex-col gap-1.5 rounded-lg border py-3"
           >
             <TemplateIcon size={32} />
-            <span>{template.label}</span>
+            <span>{template.name}</span>
           </ToggleGroupItem>
         );
       })}
