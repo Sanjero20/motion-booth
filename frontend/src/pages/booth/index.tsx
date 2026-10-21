@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Camera } from "lucide-react";
 
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,15 @@ import { Button } from "@/components/ui/button";
 const LIMIT = 4;
 
 function BoothPage() {
+  // "idle" -> "capturing" -> back to "idle" when all shots are taken
+  const [status, setStatus] = useState("idle");
+
+  const handleStart = () => {
+    setStatus("capturing");
+    // TODO: run the countdown and take LIMIT shots here,
+    // then setStatus("idle") when the session finishes.
+  };
+
   return (
     // Mobile: page scrolls. md and up: page is locked to the screen height.
     <main className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-3 p-3 sm:gap-4 sm:p-5 md:h-dvh md:overflow-hidden">
@@ -32,10 +42,21 @@ function BoothPage() {
         {/* Camera preview: always 4:3.
             From md, the width is capped by the available height so the
             preview never grows taller than the screen. */}
-        <div className="w-full md:max-w-[calc((100dvh-7rem)*4/3)] md:flex-1">
+        <div className="flex w-full flex-col gap-3 md:max-w-[calc((100dvh-11rem)*4/3)] md:flex-1">
           <div className="bg-secondary border-border relative aspect-4/3 w-full rounded-md border-2">
             {/* Camera feed */}
           </div>
+
+          {/* Start button */}
+          <Button
+            size="lg"
+            className="h-12 w-full rounded-full text-base md:mx-auto md:w-auto md:px-12"
+            onClick={handleStart}
+            disabled={status !== "idle"}
+          >
+            <Camera className="size-5" />
+            {status === "idle" ? "Start" : "Get ready…"}
+          </Button>
         </div>
 
         {/* Photo outputs: a row of 4 on mobile, a column from md */}
