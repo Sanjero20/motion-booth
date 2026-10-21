@@ -1,11 +1,13 @@
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 import { Card, CardContent } from "@/components/ui/card";
+import { templates } from "@/data/templates";
 
-const TEMPLATES = [
-  { title: "Classic Strip", description: "4 frames, tall print strip" },
-  { title: "Grid", description: "2 × 2 square-ish print" },
-  { title: "Story", description: "Vertical 9:16 for socials" },
-];
+const TEMPLATE_DESCRIPTIONS: Record<string, string> = {
+  "classic-strip": "4 frames, tall print strip",
+  grid: "4 × 6 landscape print with four frames",
+  single: "One large photo, ready to share",
+};
 
 function Templates() {
   return (
@@ -14,21 +16,26 @@ function Templates() {
         <SectionHeading
           eyebrow="Templates"
           title="Three ways to frame the moment."
-          body="Every template plays all four moments together, then holds on the finished print."
+          body="Every template brings your captured moments together in a finished design, ready to save and share."
         />
 
-        {/*  */}
-        <div className="grid gap-8 md:grid-cols-3">
-          {TEMPLATES.map((template) => (
-            <Card key={template.title} className="h-110">
-              <CardContent className="flex h-full flex-col gap-2 px-5">
-                <div className="bg-background foreground h-full rounded-lg">
-                  {/* Template View */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {templates.map((template) => (
+            <Card key={template.id} className="overflow-hidden">
+              <CardContent className="flex h-full flex-col gap-4 p-5">
+                <div className="bg-background flex h-72 items-center justify-center overflow-hidden rounded-lg p-4">
+                  <div className="flex h-full w-full items-center justify-center">
+                    <TemplateCanvas
+                      layout={template}
+                      className="max-h-full max-w-full"
+                    />
+                  </div>
                 </div>
+
                 <div>
-                  <p className="text-lg font-bold">{template.title}</p>
-                  <span className="text-muted-foreground">
-                    {template.description}
+                  <p className="text-lg font-bold">{template.name}</p>
+                  <span className="text-muted-foreground text-sm">
+                    {TEMPLATE_DESCRIPTIONS[template.id]}
                   </span>
                 </div>
               </CardContent>
