@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { STATS } from "@/data/landing";
 import { templates } from "@/data/templates";
 import { Camera } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { Link } from "react-router";
 
@@ -72,14 +73,23 @@ function Hero() {
         </div>
 
         {/* Right */}
-        <div className="bg-secondary min-h-[70vh] rounded-lg p-4">
-          <div className="flex h-full min-h-0 w-full min-w-0 items-center justify-center">
-            <div className="flex h-full max-h-130 w-full max-w-96 items-center justify-center">
-              <TemplateCanvas
-                layout={selectedTemplate}
-                className="max-h-full max-w-full drop-shadow-lg"
-              />
-            </div>
+
+        <div className="bg-secondary flex min-h-[70vh] items-center justify-center rounded-lg p-4">
+          <div className="flex h-120 w-full max-w-96 items-center justify-center">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={selectedTemplate.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex h-full items-center justify-center"
+              >
+                <TemplateCanvas
+                  layout={selectedTemplate}
+                  className="max-h-full max-w-full shadow-lg"
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </div>
