@@ -27,7 +27,7 @@ function Templates() {
                   <div className="flex h-full w-full items-center justify-center">
                     <TemplateCanvas
                       layout={template}
-                      className="max-h-full max-w-full"
+                      className="max-h-full max-w-full shadow-lg"
                     />
                   </div>
                 </div>
