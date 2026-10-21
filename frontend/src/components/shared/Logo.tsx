@@ -87,7 +87,7 @@ export function Logo() {
     <a
       href="#hero"
       aria-label="Motion Booth home"
-      className="flex items-center gap-2"
+      className="flex items-center gap-0.5"
     >
       <LogoMark />
       <span className="font-display text-2xl font-bold tracking-tight">
