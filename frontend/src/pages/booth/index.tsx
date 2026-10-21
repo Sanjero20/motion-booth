@@ -1,116 +1,25 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
 import { ArrowLeft, Camera } from "lucide-react";
-
 import { Logo } from "@/components/shared/Logo";
 import { Button } from "@/components/ui/button";
-
-import CapturedPhotos from "./sections/CapturedPhotos";
-
-import type { Photo } from "@/types/booth";
 import CameraPreview from "./sections/CameraPreview";
+import CapturedPhotos from "./sections/CapturedPhotos";
+import useCamera from "@/hooks/useCamera";
+import type { Photo } from "@/types/booth";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
 
 function BoothPage() {
   const [status, setStatus] = useState<"idle" | "capturing">("idle");
-  const [cameraError, setCameraError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const capturingRef = useRef(false);
 
-  // Request camera access and clean up when the page unmounts.
-  useEffect(() => {
-    let cancelled = false;
-    let activeStream: MediaStream | null = null;
-
-    async function connectCamera() {
-      try {
-        if (!navigator.mediaDevices?.getUserMedia) {
-          throw new Error(
-            "Camera access is unavailable. Use HTTPS or localhost.",
-          );
-        }
-
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "user",
-            aspectRatio: { ideal: 4 / 3 },
-          },
-          audio: false,
-        });
-
-        if (cancelled) {
-          stream.getTracks().forEach((track) => track.stop());
-          return;
-        }
-
-        activeStream = stream;
-        streamRef.current = stream;
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-        }
-      } catch (error) {
-        if (cancelled) return;
-
-        setCameraError(
-          error instanceof Error
-            ? error.message
-            : "Unable to access the camera.",
-        );
-      }
-    }
-
-    void connectCamera();
-
-    return () => {
-      cancelled = true;
-      capturingRef.current = false;
-
-      activeStream?.getTracks().forEach((track) => track.stop());
-
-      if (streamRef.current === activeStream) {
-        streamRef.current = null;
-      }
-    };
-  }, []);
-
-  const capturePhoto = (): Photo | null => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    if (
-      !video ||
-      !canvas ||
-      video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA
-    ) {
-      return null;
-    }
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const context = canvas.getContext("2d");
-
-    if (!context) return null;
-
-    // Mirror the captured image to match the mirrored selfie preview.
-    context.translate(canvas.width, 0);
-    context.scale(-1, 1);
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    return {
-      id: Date.now(),
-      src: canvas.toDataURL("image/jpeg", 0.92),
-    };
-  };
+  const { videoRef, canvasRef, streamRef, cameraError, capturePhoto } =
+    useCamera();
 
   const wait = (ms: number) =>
     new Promise<void>((resolve) => window.setTimeout(resolve, ms));
@@ -143,7 +52,7 @@ function BoothPage() {
         const photo = capturePhoto();
 
         if (photo) {
-          setPhotos((current) => [...current, photo]);
+          setPhotos((current) => [...current, { id: Date.now(), src: photo }]);
         }
 
         // Brief pause before the next shot.
