@@ -8,12 +8,12 @@ import useCamera from "@/hooks/useCamera";
 import usePhotoCapture from "@/hooks/usePhotoCapture";
 
 const LIMIT = 4;
-const COUNTDOWN_SECONDS = 3;
+const COUNTDOWN_SECONDS = 5;
 
 function BoothPage() {
   const { videoRef, canvasRef, cameraError, capturePhoto } = useCamera();
 
-  const { status, photos, countdown, startCapture } = usePhotoCapture({
+  const { status, photos, countdown, startCapture, flash } = usePhotoCapture({
     capturePhoto,
     limit: LIMIT,
     countdownSeconds: COUNTDOWN_SECONDS,
@@ -45,6 +45,7 @@ function BoothPage() {
             canvasRef={canvasRef}
             cameraError={cameraError}
             countdown={countdown}
+            flash={flash}
           />
 
           <Button

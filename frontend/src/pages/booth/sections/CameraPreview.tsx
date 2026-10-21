@@ -5,11 +5,24 @@ interface Props {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   cameraError: string | null;
   countdown: number | null;
+  flash: boolean;
 }
 
-function CameraPreview({ videoRef, canvasRef, cameraError, countdown }: Props) {
+function CameraPreview({
+  videoRef,
+  canvasRef,
+  cameraError,
+  countdown,
+  flash,
+}: Props) {
   return (
     <div className="bg-secondary border-border relative aspect-4/3 w-full overflow-hidden rounded-md border-2">
+      <div
+        className={`pointer-events-none absolute inset-0 z-10 bg-white transition-opacity duration-100 ${
+          flash ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
       <video
         ref={videoRef}
         autoPlay
