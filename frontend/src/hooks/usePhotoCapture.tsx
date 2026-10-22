@@ -27,7 +27,7 @@ function usePhotoCapture({
   const [status, setStatus] = useState<"idle" | "capturing">("idle");
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
-  const [flash, setFlash] = useState(false);
+  const [flashKey, setFlashKey] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [captureError, setCaptureError] = useState<string | null>(null);
 
@@ -90,7 +90,8 @@ function usePhotoCapture({
         throw new Error("Unable to capture the photo.");
       }
 
-      setFlash(true);
+      // Each increment remounts the flash overlay in CameraPreview
+      setFlashKey((key) => key + 1);
 
       const motionClip = await stopRecording(session);
 
@@ -130,7 +131,6 @@ function usePhotoCapture({
         if (!mountedRef.current) return;
 
         setPhotos((current) => [...current, photo]);
-        setFlash(false);
 
         if (shot < limit - 1) {
           await wait(800);
@@ -155,7 +155,6 @@ function usePhotoCapture({
 
       if (mountedRef.current) {
         setCountdown(null);
-        setFlash(false);
         setStatus("idle");
       }
     }
@@ -167,7 +166,7 @@ function usePhotoCapture({
     setIsComplete(false);
     setPhotos([]);
     setCountdown(null);
-    setFlash(false);
+    setFlashKey(0);
     setCaptureError(null);
   }, []);
 
@@ -178,7 +177,7 @@ function usePhotoCapture({
     isComplete,
     startCapture,
     resetCapture,
-    flash,
+    flashKey,
     captureError,
   };
 }

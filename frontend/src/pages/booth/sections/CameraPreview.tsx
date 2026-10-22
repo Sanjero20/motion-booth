@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import type { Ref, RefObject } from "react";
 
 interface Props {
@@ -5,24 +6,33 @@ interface Props {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   cameraError: string | null;
   countdown: number | null;
-  flash: boolean;
+  flashKey: number;
 }
+
+const FLASH_DURATION_MS = 350;
 
 function CameraPreview({
   videoRef,
   canvasRef,
   cameraError,
   countdown,
-  flash,
+  flashKey,
 }: Props) {
+  const flashRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (flashKey === 0) return;
+
+    const animation = flashRef.current?.animate(
+      [{ opacity: 1 }, { opacity: 0 }],
+      { duration: FLASH_DURATION_MS, easing: "ease-out", fill: "none" },
+    );
+
+    return () => animation?.cancel();
+  }, [flashKey]);
+
   return (
     <div className="bg-secondary border-border relative aspect-4/3 w-full overflow-hidden rounded-md border-2">
-      <div
-        className={`pointer-events-none absolute inset-0 z-10 bg-white transition-opacity ${
-          flash ? "opacity-100 duration-0" : "opacity-0 duration-300"
-        }`}
-      />
-
       <video
         ref={videoRef}
         autoPlay
@@ -44,6 +54,12 @@ function CameraPreview({
           </span>
         </div>
       )}
+
+      {/* Flash overlay: last so it always paints on top */}
+      <div
+        ref={flashRef}
+        className="pointer-events-none absolute inset-0 z-20 bg-white opacity-0"
+      />
 
       <canvas ref={canvasRef} className="hidden" />
     </div>

@@ -34,7 +34,7 @@ function BoothPage() {
     isComplete,
     startCapture,
     resetCapture,
-    flash,
+    flashKey,
     captureError,
   } = usePhotoCapture({
     capturePhoto,
@@ -144,7 +144,7 @@ function BoothPage() {
                 canvasRef={canvasRef}
                 cameraError={cameraError}
                 countdown={countdown}
-                flash={flash}
+                flashKey={flashKey}
               />
 
               {captureError && (
