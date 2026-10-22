@@ -1,7 +1,7 @@
-const MP4_MIME_TYPES = [
-  "video/mp4;codecs=avc1.42E01E",
-  "video/mp4;codecs=avc1",
-  "video/mp4",
+const VIDEO_MIME_TYPES = [
+  "video/webm;codecs=vp9",
+  "video/webm;codecs=vp8",
+  "video/webm",
 ] as const;
 
 export function getSupportedMimeType(): string | null {
@@ -10,7 +10,7 @@ export function getSupportedMimeType(): string | null {
   }
 
   return (
-    MP4_MIME_TYPES.find((mimeType) =>
+    VIDEO_MIME_TYPES.find((mimeType) =>
       MediaRecorder.isTypeSupported(mimeType),
     ) ?? null
   );
