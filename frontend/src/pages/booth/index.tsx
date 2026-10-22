@@ -1,10 +1,9 @@
 import { useCallback, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Camera, Download, Video } from "lucide-react";
+import { Camera } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { templates } from "@/data/templates";
-import TemplatePicker from "@/components/shared/TemplatePicker";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
 
 import BoothHeader from "./sections/BoothHeader";
@@ -13,6 +12,7 @@ import CapturedPhotos from "./sections/CapturedPhotos";
 
 import useCamera from "@/hooks/useCamera";
 import usePhotoCapture from "@/hooks/usePhotoCapture";
+import BoothResultsPanel from "./sections/BoothResultsPanel";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
@@ -20,12 +20,19 @@ const COUNTDOWN_SECONDS = 3;
 function BoothPage() {
   const { videoRef, canvasRef, cameraError, capturePhoto } = useCamera();
 
-  const { status, photos, countdown, isComplete, startCapture, flash } =
-    usePhotoCapture({
-      capturePhoto,
-      limit: LIMIT,
-      countdownSeconds: COUNTDOWN_SECONDS,
-    });
+  const {
+    status,
+    photos,
+    countdown,
+    isComplete,
+    startCapture,
+    resetCapture,
+    flash,
+  } = usePhotoCapture({
+    capturePhoto,
+    limit: LIMIT,
+    countdownSeconds: COUNTDOWN_SECONDS,
+  });
 
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([
     templates[0].id,
@@ -136,29 +143,12 @@ function BoothPage() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className="flex flex-col gap-4"
               >
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-display text-lg font-medium">
-                    Choose a template
-                  </h2>
-
-                  <TemplatePicker
-                    selectedId={selectedTemplateIds}
-                    onSelect={setSelectedTemplateIds}
-                    layout="vertical"
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <Button className="w-full" onClick={handleSaveImage}>
-                    <Download className="size-4" />
-                    Save image
-                  </Button>
-
-                  <Button variant="outline" className="w-full" disabled>
-                    <Video className="size-4" />
-                    Save video — Soon
-                  </Button>
-                </div>
+                <BoothResultsPanel
+                  selectedTemplateIds={selectedTemplateIds}
+                  onSelectTemplate={setSelectedTemplateIds}
+                  onSaveImage={handleSaveImage}
+                  onNewSession={resetCapture}
+                />
               </motion.div>
             ) : (
               <motion.div
