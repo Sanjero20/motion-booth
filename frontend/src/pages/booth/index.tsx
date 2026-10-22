@@ -1,9 +1,10 @@
-import { Link } from "react-router";
-import { ArrowLeft, Camera } from "lucide-react";
-import { Logo } from "@/components/shared/Logo";
+import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+import BoothHeader from "./sections/BoothHeader";
 import CameraPreview from "./sections/CameraPreview";
 import CapturedPhotos from "./sections/CapturedPhotos";
+
 import useCamera from "@/hooks/useCamera";
 import usePhotoCapture from "@/hooks/usePhotoCapture";
 
@@ -21,21 +22,7 @@ function BoothPage() {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-3 p-3 sm:gap-4 sm:p-5 md:h-dvh md:overflow-hidden">
-      <header className="relative flex shrink-0 items-center justify-center">
-        <Link
-          to="/"
-          aria-label="Back to landing page"
-          className="absolute left-0"
-        >
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="size-4" />
-            <span className="hidden sm:inline">Go back</span>
-            <span className="sm:hidden">Back</span>
-          </Button>
-        </Link>
-
-        <Logo />
-      </header>
+      <BoothHeader />
 
       <section className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4 md:flex-row md:items-start md:justify-center">
         <div className="flex w-full flex-col gap-3 md:max-w-[calc((100dvh-11rem)*4/3)] md:flex-1">
