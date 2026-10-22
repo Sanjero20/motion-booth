@@ -5,15 +5,19 @@ import { Button } from "@/components/ui/button";
 
 type BoothResultsPanelProps = {
   selectedTemplateIds: string[];
+  exportStage: "idle" | "recording" | "converting";
   onSelectTemplate: (ids: string[]) => void;
   onSaveImage: () => void;
+  onSaveVideo: () => void;
   onNewSession: () => void;
 };
 
 function BoothResultsPanel({
   selectedTemplateIds,
+  exportStage,
   onSelectTemplate,
   onSaveImage,
+  onSaveVideo,
   onNewSession,
 }: BoothResultsPanelProps) {
   return (
@@ -48,10 +52,17 @@ function BoothResultsPanel({
       */}
 
       <div className="flex flex-col gap-2">
-        {/* <Button variant="outline" className="w-full rounded-lg" disabled>
-          <Video className="size-4" />
-          Download motion video
-        </Button> */}
+        <Button
+          onClick={onSaveVideo}
+          disabled={exportStage !== "idle"}
+          className="w-full rounded-lg"
+        >
+          {exportStage === "recording"
+            ? "Recording…"
+            : exportStage === "converting"
+              ? "Converting…"
+              : "Save video"}
+        </Button>
 
         <Button className="w-full rounded-lg" onClick={onSaveImage}>
           <Download className="size-4" />
