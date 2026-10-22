@@ -1,12 +1,20 @@
-import type { TemplateLayout } from "@/types/booth";
+import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
+import type { Photo, TemplateLayout } from "@/types/booth";
 import { useEffect, useRef } from "react";
 
 interface Props {
   layout: TemplateLayout;
+  photos?: Photo[];
   className?: string;
+  onCanvasReady?: (canvas: HTMLCanvasElement | null) => void;
 }
 
-function TemplateCanvas({ layout, className }: Props) {
+function TemplateCanvas({
+  layout,
+  photos = [],
+  className,
+  onCanvasReady,
+}: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -15,27 +23,25 @@ function TemplateCanvas({ layout, className }: Props) {
 
     if (!canvas || !ctx) return;
 
-    const { width, height, slots, branding } = layout;
+    onCanvasReady?.(canvas);
 
-    // Paper background
-    ctx.fillStyle = "#FFFCF6";
-    ctx.fillRect(0, 0, width, height);
+    let cancelled = false;
 
-    // Photo placeholders
-    ctx.fillStyle = "#E8E0D4";
+    drawTemplate(ctx, layout);
 
-    slots.forEach(({ x, y, w, h }) => {
-      ctx.fillRect(x, y, w, h);
-    });
+    Promise.all(photos.slice(0, layout.slots.length).map(loadPhotoImage)).then(
+      (images) => {
+        if (!cancelled) {
+          drawTemplate(ctx, layout, images);
+        }
+      },
+    );
 
-    // Branding
-    ctx.fillStyle = "#191916";
-    ctx.font = `600 ${width * 0.035}px "Fraunces", serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-
-    ctx.fillText(branding.toUpperCase(), width / 2, height * 0.92);
-  }, [layout]);
+    return () => {
+      cancelled = true;
+      onCanvasReady?.(null);
+    };
+  }, [layout, photos, onCanvasReady]);
 
   return (
     <canvas
