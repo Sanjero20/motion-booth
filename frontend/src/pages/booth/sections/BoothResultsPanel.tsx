@@ -1,4 +1,4 @@
-import { Download, RotateCcw, Video } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 
 import TemplatePicker from "@/components/shared/TemplatePicker";
 import { Button } from "@/components/ui/button";
@@ -48,12 +48,12 @@ function BoothResultsPanel({
       */}
 
       <div className="flex flex-col gap-2">
-        <Button variant="outline" className="w-full" disabled>
+        {/* <Button variant="outline" className="w-full rounded-lg" disabled>
           <Video className="size-4" />
           Download motion video
-        </Button>
+        </Button> */}
 
-        <Button className="w-full" onClick={onSaveImage}>
+        <Button className="w-full rounded-lg" onClick={onSaveImage}>
           <Download className="size-4" />
           Download photo
         </Button>
@@ -61,8 +61,8 @@ function BoothResultsPanel({
 
       <div className="border-t pt-4">
         <Button
-          variant="ghost"
-          className="w-full justify-start"
+          variant="outline"
+          className="w-full rounded-lg"
           onClick={onNewSession}
         >
           <RotateCcw className="size-4" />
