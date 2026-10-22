@@ -19,7 +19,7 @@ function BoothResultsPanel({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <h2 className="font-display text-5xl font-semibold">
+        <h2 className="font-display text-4xl font-semibold">
           Your moments are <em className="text-primary">ready</em>
         </h2>
 
