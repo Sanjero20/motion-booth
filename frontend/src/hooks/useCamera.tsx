@@ -1,11 +1,20 @@
+/* eslint-disable react-hooks/immutability */
 import { useCallback, useEffect, useRef, useState } from "react";
 
 function useCamera() {
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [videoElement, setVideoElement] = useState<HTMLVideoElement | null>(
+    null,
+  );
+  const [stream, setStream] = useState<MediaStream | null>(null);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // Reconnects the stream whenever the video element mounts again.
+  const videoRef = useCallback((element: HTMLVideoElement | null) => {
+    setVideoElement(element);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -19,7 +28,7 @@ function useCamera() {
           );
         }
 
-        const stream = await navigator.mediaDevices.getUserMedia({
+        const cameraStream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
             aspectRatio: { ideal: 4 / 3 },
@@ -27,16 +36,14 @@ function useCamera() {
         });
 
         if (cancelled) {
-          stream.getTracks().forEach((track) => track.stop());
+          cameraStream.getTracks().forEach((track) => track.stop());
+          return;
         }
 
-        activeStream = stream;
-        streamRef.current = stream;
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-        }
+        activeStream = cameraStream;
+        streamRef.current = cameraStream;
+        setStream(cameraStream);
+        setCameraError(null);
       } catch (error) {
         if (cancelled) return;
 
@@ -52,17 +59,30 @@ function useCamera() {
 
     return () => {
       cancelled = true;
-
       activeStream?.getTracks().forEach((track) => track.stop());
 
-      if (streamRef.current == activeStream) {
+      if (streamRef.current === activeStream) {
         streamRef.current = null;
       }
     };
   }, []);
 
+  useEffect(() => {
+    if (!videoElement || !stream) return;
+
+    videoElement.srcObject = stream;
+
+    void videoElement.play().catch(() => {
+      setCameraError("Unable to start the camera preview.");
+    });
+
+    return () => {
+      videoElement.srcObject = null;
+    };
+  }, [videoElement, stream]);
+
   const capturePhoto = useCallback(() => {
-    const video = videoRef.current;
+    const video = videoElement;
     const canvas = canvasRef.current;
 
     if (
@@ -77,17 +97,23 @@ function useCamera() {
     canvas.height = video.videoHeight;
 
     const context = canvas.getContext("2d");
-
     if (!context) return null;
 
+    // Mirror the captured image to match the preview.
     context.translate(canvas.width, 0);
     context.scale(-1, 1);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     return canvas.toDataURL("image/jpeg", 0.92);
-  }, []);
+  }, [videoElement]);
 
-  return { videoRef, canvasRef, streamRef, cameraError, capturePhoto };
+  return {
+    videoRef,
+    canvasRef,
+    streamRef,
+    cameraError,
+    capturePhoto,
+  };
 }
 
 export default useCamera;

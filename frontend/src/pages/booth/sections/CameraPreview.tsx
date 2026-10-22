@@ -1,7 +1,7 @@
-import type { RefObject } from "react";
+import type { Ref, RefObject } from "react";
 
 interface Props {
-  videoRef: RefObject<HTMLVideoElement | null>;
+  videoRef: Ref<HTMLVideoElement | null>;
   canvasRef: RefObject<HTMLCanvasElement | null>;
   cameraError: string | null;
   countdown: number | null;
