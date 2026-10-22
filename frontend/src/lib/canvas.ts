@@ -2,28 +2,33 @@ import type { Photo, TemplateLayout } from "@/types/booth";
 
 export function drawImageCover(
   ctx: CanvasRenderingContext2D,
-  image: HTMLImageElement,
+  image: HTMLImageElement | HTMLVideoElement,
   x: number,
   y: number,
   width: number,
   height: number,
 ) {
-  const scale = Math.max(
-    width / image.naturalWidth,
-    height / image.naturalHeight,
-  );
+  const sourceWidth =
+    image instanceof HTMLVideoElement ? image.videoWidth : image.naturalWidth;
 
-  const sourceWidth = width / scale;
-  const sourceHeight = height / scale;
-  const sourceX = (image.naturalWidth - sourceWidth) / 2;
-  const sourceY = (image.naturalHeight - sourceHeight) / 2;
+  const sourceHeight =
+    image instanceof HTMLVideoElement ? image.videoHeight : image.naturalHeight;
+
+  if (!sourceWidth || !sourceHeight) return;
+
+  const scale = Math.max(width / sourceWidth, height / sourceHeight);
+
+  const cropWidth = width / scale;
+  const cropHeight = height / scale;
+  const sourceX = (sourceWidth - cropWidth) / 2;
+  const sourceY = (sourceHeight - cropHeight) / 2;
 
   ctx.drawImage(
     image,
     sourceX,
     sourceY,
-    sourceWidth,
-    sourceHeight,
+    cropWidth,
+    cropHeight,
     x,
     y,
     width,
