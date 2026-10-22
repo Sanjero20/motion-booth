@@ -66,16 +66,24 @@ function BoothPage() {
 
       <section className="flex min-h-0 flex-1 flex-col gap-3 sm:gap-4 md:flex-row md:items-start md:justify-center">
         <div className="flex w-full flex-col gap-3 md:max-w-[calc((100dvh-11rem)*4/3)] md:flex-1">
-          {isComplete ? (
-            <div className="bg-secondary border-border relative flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-md border-2">
-              <div className="flex h-120 w-full max-w-96 items-center justify-center">
+          <AnimatePresence mode="wait" initial={false}>
+            {isComplete ? (
+              <motion.div
+                key="result"
+                initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="bg-secondary border-border relative flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-md border-2"
+              >
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={selectedTemplate.id}
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="flex h-full items-center justify-center"
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.97 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className="flex h-120 w-full max-w-96 items-center justify-center"
                   >
                     <TemplateCanvas
                       layout={selectedTemplate}
@@ -85,62 +93,85 @@ function BoothPage() {
                     />
                   </motion.div>
                 </AnimatePresence>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Camera preview */}
-              <CameraPreview
-                videoRef={videoRef}
-                canvasRef={canvasRef}
-                cameraError={cameraError}
-                countdown={countdown}
-                flash={flash}
-              />
-
-              <Button
-                size="lg"
-                className="h-12 w-full rounded-full text-base md:mx-auto md:w-auto md:px-12"
-                onClick={startCapture}
-                disabled={status !== "idle" || !!cameraError}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="camera"
+                initial={{ opacity: 1 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="flex w-full flex-col gap-3"
               >
-                <Camera className="size-5" />
-                {status === "idle" ? "Start" : "Get ready…"}
-              </Button>
-            </>
-          )}
+                <CameraPreview
+                  videoRef={videoRef}
+                  canvasRef={canvasRef}
+                  cameraError={cameraError}
+                  countdown={countdown}
+                  flash={flash}
+                />
+
+                <Button
+                  size="lg"
+                  className="h-12 w-full rounded-full text-base md:mx-auto md:w-auto md:px-12"
+                  onClick={startCapture}
+                  disabled={status !== "idle" || !!cameraError}
+                >
+                  <Camera className="size-5" />
+                  {status === "idle" ? "Start" : "Get ready…"}
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         <aside className="flex w-full shrink-0 flex-col gap-4 md:w-56 lg:w-64">
-          {isComplete ? (
-            <>
-              <div className="flex flex-col gap-2">
-                <h2 className="font-display text-lg font-medium">
-                  Choose a template
-                </h2>
+          <AnimatePresence mode="wait" initial={false}>
+            {isComplete ? (
+              <motion.div
+                key="result-controls"
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="flex flex-col gap-4"
+              >
+                <div className="flex flex-col gap-2">
+                  <h2 className="font-display text-lg font-medium">
+                    Choose a template
+                  </h2>
 
-                <TemplatePicker
-                  selectedId={selectedTemplateIds}
-                  onSelect={setSelectedTemplateIds}
-                  layout="vertical"
-                />
-              </div>
+                  <TemplatePicker
+                    selectedId={selectedTemplateIds}
+                    onSelect={setSelectedTemplateIds}
+                    layout="vertical"
+                  />
+                </div>
 
-              <div className="flex flex-col gap-2">
-                <Button className="w-full" onClick={handleSaveImage}>
-                  <Download className="size-4" />
-                  Save image
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button className="w-full" onClick={handleSaveImage}>
+                    <Download className="size-4" />
+                    Save image
+                  </Button>
 
-                <Button variant="outline" className="w-full" disabled>
-                  <Video className="size-4" />
-                  Save video — Soon
-                </Button>
-              </div>
-            </>
-          ) : (
-            <CapturedPhotos limit={LIMIT} photos={photos} />
-          )}
+                  <Button variant="outline" className="w-full" disabled>
+                    <Video className="size-4" />
+                    Save video — Soon
+                  </Button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="captured-photos"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <CapturedPhotos limit={LIMIT} photos={photos} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </aside>
       </section>
     </main>
