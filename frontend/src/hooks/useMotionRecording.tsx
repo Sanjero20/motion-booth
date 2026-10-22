@@ -2,11 +2,12 @@ import { getSupportedMimeType } from "@/lib/media";
 import type { MotionClip } from "@/types/booth";
 import { useCallback, useRef } from "react";
 
-type RecordingSession = {
+export type RecordingSession = {
   recorder: MediaRecorder;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   video: HTMLVideoElement;
+  stream: MediaStream;
   chunks: Blob[];
   startedAt: number;
   animationFrame: number;
@@ -19,7 +20,7 @@ function useMotionRecording() {
   const startRecording = useCallback(
     (video: HTMLVideoElement): RecordingSession => {
       if (sessionRef.current) {
-        throw new Error("A recording is already in progress");
+        throw new Error("A recording is already in progress.");
       }
 
       if (
@@ -33,7 +34,7 @@ function useMotionRecording() {
       const mimeType = getSupportedMimeType();
 
       if (!mimeType) {
-        throw new Error("MP4 recording is not supported by this browser.");
+        throw new Error("WebM recording is not supported by this browser.");
       }
 
       const canvas = document.createElement("canvas");
@@ -46,17 +47,17 @@ function useMotionRecording() {
         throw new Error("Unable to create the recording canvas.");
       }
 
-      const recordingStream = canvas.captureStream(24);
-      const recorder = new MediaRecorder(recordingStream, { mimeType });
-      const chunks: Blob[] = [];
+      const stream = canvas.captureStream(24);
+      const recorder = new MediaRecorder(stream, { mimeType });
 
       const session: RecordingSession = {
         recorder,
         canvas,
         context,
         video,
-        chunks,
-        startedAt: performance.now(),
+        stream,
+        chunks: [],
+        startedAt: 0,
         animationFrame: 0,
         captureOffsetMs: null,
       };
@@ -75,16 +76,18 @@ function useMotionRecording() {
       };
 
       recorder.ondataavailable = (event) => {
-        if (event.data.size > 0) chunks.push(event.data);
+        if (event.data.size > 0) {
+          session.chunks.push(event.data);
+        }
       };
 
       sessionRef.current = session;
-      drawFrame();
       recorder.start(100);
+      session.startedAt = performance.now();
+      drawFrame();
 
       return session;
     },
-
     [],
   );
 
@@ -95,35 +98,42 @@ function useMotionRecording() {
   const stopRecording = useCallback(
     (session: RecordingSession): Promise<MotionClip> =>
       new Promise((resolve, reject) => {
-        const { recorder, canvas, animationFrame } = session;
+        const { recorder, stream, canvas } = session;
 
         if (recorder.state === "inactive") {
           reject(new Error("The recording has already stopped."));
           return;
         }
 
-        cancelAnimationFrame(animationFrame);
+        cancelAnimationFrame(session.animationFrame);
+
+        recorder.onerror = () => {
+          if (sessionRef.current === session) {
+            sessionRef.current = null;
+          }
+
+          stream.getTracks().forEach((track) => track.stop());
+          reject(new Error("Failed to record the motion clip."));
+        };
 
         recorder.onstop = () => {
-          sessionRef.current = null;
-          canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
+          if (sessionRef.current === session) {
+            sessionRef.current = null;
+          }
 
-          canvas
-            .captureStream()
-            .getTracks()
-            .forEach((track) => track.stop());
+          stream.getTracks().forEach((track) => track.stop());
 
           resolve({
-            blob: new Blob(session.chunks, { type: recorder.mimeType }),
+            blob: new Blob(session.chunks, {
+              type: recorder.mimeType,
+            }),
             mimeType: recorder.mimeType,
             durationMs: performance.now() - session.startedAt,
             captureOffsetMs: session.captureOffsetMs,
           });
-        };
 
-        recorder.onerror = () => {
-          sessionRef.current = null;
-          reject(new Error("Failed to record the motion clip."));
+          canvas.width = 0;
+          canvas.height = 0;
         };
 
         recorder.stop();
@@ -131,7 +141,37 @@ function useMotionRecording() {
     [],
   );
 
-  return { startRecording, markCapturedMoment, stopRecording };
+  const cancelRecording = useCallback((session?: RecordingSession) => {
+    const activeSession = sessionRef.current;
+
+    if (!activeSession) return;
+    if (session && session !== activeSession) return;
+
+    sessionRef.current = null;
+
+    cancelAnimationFrame(activeSession.animationFrame);
+
+    const { recorder, stream, canvas } = activeSession;
+
+    recorder.ondataavailable = null;
+    recorder.onstop = null;
+    recorder.onerror = null;
+
+    if (recorder.state !== "inactive") {
+      recorder.stop();
+    }
+
+    stream.getTracks().forEach((track) => track.stop());
+    canvas.width = 0;
+    canvas.height = 0;
+  }, []);
+
+  return {
+    startRecording,
+    markCapturedMoment,
+    stopRecording,
+    cancelRecording,
+  };
 }
 
 export default useMotionRecording;

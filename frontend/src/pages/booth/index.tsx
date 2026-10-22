@@ -13,12 +13,17 @@ import BoothResultsPanel from "./sections/BoothResultsPanel";
 
 import useCamera from "@/hooks/useCamera";
 import usePhotoCapture from "@/hooks/usePhotoCapture";
+import useMotionRecording from "@/hooks/useMotionRecording";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
 
 function BoothPage() {
-  const { videoRef, canvasRef, cameraError, capturePhoto } = useCamera();
+  const { videoRef, videoElement, canvasRef, cameraError, capturePhoto } =
+    useCamera();
+
+  const { startRecording, markCapturedMoment, stopRecording, cancelRecording } =
+    useMotionRecording();
 
   const {
     status,
@@ -28,8 +33,14 @@ function BoothPage() {
     startCapture,
     resetCapture,
     flash,
+    captureError,
   } = usePhotoCapture({
     capturePhoto,
+    videoElement,
+    startRecording,
+    markCapturedMoment,
+    stopRecording,
+    cancelRecording,
     limit: LIMIT,
     countdownSeconds: COUNTDOWN_SECONDS,
   });
@@ -129,6 +140,12 @@ function BoothPage() {
                 countdown={countdown}
                 flash={flash}
               />
+
+              {captureError && (
+                <p role="alert" className="text-destructive text-sm">
+                  {captureError}
+                </p>
+              )}
 
               <Button
                 size="lg"

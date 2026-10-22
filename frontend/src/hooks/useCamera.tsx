@@ -109,6 +109,7 @@ function useCamera() {
 
   return {
     videoRef,
+    videoElement,
     canvasRef,
     streamRef,
     cameraError,
