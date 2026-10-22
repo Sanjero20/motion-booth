@@ -16,6 +16,7 @@ function usePhotoCapture({
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [flash, setFlash] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const capturingRef = useRef(false);
   const mountedRef = useRef(true);
@@ -42,11 +43,11 @@ function usePhotoCapture({
     if (capturingRef.current || !mountedRef.current) return;
 
     capturingRef.current = true;
+    setIsComplete(false);
     setStatus("capturing");
     setPhotos([]);
 
     try {
-      //
       for (let shot = 0; shot < limit; shot++) {
         // Initiate countdown timer
         for (let seconds = countdownSeconds; seconds > 0; seconds--) {
@@ -77,6 +78,8 @@ function usePhotoCapture({
           await wait(800);
         }
       }
+
+      setIsComplete(true);
     } finally {
       capturingRef.current = false;
 
@@ -87,7 +90,24 @@ function usePhotoCapture({
     }
   }, [capturePhoto, countdownSeconds, limit, wait]);
 
-  return { status, photos, countdown, startCapture, flash };
+  const resetCapture = useCallback(() => {
+    if (capturingRef.current) return;
+
+    setIsComplete(false);
+    setPhotos([]);
+    setCountdown(null);
+    setFlash(false);
+  }, []);
+
+  return {
+    status,
+    photos,
+    countdown,
+    isComplete,
+    startCapture,
+    resetCapture,
+    flash,
+  };
 }
 
 export default usePhotoCapture;
