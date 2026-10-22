@@ -1,10 +1,11 @@
-import { useCallback, useRef, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { Camera } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { templates } from "@/data/templates";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
+import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
 
 import BoothHeader from "./sections/BoothHeader";
 import CameraPreview from "./sections/CameraPreview";
@@ -17,6 +18,7 @@ import useMotionRecording from "@/hooks/useMotionRecording";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
+const HOLD_MS = 3000;
 
 function BoothPage() {
   const { videoRef, videoElement, canvasRef, cameraError, capturePhoto } =
@@ -53,15 +55,18 @@ function BoothPage() {
     templates.find((template) => template.id === selectedTemplateIds[0]) ??
     templates[0];
 
-  const exportCanvasRef = useRef<HTMLCanvasElement>(null);
+  const handleSaveImage = async () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = selectedTemplate.width;
+    canvas.height = selectedTemplate.height;
 
-  const handleCanvasReady = useCallback((canvas: HTMLCanvasElement | null) => {
-    exportCanvasRef.current = canvas;
-  }, []);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-  const handleSaveImage = () => {
-    const canvas = exportCanvasRef.current;
-    if (!canvas) return;
+    const images = await Promise.all(
+      photos.slice(0, selectedTemplate.slots.length).map(loadPhotoImage),
+    );
+    drawTemplate(ctx, selectedTemplate, images);
 
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -105,7 +110,8 @@ function BoothPage() {
                   <TemplateCanvas
                     layout={selectedTemplate}
                     photos={photos}
-                    onCanvasReady={handleCanvasReady}
+                    mode="motion"
+                    holdMs={HOLD_MS}
                     className="max-h-full max-w-full"
                   />
                 </motion.div>

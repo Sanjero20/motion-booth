@@ -18,8 +18,8 @@ function CameraPreview({
   return (
     <div className="bg-secondary border-border relative aspect-4/3 w-full overflow-hidden rounded-md border-2">
       <div
-        className={`pointer-events-none absolute inset-0 z-10 bg-white transition-opacity duration-100 ${
-          flash ? "opacity-100" : "opacity-0"
+        className={`pointer-events-none absolute inset-0 z-10 bg-white transition-opacity ${
+          flash ? "opacity-100 duration-0" : "opacity-0 duration-300"
         }`}
       />
 

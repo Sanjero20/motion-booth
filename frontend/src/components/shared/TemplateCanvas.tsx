@@ -7,6 +7,8 @@ interface Props {
   photos?: Photo[];
   className?: string;
   mode?: "photo" | "motion";
+  holdMs?: number; // how long the still photo is held before replaying
+  flashMs?: number; // flash fade duration
   onCanvasReady?: (canvas: HTMLCanvasElement | null) => void;
 }
 
@@ -15,6 +17,8 @@ function TemplateCanvas({
   photos = [],
   className,
   mode = "photo",
+  holdMs = 3000,
+  flashMs = 300,
   onCanvasReady,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -73,53 +77,125 @@ function TemplateCanvas({
 
       const clips = photos.slice(0, layout.slots.length);
 
-      const readyVideos = await Promise.all(
-        clips.map(async (photo) => {
-          if (!photo.motionClip) return null;
+      const [readyVideos, stills] = await Promise.all([
+        Promise.all(
+          clips.map(async (photo) => {
+            if (!photo.motionClip) return null;
 
-          const url = URL.createObjectURL(photo.motionClip.blob);
-          urls.push(url);
+            const url = URL.createObjectURL(photo.motionClip.blob);
+            urls.push(url);
 
-          const video = document.createElement("video");
-          video.src = url;
-          video.muted = true;
-          video.loop = true;
-          video.playsInline = true;
-          video.preload = "auto";
+            const video = document.createElement("video");
+            video.src = url;
+            video.muted = true;
+            video.loop = false; // play once, then flash + hold
+            video.playsInline = true;
+            video.preload = "auto";
 
-          await new Promise<void>((resolve) => {
-            video.onloadeddata = () => resolve();
-            video.onerror = () => resolve();
-          });
+            await new Promise<void>((resolve) => {
+              video.onloadeddata = () => resolve();
+              video.onerror = () => resolve();
+            });
 
-          return video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
-            ? video
-            : null;
-        }),
-      );
+            return video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+              ? video
+              : null;
+          }),
+        ),
+        Promise.all(clips.map(loadPhotoImage)),
+      ]);
 
       if (cancelled) return;
 
+      const finishedAt: (number | null)[] = clips.map(() => null);
+      let cycleStart = performance.now();
+
       readyVideos.forEach((video, index) => {
         videos[index] = video;
-
-        if (video) {
-          void video.play().catch(() => {});
-        }
+        if (video) void video.play().catch(() => {});
       });
+
+      const restart = (now: number) => {
+        cycleStart = now;
+        finishedAt.fill(null);
+
+        videos.forEach((video) => {
+          if (!video) return;
+          video.currentTime = 0;
+          void video.play().catch(() => {});
+        });
+      };
 
       const render = () => {
         if (cancelled) return;
 
+        const now = performance.now();
         drawTemplate(ctx!, layout);
 
-        layout.slots.forEach((slot, index) => {
-          const video = videos[index];
+        let activeSlots = 0;
+        let allDone = true;
+        let lastFinish = 0;
 
-          if (video && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+        layout.slots.forEach((slot, index) => {
+          const photo = clips[index];
+          if (!photo) return;
+
+          activeSlots++;
+
+          const video = videos[index];
+          const still = stills[index];
+          const durationMs = photo.motionClip?.durationMs ?? 0;
+
+          // Clip is done when it ends (with a time-based fallback,
+          // since MediaRecorder webm files can be unreliable).
+          if (finishedAt[index] === null) {
+            const clipFinished =
+              !video || video.ended || now - cycleStart > durationMs + 300;
+
+            if (clipFinished) {
+              video?.pause();
+              finishedAt[index] = now;
+            }
+          }
+
+          const doneAt = finishedAt[index];
+
+          if (doneAt === null) {
+            allDone = false;
+
+            if (
+              video &&
+              video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
+            ) {
+              drawImageCover(ctx!, video, slot.x, slot.y, slot.w, slot.h);
+            }
+            return;
+          }
+
+          lastFinish = Math.max(lastFinish, doneAt);
+
+          // Held still photo
+          if (still) {
+            drawImageCover(ctx!, still, slot.x, slot.y, slot.w, slot.h);
+          } else if (video) {
             drawImageCover(ctx!, video, slot.x, slot.y, slot.w, slot.h);
           }
+
+          // Flash fading out over the still
+          const flashElapsed = now - doneAt;
+
+          if (flashElapsed < flashMs) {
+            ctx!.save();
+            ctx!.globalAlpha = 1 - flashElapsed / flashMs;
+            ctx!.fillStyle = "#ffffff";
+            ctx!.fillRect(slot.x, slot.y, slot.w, slot.h);
+            ctx!.restore();
+          }
         });
+
+        if (activeSlots > 0 && allDone && now - lastFinish >= holdMs) {
+          restart(now);
+        }
 
         animationFrame = requestAnimationFrame(render);
       };
@@ -130,7 +206,7 @@ function TemplateCanvas({
     void setupMotionPreview();
 
     return cleanup;
-  }, [layout, photos, mode, onCanvasReady]);
+  }, [layout, photos, mode, holdMs, flashMs, onCanvasReady]);
 
   return (
     <canvas
