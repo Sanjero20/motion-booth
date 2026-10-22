@@ -1,9 +1,19 @@
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import TemplatePicker from "@/components/shared/TemplatePicker";
 import { Button } from "@/components/ui/button";
 import { STATS } from "@/data/landing";
+import { templates } from "@/data/templates";
 import { Camera } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
+import { Link } from "react-router";
 
 function Hero() {
+  const [selectedId, setSelectedId] = useState<string[]>([templates[0].id]);
+
+  const selectedTemplate =
+    templates.find((template) => template.id === selectedId[0]) ?? templates[0];
+
   return (
     <section id="hero" className="border-b">
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-0 lg:grid-cols-[1.1fr_1fr]">
@@ -30,18 +40,20 @@ function Hero() {
 
           <div className="flex max-w-md flex-col gap-3">
             <span className="text-sm font-medium">Pick your template</span>
-            <TemplatePicker />
+            <TemplatePicker selectedId={selectedId} onSelect={setSelectedId} />
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Button
-              size="lg"
-              onClick={() => {}}
-              className="h-14 gap-2 rounded-full px-8 text-base"
-            >
-              <Camera className="size-5" aria-hidden="true" />
-              Tap to start
-            </Button>
+            <Link to="/booth">
+              <Button
+                size="lg"
+                onClick={() => {}}
+                className="h-14 gap-2 rounded-full px-8 text-base"
+              >
+                <Camera className="size-5" aria-hidden="true" />
+                Tap to start
+              </Button>
+            </Link>
             <span className="text-muted-foreground text-xs">
               4 shots · about 25 seconds
             </span>
@@ -61,7 +73,25 @@ function Hero() {
         </div>
 
         {/* Right */}
-        <div className="bg-secondary min-h-[70vh] rounded-lg p-4"></div>
+
+        <div className="bg-secondary flex min-h-[70vh] items-center justify-center rounded-lg p-4">
+          <div className="flex h-120 w-full max-w-96 items-center justify-center">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={selectedTemplate.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex h-full items-center justify-center"
+              >
+                <TemplateCanvas
+                  layout={selectedTemplate}
+                  className="max-h-full max-w-full shadow-lg"
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
     </section>
   );
