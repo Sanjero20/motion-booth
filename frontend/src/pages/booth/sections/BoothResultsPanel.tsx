@@ -19,12 +19,12 @@ function BoothResultsPanel({
   return (
     <div className="flex flex-col gap-5">
       <div className="flex flex-col gap-2">
-        <h2 className="font-display text-xl font-semibold">
-          Your moments are ready
+        <h2 className="font-display text-5xl font-semibold">
+          Your moments are <em className="text-primary">ready</em>
         </h2>
 
         <p className="text-muted-foreground text-sm leading-relaxed">
-          Each frame replays the 5 seconds before the shutter — the laugh, the
+          Each frame replays the 5 seconds before the shutter - the laugh, the
           lean-in, the almost-ready.
         </p>
       </div>
