@@ -85,7 +85,7 @@ export function LogoMark({
 export function Logo() {
   return (
     <a
-      href="#hero"
+      href="/"
       aria-label="Motion Booth home"
       className="flex items-center gap-0.5"
     >
