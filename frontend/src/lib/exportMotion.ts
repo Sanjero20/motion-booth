@@ -1,4 +1,5 @@
-import { drawImageCover, drawTemplate, loadPhotoImage } from "@/lib/canvas";
+import { loadPhotoImage } from "@/lib/canvas";
+import { renderFrame } from "@/lib/canvas/renderFrame";
 import type { Photo, TemplateLayout } from "@/types/booth";
 
 const MIME_CANDIDATES = [
@@ -12,14 +13,17 @@ const MIME_CANDIDATES = [
 
 function getExportMimeType(): string | null {
   if (typeof MediaRecorder === "undefined") return null;
-  return MIME_CANDIDATES.find((t) => MediaRecorder.isTypeSupported(t)) ?? null;
+
+  return (
+    MIME_CANDIDATES.find((type) => MediaRecorder.isTypeSupported(type)) ?? null
+  );
 }
 
 interface Options {
   holdMs?: number;
   flashMs?: number;
   fps?: number;
-  onProgress?: (progress: number) => void; // 0 to 1
+  onProgress?: (progress: number) => void;
 }
 
 export interface ExportedVideo {
@@ -33,6 +37,7 @@ export async function exportMotionVideo(
   { holdMs = 3000, flashMs = 300, fps = 30, onProgress }: Options = {},
 ): Promise<ExportedVideo> {
   const mimeType = getExportMimeType();
+
   if (!mimeType) {
     throw new Error("Video export is not supported by this browser.");
   }
@@ -44,7 +49,10 @@ export async function exportMotionVideo(
   canvas.height = layout.height;
 
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Unable to create the export canvas.");
+
+  if (!ctx) {
+    throw new Error("Unable to create the export canvas.");
+  }
 
   const urls: string[] = [];
   const videos: (HTMLVideoElement | null)[] = [];
@@ -52,15 +60,16 @@ export async function exportMotionVideo(
   const cleanup = () => {
     videos.forEach((video) => {
       if (!video) return;
+
       video.pause();
       video.removeAttribute("src");
       video.load();
     });
+
     urls.forEach((url) => URL.revokeObjectURL(url));
   };
 
   try {
-    // Load clips and stills
     const [loadedVideos, stills] = await Promise.all([
       Promise.all(
         clips.map(async (photo) => {
@@ -89,23 +98,28 @@ export async function exportMotionVideo(
       Promise.all(clips.map(loadPhotoImage)),
     ]);
 
-    loadedVideos.forEach((video, i) => (videos[i] = video));
+    loadedVideos.forEach((video, index) => {
+      videos[index] = video;
+    });
 
     const longestClipMs = Math.max(
       0,
-      ...clips.map((p) => p.motionClip?.durationMs ?? 0),
+      ...clips.map((photo) => photo.motionClip?.durationMs ?? 0),
     );
 
-    // Recorder
     const stream = canvas.captureStream(fps);
+
     const recorder = new MediaRecorder(stream, {
       mimeType,
       videoBitsPerSecond: 5_000_000,
     });
+
     const chunks: Blob[] = [];
 
     recorder.ondataavailable = (event) => {
-      if (event.data.size > 0) chunks.push(event.data);
+      if (event.data.size > 0) {
+        chunks.push(event.data);
+      }
     };
 
     const stopped = new Promise<void>((resolve, reject) => {
@@ -113,78 +127,48 @@ export async function exportMotionVideo(
       recorder.onerror = () => reject(new Error("Failed to record the video."));
     });
 
-    // Draw the first frame before recording starts
-    drawTemplate(ctx, layout);
-
     const finishedAt: (number | null)[] = clips.map(() => null);
 
     recorder.start(100);
+
     const startedAt = performance.now();
+
     videos.forEach((video) => {
       if (video) void video.play().catch(() => {});
     });
 
-    // Safety net so a broken clip can never hang the export
     const maxMs = longestClipMs + holdMs + 3000;
 
     await new Promise<void>((resolve) => {
+      let animationFrame = 0;
+
       const render = () => {
         const now = performance.now();
         const elapsed = now - startedAt;
 
-        drawTemplate(ctx, layout);
-
-        let allDone = true;
-        let lastFinish = 0;
-
-        layout.slots.forEach((slot, index) => {
-          const photo = clips[index];
-          if (!photo) return;
+        clips.forEach((photo, index) => {
+          if (finishedAt[index] !== null) return;
 
           const video = videos[index];
-          const still = stills[index];
           const durationMs = photo.motionClip?.durationMs ?? 0;
 
-          if (finishedAt[index] === null) {
-            const clipFinished =
-              !video || video.ended || elapsed > durationMs + 300;
+          const clipFinished =
+            !video || video.ended || elapsed > durationMs + 300;
 
-            if (clipFinished) {
-              video?.pause();
-              finishedAt[index] = now;
-            }
+          if (clipFinished) {
+            video?.pause();
+            finishedAt[index] = now;
           }
+        });
 
-          const doneAt = finishedAt[index];
-
-          if (doneAt === null) {
-            allDone = false;
-
-            if (
-              video &&
-              video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
-            ) {
-              drawImageCover(ctx, video, slot.x, slot.y, slot.w, slot.h);
-            }
-            return;
-          }
-
-          lastFinish = Math.max(lastFinish, doneAt);
-
-          if (still) {
-            drawImageCover(ctx, still, slot.x, slot.y, slot.w, slot.h);
-          } else if (video) {
-            drawImageCover(ctx, video, slot.x, slot.y, slot.w, slot.h);
-          }
-
-          const flashElapsed = now - doneAt;
-          if (flashElapsed < flashMs) {
-            ctx.save();
-            ctx.globalAlpha = 1 - flashElapsed / flashMs;
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(slot.x, slot.y, slot.w, slot.h);
-            ctx.restore();
-          }
+        const { allDone, lastFinish } = renderFrame({
+          ctx,
+          layout,
+          stills,
+          videos,
+          finishedAt,
+          now,
+          flashMs,
         });
 
         const totalMs = longestClipMs + 300 + holdMs;
@@ -195,14 +179,18 @@ export async function exportMotionVideo(
           return;
         }
 
-        requestAnimationFrame(render);
+        animationFrame = requestAnimationFrame(render);
       };
 
       render();
+
+      // Keep the animation frame handle local to this recording.
+      void animationFrame;
     });
 
     recorder.stop();
     await stopped;
+
     stream.getTracks().forEach((track) => track.stop());
 
     onProgress?.(1);
