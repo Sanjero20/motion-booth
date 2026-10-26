@@ -5,9 +5,6 @@ import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { templates } from "@/data/templates";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
-import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
-
-import { transcodeToMp4 } from "@/lib/transcodeToMp4";
 
 import BoothHeader from "./sections/BoothHeader";
 import CameraPreview from "./sections/CameraPreview";
@@ -17,13 +14,11 @@ import BoothResultsPanel from "./sections/BoothResultsPanel";
 import useCamera from "@/hooks/useCamera";
 import usePhotoCapture from "@/hooks/usePhotoCapture";
 import useMotionRecording from "@/hooks/useMotionRecording";
-import { exportMotionVideo } from "@/lib/exportMotion";
+import useBoothExport from "@/hooks/useBoothExport";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;
 const HOLD_MS = 3000;
-
-type ExportStage = "idle" | "recording" | "converting";
 
 function BoothPage() {
   const { videoRef, videoElement, canvasRef, cameraError, capturePhoto } =
@@ -55,72 +50,18 @@ function BoothPage() {
   const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([
     templates[0].id,
   ]);
-  const [exportStage, setExportStage] = useState<ExportStage>("idle");
-  const [exportError, setExportError] = useState<string | null>(null);
 
   const selectedTemplate =
     templates.find((template) => template.id === selectedTemplateIds[0]) ??
     templates[0];
 
-  const downloadBlob = (blob: Blob, filename: string) => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-
-    link.href = url;
-    link.download = filename;
-    link.click();
-
-    // Give the browser a moment to start the download
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
-
-  const handleSaveImage = async () => {
-    const canvas = document.createElement("canvas");
-    canvas.width = selectedTemplate.width;
-    canvas.height = selectedTemplate.height;
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const images = await Promise.all(
-      photos.slice(0, selectedTemplate.slots.length).map(loadPhotoImage),
-    );
-    drawTemplate(ctx, selectedTemplate, images);
-
-    canvas.toBlob((blob) => {
-      if (!blob) return;
-      downloadBlob(blob, `${selectedTemplate.id}.png`);
-    }, "image/png");
-  };
-
-  const handleSaveVideo = async () => {
-    if (exportStage !== "idle") return;
-
-    setExportError(null);
-    setExportStage("recording");
-
-    try {
-      const recorded = await exportMotionVideo(selectedTemplate, photos, {
-        holdMs: HOLD_MS,
-      });
-
-      let blob = recorded.blob;
-
-      // Chrome/Safari record MP4 directly; everything else goes through ffmpeg
-      if (recorded.extension !== "mp4") {
-        setExportStage("converting");
-        blob = await transcodeToMp4(recorded.blob);
-      }
-
-      downloadBlob(blob, `${selectedTemplate.id}.mp4`);
-    } catch (error) {
-      setExportError(
-        error instanceof Error ? error.message : "Failed to export the video.",
-      );
-    } finally {
-      setExportStage("idle");
-    }
-  };
+  const {
+    handleSaveImage,
+    handleSaveVideo,
+    exportStage,
+    exportProgress,
+    exportError,
+  } = useBoothExport(selectedTemplate, photos, HOLD_MS);
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-6xl flex-col gap-3 p-3 sm:gap-4 sm:p-5 md:h-dvh md:overflow-hidden">
@@ -166,6 +107,7 @@ function BoothPage() {
                 onSaveImage={handleSaveImage}
                 onSaveVideo={handleSaveVideo}
                 exportStage={exportStage}
+                exportProgress={exportProgress}
                 onNewSession={resetCapture}
               />
 
