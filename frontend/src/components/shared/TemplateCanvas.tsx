@@ -1,4 +1,5 @@
-import { drawImageCover, drawTemplate, loadPhotoImage } from "@/lib/canvas";
+import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
+import { renderFrame } from "@/lib/canvas/renderFrame";
 import type { Photo, TemplateLayout } from "@/types/booth";
 import { useEffect, useRef } from "react";
 
@@ -7,8 +8,8 @@ interface Props {
   photos?: Photo[];
   className?: string;
   mode?: "photo" | "motion";
-  holdMs?: number; // how long the still photo is held before replaying
-  flashMs?: number; // flash fade duration
+  holdMs?: number;
+  flashMs?: number;
   onCanvasReady?: (canvas: HTMLCanvasElement | null) => void;
 }
 
@@ -28,10 +29,6 @@ function TemplateCanvas({
     const ctx = canvas?.getContext("2d");
 
     if (!canvas || !ctx) return;
-
-    if (mode === "photo") {
-      onCanvasReady?.(canvas);
-    }
 
     let cancelled = false;
     let animationFrame = 0;
@@ -59,9 +56,11 @@ function TemplateCanvas({
     };
 
     if (mode === "photo") {
+      onCanvasReady?.(canvas);
+
       drawTemplate(ctx, layout);
 
-      Promise.all(
+      void Promise.all(
         photos.slice(0, layout.slots.length).map(loadPhotoImage),
       ).then((images) => {
         if (!cancelled) {
@@ -88,7 +87,7 @@ function TemplateCanvas({
             const video = document.createElement("video");
             video.src = url;
             video.muted = true;
-            video.loop = false; // play once, then flash + hold
+            video.loop = false;
             video.playsInline = true;
             video.preload = "auto";
 
@@ -107,11 +106,14 @@ function TemplateCanvas({
 
       if (cancelled) return;
 
+      readyVideos.forEach((video, index) => {
+        videos[index] = video;
+      });
+
       const finishedAt: (number | null)[] = clips.map(() => null);
       let cycleStart = performance.now();
 
-      readyVideos.forEach((video, index) => {
-        videos[index] = video;
+      videos.forEach((video) => {
         if (video) void video.play().catch(() => {});
       });
 
@@ -121,6 +123,7 @@ function TemplateCanvas({
 
         videos.forEach((video) => {
           if (!video) return;
+
           video.currentTime = 0;
           void video.play().catch(() => {});
         });
@@ -130,70 +133,42 @@ function TemplateCanvas({
         if (cancelled) return;
 
         const now = performance.now();
-        drawTemplate(ctx!, layout);
 
-        let activeSlots = 0;
-        let allDone = true;
-        let lastFinish = 0;
+        // Update clip completion times before drawing the shared frame.
+        layout.slots.forEach((_, index) => {
+          if (finishedAt[index] !== null) return;
 
-        layout.slots.forEach((slot, index) => {
           const photo = clips[index];
-          if (!photo) return;
-
-          activeSlots++;
-
-          const video = videos[index];
-          const still = stills[index];
-          const durationMs = photo.motionClip?.durationMs ?? 0;
-
-          // Clip is done when it ends (with a time-based fallback,
-          // since MediaRecorder webm files can be unreliable).
-          if (finishedAt[index] === null) {
-            const clipFinished =
-              !video || video.ended || now - cycleStart > durationMs + 300;
-
-            if (clipFinished) {
-              video?.pause();
-              finishedAt[index] = now;
-            }
-          }
-
-          const doneAt = finishedAt[index];
-
-          if (doneAt === null) {
-            allDone = false;
-
-            if (
-              video &&
-              video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
-            ) {
-              drawImageCover(ctx!, video, slot.x, slot.y, slot.w, slot.h);
-            }
+          if (!photo) {
+            finishedAt[index] = now;
             return;
           }
 
-          lastFinish = Math.max(lastFinish, doneAt);
+          const video = videos[index];
+          const durationMs = photo.motionClip?.durationMs ?? 0;
 
-          // Held still photo
-          if (still) {
-            drawImageCover(ctx!, still, slot.x, slot.y, slot.w, slot.h);
-          } else if (video) {
-            drawImageCover(ctx!, video, slot.x, slot.y, slot.w, slot.h);
-          }
+          const clipFinished =
+            !video || video.ended || now - cycleStart > durationMs + 300;
 
-          // Flash fading out over the still
-          const flashElapsed = now - doneAt;
-
-          if (flashElapsed < flashMs) {
-            ctx!.save();
-            ctx!.globalAlpha = 1 - flashElapsed / flashMs;
-            ctx!.fillStyle = "#ffffff";
-            ctx!.fillRect(slot.x, slot.y, slot.w, slot.h);
-            ctx!.restore();
+          if (clipFinished) {
+            video?.pause();
+            finishedAt[index] = now;
           }
         });
 
-        if (activeSlots > 0 && allDone && now - lastFinish >= holdMs) {
+        const { allDone, lastFinish } = renderFrame({
+          ctx: ctx!,
+          layout,
+          stills,
+          videos,
+          finishedAt,
+          now,
+          flashMs,
+        });
+
+        const activeSlots = clips.length > 0;
+
+        if (activeSlots && allDone && now - lastFinish >= holdMs) {
           restart(now);
         }
 
