@@ -72,37 +72,67 @@ function TemplateCanvas({
     }
 
     async function setupMotionPreview() {
-      drawTemplate(ctx!, layout);
-
       const clips = photos.slice(0, layout.slots.length);
 
-      const [readyVideos, stills] = await Promise.all([
-        Promise.all(
-          clips.map(async (photo) => {
-            if (!photo.motionClip) return null;
+      // Draw the template immediately, then load its still photos.
+      drawTemplate(ctx!, layout);
 
-            const url = URL.createObjectURL(photo.motionClip.blob);
-            urls.push(url);
+      const stills = await Promise.all(clips.map(loadPhotoImage));
 
-            const video = document.createElement("video");
+      if (cancelled) return;
+
+      // Show the captured photos before preparing any motion clips.
+      drawTemplate(ctx!, layout, stills);
+
+      const readyVideos = await Promise.all(
+        clips.map(async (photo, index): Promise<HTMLVideoElement | null> => {
+          if (!photo.motionClip || cancelled) return null;
+
+          const url = URL.createObjectURL(photo.motionClip.blob);
+          urls.push(url);
+
+          const video = document.createElement("video");
+          videos[index] = video;
+
+          video.muted = true;
+          video.loop = false;
+          video.playsInline = true;
+          video.preload = "auto";
+
+          const loaded = await new Promise<boolean>((resolve) => {
+            let settled = false;
+
+            const finish = (success: boolean) => {
+              if (settled) return;
+              settled = true;
+              window.clearTimeout(timeout);
+              video.onloadeddata = null;
+              video.onerror = null;
+              resolve(success);
+            };
+
+            const timeout = window.setTimeout(() => {
+              finish(video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA);
+            }, 3000);
+
+            video.onloadeddata = () => finish(true);
+            video.onerror = () => finish(false);
+
             video.src = url;
-            video.muted = true;
-            video.loop = false;
-            video.playsInline = true;
-            video.preload = "auto";
+            video.load();
+          });
 
-            await new Promise<void>((resolve) => {
-              video.onloadeddata = () => resolve();
-              video.onerror = () => resolve();
-            });
+          if (
+            cancelled ||
+            !loaded ||
+            video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA
+          ) {
+            return null;
+          }
 
-            return video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA
-              ? video
-              : null;
-          }),
-        ),
-        Promise.all(clips.map(loadPhotoImage)),
-      ]);
+          return video;
+        }),
+      );
 
       if (cancelled) return;
 
@@ -147,10 +177,7 @@ function TemplateCanvas({
           const video = videos[index];
           const durationMs = photo.motionClip?.durationMs ?? 0;
 
-          const clipFinished =
-            !video || video.ended || now - cycleStart > durationMs + 300;
-
-          if (clipFinished) {
+          if (!video || video.ended || now - cycleStart > durationMs + 300) {
             video?.pause();
             finishedAt[index] = now;
           }
@@ -166,9 +193,7 @@ function TemplateCanvas({
           flashMs,
         });
 
-        const activeSlots = clips.length > 0;
-
-        if (activeSlots && allDone && now - lastFinish >= holdMs) {
+        if (clips.length > 0 && allDone && now - lastFinish >= holdMs) {
           restart(now);
         }
 
