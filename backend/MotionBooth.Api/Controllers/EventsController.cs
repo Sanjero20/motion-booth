@@ -28,6 +28,23 @@ public class EventsController : ControllerBase
         return Ok(events);
     }
 
+
+    // GET: api/events/{id}
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<Event>> GetEvent(Guid id)
+    {
+        var eventItem = await _dbContext.Events
+        .AsNoTracking()
+        .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (eventItem is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(eventItem);
+    }
+
     // POST: api/events
     [HttpPost]
     public async Task<ActionResult<Event>> CreateEvent(Event newEvent)
@@ -46,4 +63,3 @@ public class EventsController : ControllerBase
         );
     }
 }
-
