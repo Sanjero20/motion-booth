@@ -1,6 +1,0 @@
-@MotionBooth.Api_HostAddress = http://localhost:5135
-
-GET {{MotionBooth.Api_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
