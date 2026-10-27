@@ -62,4 +62,44 @@ public class EventsController : ControllerBase
           newEvent
         );
     }
+
+    // PUT: api/events/{id}
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<Event>> UpdateEvent(
+        Guid id,
+        Event updatedEvent)
+    {
+        var existingEvent = await _dbContext.Events
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (existingEvent is null)
+        {
+            return NotFound();
+        }
+
+        existingEvent.Name = updatedEvent.Name;
+        existingEvent.EventDate = updatedEvent.EventDate;
+
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    // DELETE: api/events/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<ActionResult<Event>> DeleteEvent(Guid id)
+    {
+        var eventItem = await _dbContext.Events
+            .FirstOrDefaultAsync(e => e.Id == id);
+
+        if (eventItem == null)
+        {
+            return NotFound();
+        }
+
+        _dbContext.Events.Remove(eventItem);
+        await _dbContext.SaveChangesAsync();
+
+        return NoContent();
+    }
 }
