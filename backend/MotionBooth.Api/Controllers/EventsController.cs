@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.Models;
+using MotionBooth.Api.DTOs.Events;
 
 namespace MotionBooth.Api.Controllers;
 
@@ -28,7 +29,6 @@ public class EventsController : ControllerBase
         return Ok(events);
     }
 
-
     // GET: api/events/{id}
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<Event>> GetEvent(Guid id)
@@ -47,19 +47,30 @@ public class EventsController : ControllerBase
 
     // POST: api/events
     [HttpPost]
-    public async Task<ActionResult<Event>> CreateEvent(Event newEvent)
+    public async Task<ActionResult<EventResponse>> CreateEvent(CreateEventRequest request)
     {
-        newEvent.Id = Guid.NewGuid();
-        newEvent.CreatedAt = DateTime.UtcNow;
+        var newEvent = new Event
+        {
+            Name = request.Name,
+            EventDate = request.EventDate,
+            CreatedAt = DateTime.UtcNow,
+        };
 
         _dbContext.Events.Add(newEvent);
         await _dbContext.SaveChangesAsync();
 
+        var response = new EventResponse
+        {
+            Id = newEvent.Id,
+            Name = newEvent.Name,
+            EventDate = newEvent.EventDate,
+            CreatedAt = newEvent.CreatedAt
+        };
 
         return CreatedAtAction(
-          nameof(GetEvents),
-          new { id = newEvent.Id },
-          newEvent
+            nameof(GetEvent),
+            new { id = newEvent.Id },
+            response
         );
     }
 
