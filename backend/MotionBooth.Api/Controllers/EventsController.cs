@@ -91,20 +91,19 @@ public class EventsController : ControllerBase
 
     // PUT: api/events/{id}
     [HttpPut("{id:guid}")]
-    public async Task<ActionResult<Event>> UpdateEvent(
+    public async Task<IActionResult> UpdateEvent(
         Guid id,
-        Event updatedEvent)
+        UpdateEventRequest request)
     {
-        var existingEvent = await _dbContext.Events
-            .FirstOrDefaultAsync(e => e.Id == id);
+        var eventItem = await _dbContext.Events.FindAsync(id);
 
-        if (existingEvent is null)
+        if (eventItem is null)
         {
             return NotFound();
         }
 
-        existingEvent.Name = updatedEvent.Name;
-        existingEvent.EventDate = updatedEvent.EventDate;
+        eventItem.Name = request.Name;
+        eventItem.EventDate = request.EventDate;
 
         await _dbContext.SaveChangesAsync();
 
@@ -113,10 +112,9 @@ public class EventsController : ControllerBase
 
     // DELETE: api/events/{id}
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<Event>> DeleteEvent(Guid id)
+    public async Task<IActionResult> DeleteEvent(Guid id)
     {
-        var eventItem = await _dbContext.Events
-            .FirstOrDefaultAsync(e => e.Id == id);
+        var eventItem = await _dbContext.Events.FindAsync(id);
 
         if (eventItem == null)
         {
