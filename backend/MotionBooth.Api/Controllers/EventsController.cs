@@ -67,7 +67,7 @@ public class EventsController : ControllerBase
         var newEvent = new Event
         {
             Name = request.Name,
-            EventDate = request.EventDate,
+            EventDate = request.EventDate!.Value,
             CreatedAt = DateTime.UtcNow,
         };
 
@@ -103,7 +103,7 @@ public class EventsController : ControllerBase
         }
 
         eventItem.Name = request.Name;
-        eventItem.EventDate = request.EventDate;
+        eventItem.EventDate = request.EventDate!.Value;
 
         await _dbContext.SaveChangesAsync();
 

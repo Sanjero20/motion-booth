@@ -6,8 +6,9 @@ namespace MotionBooth.Api.DTOs.Events;
 public class UpdateEventRequest
 {
     [Required]
-    [StringLength(100)]
+    [StringLength(100, MinimumLength = 1)]
     public string Name { get; set; } = string.Empty;
 
-    public DateTime EventDate { get; set; }
+    [Required]
+    public DateTime? EventDate { get; set; }
 }
