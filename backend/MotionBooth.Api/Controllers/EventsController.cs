@@ -19,23 +19,38 @@ public class EventsController : ControllerBase
 
     // GET: api/events
     [HttpGet]
-    public async Task<ActionResult<List<Event>>> GetEvents()
+    public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents()
     {
         var events = await _dbContext.Events
-        .AsNoTracking()
-        .OrderByDescending(e => e.CreatedAt)
-        .ToListAsync();
+            .AsNoTracking()
+            .OrderByDescending(e => e.CreatedAt)
+            .Select(e => new EventResponse
+            {
+                Id = e.Id,
+                Name = e.Name,
+                EventDate = e.EventDate,
+                CreatedAt = e.CreatedAt
+            })
+            .ToListAsync();
 
         return Ok(events);
     }
 
     // GET: api/events/{id}
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<Event>> GetEvent(Guid id)
+    public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvent(Guid id)
     {
         var eventItem = await _dbContext.Events
-        .AsNoTracking()
-        .FirstOrDefaultAsync(e => e.Id == id);
+            .AsNoTracking()
+            .Where(e => e.Id == id)
+            .Select(e => new EventResponse
+            {
+                Id = e.Id,
+                Name = e.Name,
+                EventDate = e.EventDate,
+                CreatedAt = e.CreatedAt
+            })
+            .FirstOrDefaultAsync();
 
         if (eventItem is null)
         {
