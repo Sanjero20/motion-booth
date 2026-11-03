@@ -1,5 +1,5 @@
-import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
-import { renderFrame } from "@/lib/canvas/renderFrame";
+import { drawTemplate, loadPhotoImage } from "@/features/booth/services/canvas";
+import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
 import { useEffect, useRef } from "react";
 
 import type { Photo } from "@/features/booth/types/photo";

@@ -1,4 +1,4 @@
-import { getSupportedMimeType } from "@/lib/media";
+import { getSupportedMimeType } from "@/features/booth/services/media";
 import { useCallback, useRef } from "react";
 
 import type { MotionClip } from "@/features/booth/types/motion";
