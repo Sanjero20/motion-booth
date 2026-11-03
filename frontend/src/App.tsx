@@ -24,13 +24,13 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Routes location={location}>
+      <Routes location={location} key={location.pathname}>
         {/* Accessible to all */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/booth" element={<BoothPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/sign-up" element={<SignupPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Route>
 
         {/* For signed in users */}
