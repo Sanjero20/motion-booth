@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout";
+import PrivateLayout from "./layouts/PrivateLayout";
 
 // Public routes
 import HomePage from "./pages/home";
@@ -12,6 +13,7 @@ import BoothPage from "./pages/booth";
 import DashboardPage from "./pages/dashboard";
 import EventsPage from "./pages/events";
 import TemplatesPage from "./pages/templates";
+import NotFoundPage from "./pages/not-found";
 
 const queryClient = new QueryClient();
 
@@ -28,9 +30,13 @@ function App() {
         </Route>
 
         {/* For signed in users */}
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/templates" element={<TemplatesPage />} />
+        <Route element={<PrivateLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/templates" element={<TemplatesPage />} />
+        </Route>
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </QueryClientProvider>
   );
