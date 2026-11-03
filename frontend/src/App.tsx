@@ -2,9 +2,15 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes, useLocation } from "react-router";
 import { AnimatePresence } from "motion/react";
 
+// Public routes
 import HomePage from "./pages/home";
 import BoothPage from "./pages/booth";
 import PageTransition from "./components/shared/PageTransition";
+
+// Authenticated routes
+import DashboardPage from "./pages/dashboard";
+import EventsPage from "./pages/events";
+import TemplatesPage from "./pages/templates";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +40,11 @@ function App() {
               </PageTransition>
             }
           />
+
+          {/* For signed in users */}
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/templates" element={<TemplatesPage />} />
         </Routes>
       </AnimatePresence>
     </QueryClientProvider>
