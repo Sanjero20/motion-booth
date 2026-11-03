@@ -1,7 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/Logo";
-import { Camera } from "lucide-react";
 
 const SECTIONS = [
   { href: "#how", label: "How it works" },
@@ -31,11 +30,8 @@ function Header() {
           ))}
         </nav>
 
-        <Link to="/booth">
-          <Button className="px-4">
-            <Camera />
-            Start
-          </Button>
+        <Link to="/login">
+          <Button className="px-4">Sign in</Button>
         </Link>
       </div>
     </header>

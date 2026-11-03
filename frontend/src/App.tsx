@@ -8,6 +8,8 @@ import PrivateLayout from "./layouts/PrivateLayout";
 // Public routes
 import HomePage from "./pages/home";
 import BoothPage from "./pages/booth";
+import LoginPage from "./pages/login";
+import SignupPage from "./pages/signup";
 
 // Authenticated routes
 import DashboardPage from "./pages/dashboard";
@@ -27,6 +29,8 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/booth" element={<BoothPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/sign-up" element={<SignupPage />} />
         </Route>
 
         {/* For signed in users */}
