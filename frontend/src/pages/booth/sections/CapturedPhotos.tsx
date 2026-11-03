@@ -1,4 +1,4 @@
-import type { Photo } from "@/types/booth";
+import type { Photo } from "@/features/booth/types/photo";
 
 interface Props {
   limit: number;

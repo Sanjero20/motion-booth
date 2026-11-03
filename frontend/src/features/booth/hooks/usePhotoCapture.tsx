@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { MotionClip, Photo } from "@/types/booth";
-import type { RecordingSession } from "@/hooks/useMotionRecording";
+
+import type { RecordingSession } from "./useMotionRecording";
+import type { MotionClip } from "../types/motion";
+import type { Photo } from "../types/photo";
 
 interface Props {
   capturePhoto: () => string | null;

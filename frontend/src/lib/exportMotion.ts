@@ -1,6 +1,7 @@
+import type { Photo } from "@/features/booth/types/photo";
+import type { TemplateLayout } from "@/features/templates/types/template";
 import { loadPhotoImage } from "@/lib/canvas";
 import { renderFrame } from "@/lib/canvas/renderFrame";
-import type { Photo, TemplateLayout } from "@/types/booth";
 
 const MIME_CANDIDATES = [
   "video/mp4;codecs=avc1.42E01E",

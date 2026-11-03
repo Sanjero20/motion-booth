@@ -1,4 +1,4 @@
-import type { TemplateLayout } from "@/types/booth";
+import type { TemplateLayout } from "@/features/templates/types/template";
 
 export const templates: TemplateLayout[] = [
   {

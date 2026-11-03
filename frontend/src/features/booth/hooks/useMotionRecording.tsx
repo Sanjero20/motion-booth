@@ -1,6 +1,7 @@
 import { getSupportedMimeType } from "@/lib/media";
-import type { MotionClip } from "@/types/booth";
 import { useCallback, useRef } from "react";
+
+import type { MotionClip } from "@/features/booth/types/motion";
 
 export type RecordingSession = {
   recorder: MediaRecorder;
