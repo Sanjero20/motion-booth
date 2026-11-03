@@ -11,10 +11,10 @@ import CameraPreview from "./sections/CameraPreview";
 import CapturedPhotos from "./sections/CapturedPhotos";
 import BoothResultsPanel from "./sections/BoothResultsPanel";
 
-import useCamera from "@/hooks/useCamera";
-import usePhotoCapture from "@/hooks/usePhotoCapture";
-import useMotionRecording from "@/hooks/useMotionRecording";
-import useBoothExport from "@/hooks/useBoothExport";
+import useBoothExport from "@/features/booth/hooks/useBoothExport";
+import useCamera from "@/features/booth/hooks/useCamera";
+import useMotionRecording from "@/features/booth/hooks/useMotionRecording";
+import usePhotoCapture from "@/features/booth/hooks/usePhotoCapture";
 
 const LIMIT = 4;
 const COUNTDOWN_SECONDS = 3;

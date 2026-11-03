@@ -1,5 +1,5 @@
-import { drawImageCover, drawTemplate } from "@/lib/canvas";
-import type { TemplateLayout } from "@/types/booth";
+import type { TemplateLayout } from "@/features/templates/types/template";
+import { drawImageCover, drawTemplate } from "@/features/booth/services/canvas";
 
 interface RenderFrameOptions {
   ctx: CanvasRenderingContext2D;

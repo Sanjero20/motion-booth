@@ -1,9 +1,11 @@
 import { useState } from "react";
 
-import { drawTemplate, loadPhotoImage } from "@/lib/canvas";
-import { exportMotionVideo } from "@/lib/exportMotion";
-import { transcodeToMp4 } from "@/lib/transcodeToMp4";
-import type { Photo, TemplateLayout } from "@/types/booth";
+import { drawTemplate, loadPhotoImage } from "@/features/booth/services/canvas";
+import { exportMotionVideo } from "@/features/booth/services/exportMotion";
+import { transcodeToMp4 } from "@/features/booth/services/transcodeToMp4";
+
+import type { Photo } from "@/features/booth/types/photo";
+import type { TemplateLayout } from "@/features/templates/types/template";
 
 export type ExportStage = "idle" | "recording" | "converting";
 

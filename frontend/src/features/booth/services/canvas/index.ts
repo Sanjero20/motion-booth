@@ -1,4 +1,5 @@
-import type { Photo, TemplateLayout } from "@/types/booth";
+import type { Photo } from "@/features/booth/types/photo";
+import type { TemplateLayout } from "@/features/templates/types/template";
 
 export function drawImageCover(
   ctx: CanvasRenderingContext2D,
