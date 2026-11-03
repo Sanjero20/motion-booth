@@ -6,11 +6,13 @@ function PublicLayout() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <PageTransition key={location.pathname}>
-        <Outlet />
-      </PageTransition>
-    </AnimatePresence>
+    <div className="min-h-dvh overflow-clip">
+      <AnimatePresence mode="wait">
+        <PageTransition key={location.pathname}>
+          <Outlet />
+        </PageTransition>
+      </AnimatePresence>
+    </div>
   );
 }
 

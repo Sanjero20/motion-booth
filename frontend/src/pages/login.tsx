@@ -18,7 +18,7 @@ import { Link } from "react-router";
 
 function LoginPage() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 p-4">
+    <div className="flex min-h-dvh flex-col items-center justify-center gap-4 p-4">
       <Logo />
 
       <Card className="w-full sm:w-125">
