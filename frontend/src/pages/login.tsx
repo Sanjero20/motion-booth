@@ -1,5 +1,4 @@
 import { Logo } from "@/components/shared/Logo";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,14 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Link } from "react-router";
+import LoginForm from "@/features/auth/components/LoginForm";
 
 function LoginPage() {
   return (
@@ -28,39 +20,8 @@ function LoginPage() {
             Enter your email to login to your account
           </CardDescription>
         </CardHeader>
-        <CardContent className="">
-          <form>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email Address"
-                  required
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Link
-                    to="#"
-                    className="ml-auto text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-                <Input id="password" type="password" required />
-              </Field>
-
-              <Field>
-                <Button type="submit">Login</Button>
-                <FieldDescription className="text-center">
-                  Don&apos;t have an account? <Link to="/signup">Sign up</Link>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </form>
+        <CardContent>
+          <LoginForm />
         </CardContent>
       </Card>
     </div>
