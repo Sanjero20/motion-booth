@@ -18,10 +18,10 @@ import { Link } from "react-router";
 
 function LoginPage() {
   return (
-    <div className="flex h-screen flex-col items-center justify-center gap-4 overflow-hidden">
+    <div className="flex h-screen flex-col items-center justify-center gap-4 p-4">
       <Logo />
 
-      <Card className="w-125">
+      <Card className="w-full sm:w-125">
         <CardHeader className="text-center">
           <CardTitle>Login to your account</CardTitle>
           <CardDescription>
