@@ -1,5 +1,5 @@
-import Footer from "@/layouts/Footer";
-import Header from "@/layouts/Header";
+import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 
 import Hero from "./sections/Hero";
 import HowItWorks from "./sections/HowItWorks";
