@@ -1,0 +1,141 @@
+import {
+  ArrowRight,
+  Calendar,
+  Camera,
+  Images,
+  LayoutTemplate,
+} from "lucide-react";
+import { Link } from "react-router";
+import { Card, CardContent } from "@/components/ui/card";
+
+import StatusCard from "./components/StatusCard";
+import EventCard from "./components/EventCard";
+import type { Event } from "@/features/events/types/event";
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
+import { templates } from "@/data/templates";
+
+const upcomingEvents: Event[] = [
+  {
+    id: "event-1",
+    name: "Sarah & James Wedding",
+    eventDate: "2026-11-11",
+    createdAt: "2026-11-04",
+  },
+  {
+    id: "event-2",
+    name: "Alex's 18th Birthday",
+    eventDate: "2026-11-21",
+    createdAt: "2026-11-04",
+  },
+];
+
+function DashboardPage() {
+  return (
+    <div className="space-y-4">
+      {/* Page Heading */}
+      <div className="space-y-2">
+        <span className="text-primary font-mono text-xs tracking-[0.2em] uppercase">
+          dashboard
+        </span>
+
+        <h2 className="pt-2 text-4xl font-bold">Hi, there!</h2>
+        <p className="text-muted-foreground text-sm">
+          Your events, sessions and prints at a glance.
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatusCard
+          title="Upcoming events"
+          icon={Calendar}
+          value={0}
+          description="Next event in 0 days"
+        />
+        <StatusCard
+          title="Sessions"
+          icon={Camera}
+          value={0}
+          description="Across all events"
+        />
+        <StatusCard
+          title="Templates"
+          icon={LayoutTemplate}
+          value={0}
+          description="Your saved designs"
+        />
+        <StatusCard
+          title="Exports"
+          icon={Images}
+          value={0}
+          description="Photos and videos saved"
+        />
+      </div>
+
+      {/* Upcoming Events */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-semibold">Upcoming events</h3>
+
+          <Link
+            to="/events"
+            className="text-muted-foreground hover:text-primary flex items-center gap-1 text-sm transition-colors"
+          >
+            View all
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <Card>
+          <CardContent className="space-y-4">
+            {upcomingEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </CardContent>
+        </Card>
+      </section>
+
+      {/* Recent Sessions */}
+      <section className="space-y-4">
+        <div className="flex items-end justify-between">
+          <h3 className="text-base font-semibold">Recent sessions</h3>
+          <Link
+            to="/events"
+            className="text-muted-foreground hover:text-primary flex items-center gap-1 text-sm transition-colors"
+          >
+            View all
+            <ArrowRight size={16} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-4 gap-4">
+          <Card className="aspect-4/3 w-full">
+            <div className="flex h-full w-full justify-center">
+              <TemplateCanvas layout={templates[0]} className="border" />
+            </div>
+          </Card>
+
+          <Card className="aspect-4/3 w-full">
+            <div className="flex h-full w-full justify-center">
+              <TemplateCanvas layout={templates[1]} className="border" />
+            </div>
+          </Card>
+
+          <Card className="aspect-4/3 w-full">
+            <div className="flex h-full w-full justify-center">
+              <TemplateCanvas layout={templates[2]} className="border" />
+            </div>
+          </Card>
+
+          <Card className="aspect-4/3 w-full">
+            <div className="flex h-full w-full justify-center">
+              <TemplateCanvas layout={templates[1]} className="border" />
+            </div>
+          </Card>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default DashboardPage;
