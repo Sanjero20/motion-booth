@@ -29,8 +29,8 @@ function EventFormHeader({
           {isSubmitting
             ? "Saving..."
             : isEditing
-              ? "Save Changes"
-              : "Create Event"}
+              ? "Save changes"
+              : "Create event"}
         </Button>
       </div>
     </div>

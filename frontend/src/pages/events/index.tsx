@@ -57,7 +57,7 @@ function EventsPage() {
             <Card className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden">
               <CardContent className="min-h-0 flex-1 overflow-y-auto">
                 <TabsContent value="all" className="mt-0">
-                  <div className="space-y-2">
+                  <div className="space-y-4">
                     {events.map((event) => (
                       <EventCard key={event.id} event={event} />
                     ))}
