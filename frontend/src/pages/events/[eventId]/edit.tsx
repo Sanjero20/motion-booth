@@ -6,6 +6,7 @@ import EventFormHeader from "@/features/events/components/EventFormHeader";
 import EventForm from "@/features/events/components/EventForm";
 import EventTemplateCustomizer from "@/features/events/components/EventTemplateCustomizer";
 import { useEffect, useState } from "react";
+import { toDateInputValue } from "@/lib/date";
 
 function EditEventPage() {
   const { eventId } = useParams();
@@ -19,8 +20,10 @@ function EditEventPage() {
 
   useEffect(() => {
     if (event) {
+      const parsedDate = toDateInputValue(event.eventDate);
+
       setName(event.name);
-      setEventDate(event.eventDate);
+      setEventDate(parsedDate);
     }
   }, [event]);
 
