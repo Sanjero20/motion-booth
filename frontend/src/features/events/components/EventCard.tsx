@@ -9,7 +9,7 @@ interface Props {
 }
 
 function EventCard({ event }: Props) {
-  const date = new Date(`${event.eventDate}T00:00:00`);
+  const date = new Date(event.eventDate);
 
   const month = date.toLocaleDateString("en-US", {
     month: "short",
@@ -38,11 +38,15 @@ function EventCard({ event }: Props) {
 
       {/* Actions */}
       <div className="flex items-center gap-2 sm:shrink-0">
-        <Button variant="outline" render={<Link to={"/events"} />}>
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link to={"/events"} />}
+        >
           Manage
         </Button>
 
-        <Button render={<Link to={"/booth"} />}>
+        <Button nativeButton={false} render={<Link to={"/booth"} />}>
           <Camera size={16} />
           Launch
         </Button>

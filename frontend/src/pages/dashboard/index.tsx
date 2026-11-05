@@ -7,12 +7,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
-import PageHeading from "@/components/shared/PageHeading";
-import TemplateCanvas from "@/components/shared/TemplateCanvas";
-import EventCard from "./components/EventCard";
-import type { Event } from "@/features/events/types/event";
 import { templates } from "@/data/templates";
 import MetricCard from "@/components/shared/MetricCard";
+import PageHeading from "@/components/shared/PageHeading";
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
+import EventCard from "@/features/events/components/EventCard";
+import type { Event } from "@/features/events/types/event";
 
 const upcomingEvents: Event[] = [
   {

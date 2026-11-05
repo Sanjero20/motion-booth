@@ -7,6 +7,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEvents } from "@/features/events/hooks/useEvents";
+import { Button } from "@/components/ui/button";
+import EventCard from "@/features/events/components/EventCard";
 
 function EventsPage() {
   const { data: events = [], isLoading } = useEvents();
@@ -19,11 +21,17 @@ function EventsPage() {
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
-      <PageHeading
-        eyebrow="Workspace"
-        title="Your Events"
-        description="Manage your events and keep track of every booth session."
-      />
+      <div className="flex items-end justify-between">
+        <PageHeading
+          eyebrow="Workspace"
+          title="Your Events"
+          description="Manage your events and keep track of every booth session."
+        />
+
+        <Button nativeButton={false} render={<Link to="/events/new" />}>
+          Create event
+        </Button>
+      </div>
 
       <section className="grid shrink-0 grid-cols-2 gap-4 lg:grid-cols-4">
         <MetricCard title="Events" value={events.length} />
@@ -49,14 +57,11 @@ function EventsPage() {
             <Card className="mt-4 flex min-h-0 flex-1 flex-col overflow-hidden">
               <CardContent className="min-h-0 flex-1 overflow-y-auto">
                 <TabsContent value="all" className="mt-0">
-                  {events.map((event) => (
-                    <div key={event.id} className="border-b py-4 last:border-0">
-                      <p className="font-medium">{event.name}</p>
-                      <p className="text-muted-foreground text-sm">
-                        {event.eventDate}
-                      </p>
-                    </div>
-                  ))}
+                  <div className="space-y-2">
+                    {events.map((event) => (
+                      <EventCard key={event.id} event={event} />
+                    ))}
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="ongoing" className="mt-0">
