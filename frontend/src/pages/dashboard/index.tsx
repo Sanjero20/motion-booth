@@ -39,7 +39,7 @@ function DashboardPage() {
       />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Upcoming events"
           icon={Calendar}
@@ -64,7 +64,7 @@ function DashboardPage() {
           value={0}
           description="Photos and videos saved"
         />
-      </div>
+      </section>
 
       {/* Upcoming Events */}
       <section className="space-y-4">
