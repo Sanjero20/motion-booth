@@ -14,6 +14,7 @@ import SignupPage from "./pages/signup";
 // Authenticated routes
 import DashboardPage from "./pages/dashboard";
 import EventsPage from "./pages/events";
+import CreateEventPage from "./pages/events/new";
 import TemplatesPage from "./pages/templates";
 import NotFoundPage from "./pages/not-found";
 
@@ -36,7 +37,10 @@ function App() {
         {/* For signed in users */}
         <Route element={<PrivateLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
+
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/new" element={<CreateEventPage />} />
+
           <Route path="/templates" element={<TemplatesPage />} />
         </Route>
 
