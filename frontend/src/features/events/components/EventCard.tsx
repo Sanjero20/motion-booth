@@ -41,7 +41,7 @@ function EventCard({ event }: Props) {
         <Button
           variant="outline"
           nativeButton={false}
-          render={<Link to={"/events"} />}
+          render={<Link to={`/events/${event.id}`} />}
         >
           Manage
         </Button>
