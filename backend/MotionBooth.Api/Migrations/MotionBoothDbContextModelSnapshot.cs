@@ -31,8 +31,8 @@ namespace MotionBooth.Api.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("EventDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly>("EventDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("Name")
                         .IsRequired()

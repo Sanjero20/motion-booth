@@ -11,5 +11,5 @@ public class CreateEventRequest
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public DateTime? EventDate { get; set; }
+    public DateOnly? EventDate { get; set; }
 }
