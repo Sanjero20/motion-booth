@@ -15,12 +15,10 @@ function CreateEventPage() {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const eventDateTime = new Date(`${eventDate}T00:00:00`).toISOString();
-
     mutation.mutate(
       {
         name: name.trim(),
-        eventDate: eventDateTime,
+        eventDate,
       },
       {
         onSuccess: () => {

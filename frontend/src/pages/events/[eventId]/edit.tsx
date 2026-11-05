@@ -14,7 +14,6 @@ import EventForm from "@/features/events/components/EventForm";
 import EventTemplateCustomizer from "@/features/events/components/EventTemplateCustomizer";
 import DeleteConfirmationDialog from "@/components/shared/dialog/DeleteConfirmationDialog";
 
-import { toDateInputValue } from "@/lib/date";
 import { useDeleteEvent } from "@/features/events/hooks/useDeleteEvent";
 
 function EditEventPage() {
@@ -32,10 +31,8 @@ function EditEventPage() {
 
   useEffect(() => {
     if (event) {
-      const parsedDate = toDateInputValue(event.eventDate);
-
       setName(event.name);
-      setEventDate(parsedDate);
+      setEventDate(event.eventDate);
     }
   }, [event]);
 
@@ -44,14 +41,12 @@ function EditEventPage() {
 
     if (!eventId) return;
 
-    const eventDateTime = new Date(`${eventDate}T00:00:00`).toISOString();
-
     updateMutation.mutate(
       {
         id: eventId,
         data: {
           name: name.trim(),
-          eventDate: eventDateTime,
+          eventDate,
         },
       },
       {
