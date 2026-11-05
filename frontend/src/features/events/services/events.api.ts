@@ -23,7 +23,7 @@ export const eventsApi = {
   },
 
   update: async (id: string, request: UpdateEventRequest): Promise<void> => {
-    await api.patch(`/events/${id}`, request);
+    await api.put(`/events/${id}`, request);
   },
 
   delete: async (id: string): Promise<void> => {
