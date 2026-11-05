@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router";
+
 import PageHeading from "@/components/shared/PageHeading";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,27 +13,60 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Link } from "react-router";
+
+import { useCreateEvent } from "@/features/events/hooks/useCreateEvent";
 
 function CreateEventPage() {
+  const navigate = useNavigate();
+  const mutation = useCreateEvent();
+
+  const [name, setName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const eventDateTime = new Date(`${eventDate}T00:00:00`).toISOString();
+
+    mutation.mutate(
+      {
+        name: name.trim(),
+        eventDate: eventDateTime,
+      },
+      {
+        onSuccess: () => {
+          navigate("/events");
+        },
+      },
+    );
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Heading */}
       <div className="flex items-end justify-between">
         <PageHeading
           eyebrow="Workspace / Events / New"
           title="Create an event"
-          description="Set up your event and preparte it for capturing memories."
+          description="Set up your event and prepare it for capturing memories."
         />
 
-        <div className="space-x-2">
-          <Button variant={"outline"} render={<Link to="/events" />}>
+        <div className="flex gap-2">
+          <Button variant="outline" render={<Link to="/events" />}>
             Cancel
           </Button>
-          <Button>Create event</Button>
+
+          <Button
+            type="submit"
+            form="create-event-form"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Creating..." : "Create event"}
+          </Button>
         </div>
       </div>
 
-      {/* Form */}
+      {/* Event Details */}
       <section>
         <Card>
           <CardHeader>
@@ -39,30 +75,46 @@ function CreateEventPage() {
               Give your event a name and add the basic details.
             </CardDescription>
           </CardHeader>
+
           <CardContent>
-            <form>
-              <FieldGroup className="grid grid-cols-3">
+            <form id="create-event-form" onSubmit={handleSubmit}>
+              <FieldGroup className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <Field>
                   <FieldLabel htmlFor="name">Event Name</FieldLabel>
-                  <Input id="name" placeholder="" required />
+                  <Input
+                    id="name"
+                    placeholder="e.g. Sarah & John's Wedding"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    maxLength={100}
+                  />
                 </Field>
+
                 <Field>
                   <FieldLabel htmlFor="eventDate">Date</FieldLabel>
-                  <Input id="eventDate" type="date" placeholder="" required />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="venue">Venue</FieldLabel>
-                  <Input id="venue" placeholder="" required />
+                  <Input
+                    id="eventDate"
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                    required
+                  />
                 </Field>
               </FieldGroup>
             </form>
+
+            {mutation.isError && (
+              <p className="text-destructive mt-4 text-sm" role="alert">
+                Failed to create event. Please try again.
+              </p>
+            )}
           </CardContent>
         </Card>
       </section>
 
       {/* Custom Layouts */}
       <section className="space-y-4">
-        {/* Section Heading */}
         <div className="space-y-1">
           <h3 className="text-lg font-semibold">Layout</h3>
           <p className="text-muted-foreground text-sm">
@@ -71,11 +123,9 @@ function CreateEventPage() {
           </p>
         </div>
 
-        {/* Editor */}
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
           {/* Canvas */}
           <div className="bg-secondary flex min-h-150 items-center justify-center rounded-xl border lg:col-span-3">
-            {/* Custom template canvas */}
             <p className="text-muted-foreground text-sm">Template canvas</p>
           </div>
 
@@ -84,7 +134,7 @@ function CreateEventPage() {
             <Card className="h-full py-4">
               <CardContent className="space-y-4 px-4">
                 {/* Settings */}
-                <div className="space-y-1 border-b pb-1">
+                <div className="space-y-1 border-b pb-3">
                   <p className="font-semibold">Settings</p>
                   <p className="text-muted-foreground text-xs">
                     Configure your template layout.
@@ -94,42 +144,50 @@ function CreateEventPage() {
                 {/* Print Format */}
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Print Format</p>
-                  <div>
-                    <ToggleGroup>
-                      <ToggleGroupItem variant="outline">Strip</ToggleGroupItem>
-                      <ToggleGroupItem variant="outline">
-                        Landscape
-                      </ToggleGroupItem>
-                      <ToggleGroupItem variant="outline">
-                        Portrait
-                      </ToggleGroupItem>
-                    </ToggleGroup>
-                  </div>
+
+                  <ToggleGroup>
+                    <ToggleGroupItem variant="outline" value="strip">
+                      Strip
+                    </ToggleGroupItem>
+                    <ToggleGroupItem variant="outline" value="landscape">
+                      Landscape
+                    </ToggleGroupItem>
+                    <ToggleGroupItem variant="outline" value="portrait">
+                      Portrait
+                    </ToggleGroupItem>
+                  </ToggleGroup>
                 </div>
 
                 {/* Photo Slots */}
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Photo Slots</p>
-                  <div>
-                    <ToggleGroup className={"grid w-full grid-cols-4"}>
-                      <ToggleGroupItem variant="outline">1</ToggleGroupItem>
-                      <ToggleGroupItem variant="outline">2</ToggleGroupItem>
-                      <ToggleGroupItem variant="outline">3</ToggleGroupItem>
-                      <ToggleGroupItem variant="outline">4</ToggleGroupItem>
-                    </ToggleGroup>
-                  </div>
+
+                  <ToggleGroup className="grid w-full grid-cols-4">
+                    {[1, 2, 3, 4].map((count) => (
+                      <ToggleGroupItem
+                        key={count}
+                        variant="outline"
+                        value={String(count)}
+                      >
+                        {count}
+                      </ToggleGroupItem>
+                    ))}
+                  </ToggleGroup>
                 </div>
 
                 {/* Background */}
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Background</p>
+
                   <div className="bg-secondary border-border h-12 rounded-lg border-2 border-dashed">
                     {/* Background controls */}
                   </div>
                 </div>
 
+                {/* Selected Slot */}
                 <div className="space-y-3">
                   <p className="text-sm font-medium">Selected slot</p>
+                  {/* Selected slot controls */}
                 </div>
               </CardContent>
             </Card>
