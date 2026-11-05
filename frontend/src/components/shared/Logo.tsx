@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 type MarkProps = { className?: string; trail?: boolean };
 
 /** Aperture mark. Uses currentColor, so it follows the text color (default: brand orange). */
@@ -82,10 +84,14 @@ export function LogoMark({
   );
 }
 
-export function Logo() {
+interface Props {
+  href?: string;
+}
+
+export function Logo({ href = "/" }: Props) {
   return (
-    <a
-      href="/"
+    <Link
+      to={href}
       aria-label="Motion Booth home"
       className="flex items-center gap-0.5"
     >
@@ -93,6 +99,6 @@ export function Logo() {
       <span className="font-display text-2xl font-bold tracking-tight">
         Motion <em className="text-primary">Booth</em>
       </span>
-    </a>
+    </Link>
   );
 }

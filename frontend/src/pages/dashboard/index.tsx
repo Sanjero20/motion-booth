@@ -7,12 +7,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
-
-import StatusCard from "./components/StatusCard";
-import EventCard from "./components/EventCard";
-import type { Event } from "@/features/events/types/event";
-import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import { templates } from "@/data/templates";
+import MetricCard from "@/components/shared/MetricCard";
+import PageHeading from "@/components/shared/PageHeading";
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
+import EventCard from "@/features/events/components/EventCard";
+import type { Event } from "@/features/events/types/event";
 
 const upcomingEvents: Event[] = [
   {
@@ -32,45 +32,39 @@ const upcomingEvents: Event[] = [
 function DashboardPage() {
   return (
     <div className="space-y-4">
-      {/* Page Heading */}
-      <div className="space-y-2">
-        <span className="text-primary font-mono text-xs tracking-[0.2em] uppercase">
-          dashboard
-        </span>
-
-        <h2 className="pt-2 text-4xl font-bold">Hi, there!</h2>
-        <p className="text-muted-foreground text-sm">
-          Your events, sessions and prints at a glance.
-        </p>
-      </div>
+      <PageHeading
+        eyebrow={"Dashboard"}
+        title={"Hi, there!"}
+        description="Your events, sessions and prints at a glance."
+      />
 
       {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatusCard
+      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <MetricCard
           title="Upcoming events"
           icon={Calendar}
           value={0}
           description="Next event in 0 days"
         />
-        <StatusCard
+        <MetricCard
           title="Sessions"
           icon={Camera}
           value={0}
           description="Across all events"
         />
-        <StatusCard
+        <MetricCard
           title="Templates"
           icon={LayoutTemplate}
           value={0}
           description="Your saved designs"
         />
-        <StatusCard
+        <MetricCard
           title="Exports"
           icon={Images}
           value={0}
           description="Photos and videos saved"
         />
-      </div>
+      </section>
 
       {/* Upcoming Events */}
       <section className="space-y-4">
