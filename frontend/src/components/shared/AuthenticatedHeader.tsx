@@ -32,7 +32,6 @@ function AuthenticatedHeader() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                end
                 className={({ isActive }) =>
                   `flex items-center gap-2 transition-colors ${
                     isActive
