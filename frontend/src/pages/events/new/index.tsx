@@ -1,4 +1,5 @@
 import PageHeading from "@/components/shared/PageHeading";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,15 +10,25 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Link } from "react-router";
 
 function CreateEventPage() {
   return (
     <div className="space-y-4">
-      <PageHeading
-        eyebrow="Workspace / Events / New"
-        title="Create an event"
-        description="Set up your event and preparte it for capturing memories."
-      />
+      <div className="flex items-end justify-between">
+        <PageHeading
+          eyebrow="Workspace / Events / New"
+          title="Create an event"
+          description="Set up your event and preparte it for capturing memories."
+        />
+
+        <div className="space-x-2">
+          <Button variant={"outline"} render={<Link to="/events" />}>
+            Cancel
+          </Button>
+          <Button>Create event</Button>
+        </div>
+      </div>
 
       {/* Form */}
       <section>
