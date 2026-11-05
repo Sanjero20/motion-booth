@@ -17,6 +17,7 @@ import EventsPage from "./pages/events";
 import CreateEventPage from "./pages/events/new";
 import TemplatesPage from "./pages/templates";
 import NotFoundPage from "./pages/not-found";
+import EventDetailsPage from "./pages/events/[eventId]";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ function App() {
 
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/new" element={<CreateEventPage />} />
+          <Route path="/events/:eventId" element={<EventDetailsPage />} />
 
           <Route path="/templates" element={<TemplatesPage />} />
         </Route>
