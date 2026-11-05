@@ -13,11 +13,15 @@ import SignupPage from "./pages/signup";
 
 // Authenticated routes
 import DashboardPage from "./pages/dashboard";
+
 import EventsPage from "./pages/events";
 import CreateEventPage from "./pages/events/new";
-import TemplatesPage from "./pages/templates";
-import NotFoundPage from "./pages/not-found";
 import EventDetailsPage from "./pages/events/[eventId]";
+import EditEventPage from "./pages/events/[eventId]/edit";
+
+import TemplatesPage from "./pages/templates";
+
+import NotFoundPage from "./pages/not-found";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +46,7 @@ function App() {
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/new" element={<CreateEventPage />} />
           <Route path="/events/:eventId" element={<EventDetailsPage />} />
+          <Route path="/events/:eventId/edit" element={<EditEventPage />} />
 
           <Route path="/templates" element={<TemplatesPage />} />
         </Route>
