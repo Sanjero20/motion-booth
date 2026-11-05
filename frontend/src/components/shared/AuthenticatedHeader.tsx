@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router";
+import { NavLink } from "react-router";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -19,9 +19,7 @@ function AuthenticatedHeader() {
   return (
     <header className="border-border/60 bg-background/70 sticky top-0 z-50 border-b px-4 backdrop-blur-md lg:px-0">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between">
-        <Link to="/dashboard">
-          <Logo />
-        </Link>
+        <Logo href="/dashboard" />
 
         <nav
           aria-label="Primary"
