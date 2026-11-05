@@ -9,10 +9,10 @@ import { Link } from "react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import PageHeading from "@/components/shared/PageHeading";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
-import StatusCard from "./components/StatusCard";
 import EventCard from "./components/EventCard";
 import type { Event } from "@/features/events/types/event";
 import { templates } from "@/data/templates";
+import MetricCard from "@/components/shared/MetricCard";
 
 const upcomingEvents: Event[] = [
   {
@@ -40,25 +40,25 @@ function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatusCard
+        <MetricCard
           title="Upcoming events"
           icon={Calendar}
           value={0}
           description="Next event in 0 days"
         />
-        <StatusCard
+        <MetricCard
           title="Sessions"
           icon={Camera}
           value={0}
           description="Across all events"
         />
-        <StatusCard
+        <MetricCard
           title="Templates"
           icon={LayoutTemplate}
           value={0}
           description="Your saved designs"
         />
-        <StatusCard
+        <MetricCard
           title="Exports"
           icon={Images}
           value={0}
