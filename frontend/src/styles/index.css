@@ -156,3 +156,12 @@
     color: #191916;
   }
 }
+
+/* Fix for ShadCN Base UI Alert dialog overlay */
+html:has(
+  [data-slot="dialog-overlay"],
+  [data-slot="alert-dialog-overlay"],
+  [data-slot="sheet-overlay"]
+) {
+  background-color: color-mix(in srgb, black 80%, var(--background));
+}
