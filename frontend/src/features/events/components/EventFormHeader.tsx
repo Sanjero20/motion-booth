@@ -18,8 +18,6 @@ function EventFormHeader({
         eyebrow={isEditing ? "Event Settings" : "Get Started"}
         title={isEditing ? "Edit Event" : "Create Event"}
         description="Set up your event and customize its photo experience."
-        backTo="/events"
-        backLabel="Back to Events"
       />
 
       <div className="flex items-center gap-2">
