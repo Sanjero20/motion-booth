@@ -26,7 +26,13 @@ function EventDetailsPage() {
     <div className="space-y-6">
       {/* Heading */}
       <section className="flex items-end justify-between">
-        <PageHeading eyebrow="Event Overview" title={event.name} />
+        <PageHeading
+          eyebrow="Event Overview"
+          title={event.name}
+          description="View your event information and manage its photo booth setup."
+          backTo="/events"
+          backLabel="Back to Events"
+        />
 
         <div className="flex gap-2">
           <Button

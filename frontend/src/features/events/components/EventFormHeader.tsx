@@ -13,11 +13,13 @@ function EventFormHeader({
   onCancel,
 }: EventFormHeaderProps) {
   return (
-    <div className="flex items-end justify-between">
+    <div className="flex items-end justify-between gap-4">
       <PageHeading
-        eyebrow={`Workspace / Events / ${isEditing ? "Edit" : "New"}`}
+        eyebrow={isEditing ? "Event Settings" : "Get Started"}
         title={isEditing ? "Edit Event" : "Create Event"}
         description="Set up your event and customize its photo experience."
+        backTo="/events"
+        backLabel="Back to Events"
       />
 
       <div className="flex items-center gap-2">

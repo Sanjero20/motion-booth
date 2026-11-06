@@ -23,7 +23,7 @@ function EventsPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       <div className="flex items-end justify-between">
         <PageHeading
-          eyebrow="Workspace"
+          eyebrow="Your Workspace"
           title="Your Events"
           description="Manage your events and keep track of every booth session."
         />
