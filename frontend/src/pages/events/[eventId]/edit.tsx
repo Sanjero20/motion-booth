@@ -114,6 +114,7 @@ function EditEventPage() {
         title="Delete Event?"
         description="Are you sure you want to delete this event? This action cannot be undone."
         confirmLabel="Delete"
+        isDeleting={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
     </div>
