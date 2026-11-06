@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Route, Routes, useLocation } from "react-router";
+import { Toaster } from "@/components/ui/toast";
 
 // Layouts
 import PublicLayout from "./layouts/PublicLayout";
@@ -53,6 +54,8 @@ function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+
+      <Toaster />
     </QueryClientProvider>
   );
 }
