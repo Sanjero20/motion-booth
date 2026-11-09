@@ -1,4 +1,4 @@
-export type Rect = {
+export type Slot = {
   x: number;
   y: number;
   w: number;
@@ -10,6 +10,6 @@ export type TemplateLayout = {
   name: string;
   width: number;
   height: number;
-  slots: Rect[];
+  slots: Slot[];
   branding: string;
 };
