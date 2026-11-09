@@ -217,7 +217,7 @@ function TemplateCanvas({
       height={layout.height}
       role="img"
       aria-label={`${layout.name} template preview`}
-      className={`block h-auto max-h-full w-auto max-w-full ${className ?? ""}`}
+      className={`block h-auto max-h-full w-auto max-w-full object-contain ${className ?? ""}`}
       style={{
         aspectRatio: `${layout.width} / ${layout.height}`,
       }}
