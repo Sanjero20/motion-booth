@@ -11,15 +11,33 @@ function createSlots(width: number, height: number, count: number): Slot[] {
   const margin = 40;
   const gap = 20;
 
-  const slotWidth = width - margin * 2;
-  const slotHeight = (height - margin * 2 - gap * (count - 1)) / count;
+  // Strip layouts use a single column.
+  const isStrip = height / width >= 2;
 
-  return Array.from({ length: count }, (_, index) => ({
-    x: margin,
-    y: margin + index * (slotHeight + gap),
-    w: slotWidth,
-    h: slotHeight,
-  }));
+  // Determine grid dimensions.
+  const columns = isStrip ? 1 : Math.ceil(Math.sqrt(count));
+  const rows = Math.ceil(count / columns);
+
+  // Available space inside the canvas.
+  const availableWidth = width - margin * 2;
+  const availableHeight = height - margin * 2;
+
+  // Calculate each slot's dimensions.
+  const slotWidth = (availableWidth - gap * (columns - 1)) / columns;
+
+  const slotHeight = (availableHeight - gap * (rows - 1)) / rows;
+
+  return Array.from({ length: count }, (_, index) => {
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+
+    return {
+      x: margin + column * (slotWidth + gap),
+      y: margin + row * (slotHeight + gap),
+      w: slotWidth,
+      h: slotHeight,
+    };
+  });
 }
 
 function EventTemplateCustomizer() {
