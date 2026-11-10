@@ -223,6 +223,50 @@ function EventTemplateCustomizer() {
                       Slot {selectedSlot + 1} selected
                     </p>
 
+                    {(() => {
+                      const slot = slots[selectedSlot];
+
+                      return (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <p className="text-muted-foreground text-xs">
+                              Position X
+                            </p>
+                            <p className="text-sm font-medium">
+                              {Math.round(slot.x)} px
+                            </p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <p className="text-muted-foreground text-xs">
+                              Position Y
+                            </p>
+                            <p className="text-sm font-medium">
+                              {Math.round(slot.y)} px
+                            </p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <p className="text-muted-foreground text-xs">
+                              Width
+                            </p>
+                            <p className="text-sm font-medium">
+                              {Math.round(slot.w)} px
+                            </p>
+                          </div>
+
+                          <div className="space-y-1">
+                            <p className="text-muted-foreground text-xs">
+                              Height
+                            </p>
+                            <p className="text-sm font-medium">
+                              {Math.round(slot.h)} px
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })()}
+
                     <Button
                       variant="destructive"
                       size="sm"

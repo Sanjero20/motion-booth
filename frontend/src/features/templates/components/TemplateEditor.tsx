@@ -41,9 +41,11 @@ function TemplateEditor({
   }, [layout.width, layout.height]);
 
   const updateSlot = (index: number, patch: Partial<Slot>) => {
-    onSlotsChange(
-      slots.map((slot, i) => (i === index ? { ...slot, ...patch } : slot)),
+    const updatedSlots = slots.map((slot, i) =>
+      i === index ? { ...slot, ...patch } : slot,
     );
+
+    onSlotsChange(updatedSlots);
   };
 
   return (
@@ -51,7 +53,6 @@ function TemplateEditor({
       ref={containerRef}
       className="flex h-full w-full items-center justify-center overflow-hidden"
     >
-      {/* Template Container */}
       <div
         style={{
           width: layout.width,
@@ -73,10 +74,17 @@ function TemplateEditor({
             scale={scale}
             position={{ x: slot.x, y: slot.y }}
             size={{ width: slot.w, height: slot.h }}
+            dragGrid={[5, 5]}
+            resizeGrid={[5, 5]}
             onDragStart={() => onSelectSlot(index)}
             onResizeStart={() => onSelectSlot(index)}
-            onDragStop={(_, d) => updateSlot(index, { x: d.x, y: d.y })}
-            onResizeStop={(_, __, ref, ___, pos) =>
+            onDrag={(_, d) =>
+              updateSlot(index, {
+                x: d.x,
+                y: d.y,
+              })
+            }
+            onResize={(_, __, ref, ___, pos) =>
               updateSlot(index, {
                 w: ref.offsetWidth,
                 h: ref.offsetHeight,
