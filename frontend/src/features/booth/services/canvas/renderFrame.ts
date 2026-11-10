@@ -9,6 +9,7 @@ interface RenderFrameOptions {
   finishedAt: (number | null)[];
   now: number;
   flashMs?: number;
+  background?: HTMLImageElement | null;
 }
 
 /**
@@ -25,8 +26,10 @@ export function renderFrame({
   finishedAt,
   now,
   flashMs = 300,
+  background,
 }: RenderFrameOptions) {
-  drawTemplate(ctx, layout);
+  // Draw background first.
+  drawTemplate(ctx, layout, [], background);
 
   let allDone = true;
   let lastFinish = 0;

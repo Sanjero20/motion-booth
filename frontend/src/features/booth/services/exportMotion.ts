@@ -1,6 +1,11 @@
 import type { Photo } from "@/features/booth/types/photo";
 import type { TemplateLayout } from "@/features/templates/types/template";
-import { loadPhotoImage } from "@/features/booth/services/canvas";
+
+import {
+  loadBackgroundImage,
+  loadPhotoImage,
+} from "@/features/booth/services/canvas";
+
 import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
 
 const MIME_CANDIDATES = [
@@ -70,8 +75,12 @@ export async function exportMotionVideo(
     urls.forEach((url) => URL.revokeObjectURL(url));
   };
 
+  let stream: MediaStream | null = null;
+
   try {
-    const [loadedVideos, stills] = await Promise.all([
+    const [background, loadedVideos, stills] = await Promise.all([
+      loadBackgroundImage(layout.backgroundImage),
+
       Promise.all(
         clips.map(async (photo) => {
           if (!photo.motionClip) return null;
@@ -96,6 +105,7 @@ export async function exportMotionVideo(
             : null;
         }),
       ),
+
       Promise.all(clips.map(loadPhotoImage)),
     ]);
 
@@ -108,7 +118,7 @@ export async function exportMotionVideo(
       ...clips.map((photo) => photo.motionClip?.durationMs ?? 0),
     );
 
-    const stream = canvas.captureStream(fps);
+    stream = canvas.captureStream(fps);
 
     const recorder = new MediaRecorder(stream, {
       mimeType,
@@ -130,9 +140,10 @@ export async function exportMotionVideo(
 
     const finishedAt: (number | null)[] = clips.map(() => null);
 
-    recorder.start(100);
-
+    // Draw the initial frame before recording.
     const startedAt = performance.now();
+
+    recorder.start(100);
 
     videos.forEach((video) => {
       if (video) void video.play().catch(() => {});
@@ -141,8 +152,6 @@ export async function exportMotionVideo(
     const maxMs = longestClipMs + holdMs + 3000;
 
     await new Promise<void>((resolve) => {
-      let animationFrame = 0;
-
       const render = () => {
         const now = performance.now();
         const elapsed = now - startedAt;
@@ -170,6 +179,7 @@ export async function exportMotionVideo(
           finishedAt,
           now,
           flashMs,
+          background,
         });
 
         const totalMs = longestClipMs + 300 + holdMs;
@@ -180,19 +190,17 @@ export async function exportMotionVideo(
           return;
         }
 
-        animationFrame = requestAnimationFrame(render);
+        requestAnimationFrame(render);
       };
 
       render();
-
-      // Keep the animation frame handle local to this recording.
-      void animationFrame;
     });
 
     recorder.stop();
     await stopped;
 
     stream.getTracks().forEach((track) => track.stop());
+    stream = null;
 
     onProgress?.(1);
 
@@ -201,6 +209,7 @@ export async function exportMotionVideo(
       extension: recorder.mimeType.includes("mp4") ? "mp4" : "webm",
     };
   } finally {
+    stream?.getTracks().forEach((track) => track.stop());
     cleanup();
   }
 }

@@ -1,6 +1,5 @@
 import {
   drawTemplate,
-  drawImageCover,
   loadBackgroundImage,
   loadPhotoImage,
 } from "@/features/booth/services/canvas";
@@ -193,15 +192,6 @@ function TemplateCanvas({
         });
 
         // Render the background before rendering the motion frame.
-        ctx!.clearRect(0, 0, layout.width, layout.height);
-
-        if (background) {
-          drawImageCover(ctx!, background, 0, 0, layout.width, layout.height);
-        } else {
-          ctx!.fillStyle = "#FFFCF6";
-          ctx!.fillRect(0, 0, layout.width, layout.height);
-        }
-
         const { allDone, lastFinish } = renderFrame({
           ctx: ctx!,
           layout,
@@ -210,6 +200,7 @@ function TemplateCanvas({
           finishedAt,
           now,
           flashMs,
+          background,
         });
 
         if (clips.length > 0 && allDone && now - lastFinish >= holdMs) {
