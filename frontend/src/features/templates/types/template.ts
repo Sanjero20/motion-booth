@@ -11,5 +11,6 @@ export type TemplateLayout = {
   width: number;
   height: number;
   slots: Slot[];
-  branding: string;
+  branding?: string;
+  backgroundImage?: string | null;
 };
