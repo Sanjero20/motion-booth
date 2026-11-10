@@ -7,32 +7,59 @@ import TemplateEditor from "@/features/templates/components/TemplateEditor";
 import type { Slot, TemplateLayout } from "@/features/templates/types/template";
 import { DEFAULT_TEMPLATE_ID, templateFormats } from "@/data/templateFormat";
 
+type Format = "strip" | "portrait" | "landscape";
+
+// Columns per photo count, chosen so slots stay close to a normal photo shape.
+const COLUMNS: Record<Format, Record<number, number>> = {
+  strip: { 1: 1, 2: 1, 3: 1, 4: 1 },
+  portrait: { 1: 1, 2: 1, 3: 2, 4: 2 },
+  landscape: { 1: 1, 2: 2, 3: 2, 4: 2 },
+};
+
+// Share of the canvas height kept free at the bottom for a logo or caption.
+const FOOTER: Record<Format, number> = {
+  strip: 0.12,
+  portrait: 0.12,
+  landscape: 0.08,
+};
+
+function getFormat(width: number, height: number): Format {
+  const ratio = height / width;
+  if (ratio >= 2) return "strip"; // 2x6
+  return ratio > 1 ? "portrait" : "landscape"; // 4x6 / 6x4
+}
+
 function createSlots(width: number, height: number, count: number): Slot[] {
-  const margin = 40;
-  const gap = 20;
+  const n = Math.min(Math.max(Math.round(count), 1), 4);
+  const format = getFormat(width, height);
 
-  // Strip layouts use a single column.
-  const isStrip = height / width >= 2;
+  // Spacing scales with the canvas so it looks the same at any resolution.
+  const margin = Math.round(Math.min(width, height) * 0.06);
+  const gap = Math.round(margin / 2);
 
-  // Determine grid dimensions.
-  const columns = isStrip ? 1 : Math.ceil(Math.sqrt(count));
-  const rows = Math.ceil(count / columns);
+  const columns = COLUMNS[format][n];
+  const rows = Math.ceil(n / columns);
 
-  // Available space inside the canvas.
   const availableWidth = width - margin * 2;
-  const availableHeight = height - margin * 2;
+  const availableHeight =
+    height - margin * 2 - Math.round(height * FOOTER[format]);
 
-  // Calculate each slot's dimensions.
-  const slotWidth = (availableWidth - gap * (columns - 1)) / columns;
+  const slotWidth = Math.round(
+    (availableWidth - gap * (columns - 1)) / columns,
+  );
+  const slotHeight = Math.round((availableHeight - gap * (rows - 1)) / rows);
 
-  const slotHeight = (availableHeight - gap * (rows - 1)) / rows;
-
-  return Array.from({ length: count }, (_, index) => {
-    const column = index % columns;
+  return Array.from({ length: n }, (_, index) => {
     const row = Math.floor(index / columns);
+    const column = index % columns;
+
+    // Center a short last row (e.g. the 3rd slot in a 2-column grid).
+    const itemsInRow = Math.min(columns, n - row * columns);
+    const rowWidth = itemsInRow * slotWidth + (itemsInRow - 1) * gap;
+    const rowStart = margin + Math.round((availableWidth - rowWidth) / 2);
 
     return {
-      x: margin + column * (slotWidth + gap),
+      x: rowStart + column * (slotWidth + gap),
       y: margin + row * (slotHeight + gap),
       w: slotWidth,
       h: slotHeight,
