@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import TemplateEditor from "@/features/templates/components/TemplateEditor";
 import type { Slot, TemplateLayout } from "@/features/templates/types/template";
 import { DEFAULT_TEMPLATE_ID, templateFormats } from "@/data/templateFormat";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
 
 type Format = "strip" | "portrait" | "landscape";
 
@@ -67,7 +69,11 @@ function createSlots(width: number, height: number, count: number): Slot[] {
   });
 }
 
+type Mode = "edit" | "preview";
+
 function EventTemplateCustomizer() {
+  const [mode, setMode] = useState<Mode>("edit");
+
   const [selectedTemplateId, setSelectedTemplateId] = useState([
     DEFAULT_TEMPLATE_ID,
   ]);
@@ -131,6 +137,7 @@ function EventTemplateCustomizer() {
     name: "Custom",
     width: selectedLayout.width,
     height: selectedLayout.height,
+    backgroundImage: backgroundImage,
     slots: slots,
     branding: "",
   };
@@ -150,15 +157,28 @@ function EventTemplateCustomizer() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {/* Canvas */}
-        <div className="bg-secondary relative flex h-150 items-center justify-center rounded-xl border p-4 lg:col-span-3">
-          <TemplateEditor
-            layout={selectedLayout}
-            slots={slots}
-            onSlotsChange={setSlots}
-            selectedSlot={selectedSlot}
-            onSelectSlot={setSelectedSlot}
-            backgroundImage={backgroundImage}
-          />
+        <div className="bg-secondary relative flex h-150 items-center justify-center rounded-xl border p-16 lg:col-span-3">
+          <div className="absolute top-2 left-2">
+            <Tabs value={mode} onValueChange={(value: Mode) => setMode(value)}>
+              <TabsList className="bg-white">
+                <TabsTrigger value="edit">Edit</TabsTrigger>
+                <TabsTrigger value="preview">Preview</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {mode == "edit" ? (
+            <TemplateEditor
+              layout={selectedLayout}
+              slots={slots}
+              onSlotsChange={setSlots}
+              selectedSlot={selectedSlot}
+              onSelectSlot={setSelectedSlot}
+              backgroundImage={backgroundImage}
+            />
+          ) : (
+            <TemplateCanvas layout={customTemplate} />
+          )}
         </div>
 
         {/* Settings Panel */}
