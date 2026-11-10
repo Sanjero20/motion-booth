@@ -1,7 +1,19 @@
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+import TemplateEditor from "@/features/templates/components/TemplateEditor";
+import { DEFAULT_TEMPLATE_ID, templateFormats } from "@/data/templateFormat";
+
 function EventTemplateCustomizer() {
+  const [selectedTemplateId, setSelectedTemplateId] = useState([
+    DEFAULT_TEMPLATE_ID,
+  ]);
+
+  const selectedLayout = templateFormats.find(
+    (template) => template.id == selectedTemplateId[0],
+  );
+
   return (
     <section className="space-y-4">
       <div className="space-y-1">
@@ -14,8 +26,8 @@ function EventTemplateCustomizer() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {/* Canvas */}
-        <div className="bg-secondary flex min-h-150 items-center justify-center rounded-xl border lg:col-span-3">
-          <p className="text-muted-foreground text-sm">Template canvas</p>
+        <div className="bg-secondary relative flex h-150 items-center justify-center rounded-xl border p-4 lg:col-span-3">
+          <TemplateEditor layout={selectedLayout!} />
         </div>
 
         {/* Settings Panel */}
@@ -34,16 +46,23 @@ function EventTemplateCustomizer() {
               <div className="space-y-3">
                 <p className="text-sm font-medium">Print Format</p>
 
-                <ToggleGroup>
-                  <ToggleGroupItem variant="outline" value="strip">
-                    Strip
-                  </ToggleGroupItem>
-                  <ToggleGroupItem variant="outline" value="landscape">
-                    Landscape
-                  </ToggleGroupItem>
-                  <ToggleGroupItem variant="outline" value="portrait">
-                    Portrait
-                  </ToggleGroupItem>
+                <ToggleGroup
+                  value={selectedTemplateId}
+                  onValueChange={(value) => {
+                    if (value.length > 0) {
+                      setSelectedTemplateId(value);
+                    }
+                  }}
+                >
+                  {templateFormats.map((template) => (
+                    <ToggleGroupItem
+                      variant="outline"
+                      key={template.id}
+                      value={template.id}
+                    >
+                      {template.name}
+                    </ToggleGroupItem>
+                  ))}
                 </ToggleGroup>
               </div>
 
