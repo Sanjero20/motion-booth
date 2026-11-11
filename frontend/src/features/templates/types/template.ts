@@ -14,3 +14,20 @@ export type TemplateLayout = {
   branding?: string;
   backgroundImage?: string | null;
 };
+
+// DTOs
+export type CreateTemplateRequest = {
+  name: string;
+  width: number;
+  height: number;
+  slots: Slot[];
+  backgroundImage: string | null;
+};
+
+export type UpdateTemplateRequest = {
+  name: string;
+  width: number;
+  height: number;
+  slots: Slot[];
+  backgroundImage: string | null;
+};
