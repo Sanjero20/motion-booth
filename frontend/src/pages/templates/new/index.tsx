@@ -48,17 +48,15 @@ function CreateTemplatePage() {
 
       <Separator />
 
-      <div>
-        {mode == "edit" ? (
-          <CustomTemplateEditor {...templateEditor} />
-        ) : (
-          <CustomTemplateViewer
-            layout={templateEditor.selectedLayout}
-            slots={templateEditor.slots}
-            backgroundImage={templateEditor.backgroundImage}
-          />
-        )}
-      </div>
+      {mode == "edit" ? (
+        <CustomTemplateEditor {...templateEditor} />
+      ) : (
+        <CustomTemplateViewer
+          layout={templateEditor.selectedLayout}
+          slots={templateEditor.slots}
+          backgroundImage={templateEditor.backgroundImage}
+        />
+      )}
     </div>
   );
 }

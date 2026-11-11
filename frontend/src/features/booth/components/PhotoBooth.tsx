@@ -59,42 +59,40 @@ function PhotoBooth({ template }: Props) {
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="flex min-h-0 flex-1 flex-col gap-5 md:flex-row md:items-start md:gap-8"
           >
-            <div className="flex min-h-0 flex-1 flex-col gap-5 md:flex-row md:items-start md:gap-8">
-              {/* Completed template preview */}
-              <div className="bg-secondary border-border flex min-h-[45dvh] w-full min-w-0 flex-1 items-center justify-center overflow-hidden rounded-md border-2 p-3 sm:min-h-[55dvh] sm:p-5 md:h-full md:max-h-[calc(100dvh-7rem)]">
-                <div className="flex h-full w-full items-center justify-center">
-                  <TemplateCanvas
-                    layout={template}
-                    photos={photos}
-                    mode="motion"
-                    holdMs={HOLD_MS}
-                    className="max-h-full max-w-full"
-                  />
-                </div>
+            {/* Completed template preview */}
+            <div className="bg-secondary border-border flex min-h-[45dvh] w-full min-w-0 flex-1 items-center justify-center overflow-hidden rounded-md border-2 p-3 sm:min-h-[55dvh] sm:p-5 md:h-full md:max-h-[calc(100dvh-7rem)]">
+              <div className="flex h-full w-full items-center justify-center">
+                <TemplateCanvas
+                  layout={template}
+                  photos={photos}
+                  mode="motion"
+                  holdMs={HOLD_MS}
+                  className="max-h-full max-w-full"
+                />
+              </div>
+            </div>
+
+            {/* Completed session controls */}
+            <aside className="flex w-full shrink-0 flex-col gap-4 md:w-72 lg:w-80">
+              {/* Heading */}
+              <div className="flex flex-col gap-2">
+                <h2 className="font-display text-4xl font-semibold">
+                  Your moments are <em className="text-primary">ready</em>
+                </h2>
+
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Each frame replays the 5 seconds before the shutter - the
+                  laugh, the lean-in, the almost-ready.
+                </p>
               </div>
 
-              {/* Completed session controls */}
-              <aside className="flex w-full shrink-0 flex-col gap-4 md:w-72 lg:w-80">
-                {/* Heading */}
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-display text-4xl font-semibold">
-                    Your moments are <em className="text-primary">ready</em>
-                  </h2>
-
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    Each frame replays the 5 seconds before the shutter - the
-                    laugh, the lean-in, the almost-ready.
-                  </p>
-                </div>
-
-                <SessionActions
-                  template={template}
-                  photos={photos}
-                  holdMs={HOLD_MS}
-                  onNewSession={resetCapture}
-                />
-              </aside>
-            </div>
+              <SessionActions
+                template={template}
+                photos={photos}
+                holdMs={HOLD_MS}
+                onNewSession={resetCapture}
+              />
+            </aside>
           </motion.section>
         ) : (
           <motion.section
@@ -103,7 +101,6 @@ function PhotoBooth({ template }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-
             className="flex min-h-0 flex-1 flex-col gap-4 md:flex-row md:items-start"
           >
             {/* Main Camera */}
