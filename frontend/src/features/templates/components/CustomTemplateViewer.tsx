@@ -1,5 +1,5 @@
-import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import type { Slot, TemplateLayout } from "../types/template";
+import PhotoBooth from "@/features/booth/components/PhotoBooth";
 
 interface Props {
   layout: TemplateLayout;
@@ -8,11 +8,7 @@ interface Props {
 }
 
 function CustomTemplateViewer({ layout, slots, backgroundImage }: Props) {
-  return (
-    <div className="bg-secondary flex h-150 items-center justify-center p-8">
-      <TemplateCanvas layout={{ ...layout, slots, backgroundImage }} />
-    </div>
-  );
+  return <PhotoBooth template={{ ...layout, slots, backgroundImage }} />;
 }
 
 export default CustomTemplateViewer;
