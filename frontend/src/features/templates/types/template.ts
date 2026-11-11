@@ -1,4 +1,4 @@
-export type Rect = {
+export type Slot = {
   x: number;
   y: number;
   w: number;
@@ -10,6 +10,24 @@ export type TemplateLayout = {
   name: string;
   width: number;
   height: number;
-  slots: Rect[];
-  branding: string;
+  slots: Slot[];
+  branding?: string;
+  backgroundImage?: string | null;
+};
+
+// DTOs
+export type CreateTemplateRequest = {
+  name: string;
+  width: number;
+  height: number;
+  slots: Slot[];
+  backgroundImage: string | null;
+};
+
+export type UpdateTemplateRequest = {
+  name: string;
+  width: number;
+  height: number;
+  slots: Slot[];
+  backgroundImage: string | null;
 };

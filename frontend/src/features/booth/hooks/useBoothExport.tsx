@@ -1,6 +1,11 @@
 import { useState } from "react";
 
-import { drawTemplate, loadPhotoImage } from "@/features/booth/services/canvas";
+import {
+  drawTemplate,
+  loadBackgroundImage,
+  loadPhotoImage,
+} from "@/features/booth/services/canvas";
+
 import { exportMotionVideo } from "@/features/booth/services/exportMotion";
 import { transcodeToMp4 } from "@/features/booth/services/transcodeToMp4";
 
@@ -44,11 +49,14 @@ export default function useBoothExport(
         throw new Error("Unable to create the image canvas.");
       }
 
-      const images = await Promise.all(
-        photos.slice(0, selectedTemplate.slots.length).map(loadPhotoImage),
-      );
+      const [background, images] = await Promise.all([
+        loadBackgroundImage(selectedTemplate.backgroundImage),
+        Promise.all(
+          photos.slice(0, selectedTemplate.slots.length).map(loadPhotoImage),
+        ),
+      ]);
 
-      drawTemplate(ctx, selectedTemplate, images);
+      drawTemplate(ctx, selectedTemplate, images, background);
 
       const blob = await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((result) => {

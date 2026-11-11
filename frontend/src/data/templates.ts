@@ -30,9 +30,9 @@ export const templates: TemplateLayout[] = [
   {
     id: "single",
     name: "Single Shot",
-    width: 900,
-    height: 1200,
+    width: 1200,
+    height: 1800,
     branding: "Motion Booth",
-    slots: [{ x: 60, y: 60, w: 780, h: 960 }],
+    slots: [{ x: 60, y: 60, w: 1080, h: 1500 }],
   },
 ];

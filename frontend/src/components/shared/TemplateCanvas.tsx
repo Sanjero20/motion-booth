@@ -1,4 +1,8 @@
-import { drawTemplate, loadPhotoImage } from "@/features/booth/services/canvas";
+import {
+  drawTemplate,
+  loadBackgroundImage,
+  loadPhotoImage,
+} from "@/features/booth/services/canvas";
 import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
 import { useEffect, useRef } from "react";
 
@@ -60,14 +64,13 @@ function TemplateCanvas({
     if (mode === "photo") {
       onCanvasReady?.(canvas);
 
-      drawTemplate(ctx, layout);
+      void Promise.all([
+        loadBackgroundImage(layout.backgroundImage),
+        Promise.all(photos.slice(0, layout.slots.length).map(loadPhotoImage)),
+      ]).then(([background, images]) => {
+        if (cancelled) return;
 
-      void Promise.all(
-        photos.slice(0, layout.slots.length).map(loadPhotoImage),
-      ).then((images) => {
-        if (!cancelled) {
-          drawTemplate(ctx, layout, images);
-        }
+        drawTemplate(ctx, layout, images, background);
       });
 
       return cleanup;
@@ -76,15 +79,17 @@ function TemplateCanvas({
     async function setupMotionPreview() {
       const clips = photos.slice(0, layout.slots.length);
 
-      // Draw the template immediately, then load its still photos.
-      drawTemplate(ctx!, layout);
+      // Load background and still photos.
+      const background = await loadBackgroundImage(layout.backgroundImage);
+
+      if (cancelled) return;
 
       const stills = await Promise.all(clips.map(loadPhotoImage));
 
       if (cancelled) return;
 
-      // Show the captured photos before preparing any motion clips.
-      drawTemplate(ctx!, layout, stills);
+      // Display the initial still-photo frame.
+      drawTemplate(ctx!, layout, stills, background);
 
       const readyVideos = await Promise.all(
         clips.map(async (photo, index): Promise<HTMLVideoElement | null> => {
@@ -171,6 +176,7 @@ function TemplateCanvas({
           if (finishedAt[index] !== null) return;
 
           const photo = clips[index];
+
           if (!photo) {
             finishedAt[index] = now;
             return;
@@ -185,6 +191,7 @@ function TemplateCanvas({
           }
         });
 
+        // Render the background before rendering the motion frame.
         const { allDone, lastFinish } = renderFrame({
           ctx: ctx!,
           layout,
@@ -193,6 +200,7 @@ function TemplateCanvas({
           finishedAt,
           now,
           flashMs,
+          background,
         });
 
         if (clips.length > 0 && allDone && now - lastFinish >= holdMs) {
@@ -217,7 +225,7 @@ function TemplateCanvas({
       height={layout.height}
       role="img"
       aria-label={`${layout.name} template preview`}
-      className={`block h-auto max-h-full w-auto max-w-full ${className ?? ""}`}
+      className={`block h-auto max-h-full w-auto max-w-full object-contain ${className ?? ""}`}
       style={{
         aspectRatio: `${layout.width} / ${layout.height}`,
       }}

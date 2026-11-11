@@ -11,10 +11,11 @@ import { useUpdateEvent } from "@/features/events/hooks/useUpdateEvent";
 
 import EventFormHeader from "@/features/events/components/EventFormHeader";
 import EventForm from "@/features/events/components/EventForm";
-import EventTemplateCustomizer from "@/features/events/components/EventTemplateCustomizer";
 import DeleteConfirmationDialog from "@/components/shared/dialog/DeleteConfirmationDialog";
 
 import { useDeleteEvent } from "@/features/events/hooks/useDeleteEvent";
+import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
+import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 function EditEventPage() {
   const { eventId } = useParams();
@@ -23,6 +24,8 @@ function EditEventPage() {
   const { data: event, isLoading } = useEvent(eventId!);
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
+
+  const templateEditor = useTemplateEditor();
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -86,7 +89,7 @@ function EditEventPage() {
         onSubmit={handleSubmit}
       />
 
-      <EventTemplateCustomizer />
+      <CustomTemplateEditor {...templateEditor} />
 
       <Separator />
 
