@@ -2,16 +2,23 @@ import { Button } from "@/components/ui/button";
 import type { TemplateLayout } from "@/features/templates/types/template";
 import type { Photo } from "../types/photo";
 import useBoothExport from "../hooks/useBoothExport";
-import { Film, Image, Loader2, RotateCcw } from "lucide-react";
+import { Film, Image, Loader2, QrCode, RotateCcw } from "lucide-react";
 
 interface Props {
   template: TemplateLayout;
   photos: Photo[];
   holdMs: number;
   onNewSession: () => void;
+  allowSharing?: boolean;
 }
 
-function SessionActions({ template, photos, holdMs, onNewSession }: Props) {
+function SessionActions({
+  template,
+  photos,
+  holdMs,
+  onNewSession,
+  allowSharing = false,
+}: Props) {
   const {
     handleSaveImage,
     handleSaveVideo,
@@ -24,6 +31,13 @@ function SessionActions({ template, photos, holdMs, onNewSession }: Props) {
 
   return (
     <>
+      {allowSharing && (
+        <Button variant="default" className="w-full">
+          <QrCode className="size-4" />
+          Share via QR
+        </Button>
+      )}
+
       <div className="flex flex-col gap-2">
         <Button
           onClick={handleSaveVideo}
@@ -65,7 +79,6 @@ function SessionActions({ template, photos, holdMs, onNewSession }: Props) {
           Download photo
         </Button>
       </div>
-
       <div className="border-t pt-4">
         <Button
           variant="outline"
@@ -77,7 +90,6 @@ function SessionActions({ template, photos, holdMs, onNewSession }: Props) {
           New session
         </Button>
       </div>
-
       {exportError && (
         <p role="alert" className="text-destructive text-sm">
           {exportError}
