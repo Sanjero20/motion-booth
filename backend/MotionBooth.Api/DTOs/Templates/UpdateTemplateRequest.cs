@@ -4,7 +4,8 @@ using MotionBooth.Api.Validation;
 
 namespace MotionBooth.Api.DTOs.Templates;
 
-public class UpdateTemplateRequest
+[ValidTemplateSlots]
+public class UpdateTemplateRequest : ITemplateRequest
 {
     [Required]
     [NotWhitespace]
