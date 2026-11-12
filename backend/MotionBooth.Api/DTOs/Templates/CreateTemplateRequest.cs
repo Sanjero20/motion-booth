@@ -2,7 +2,7 @@ using MotionBooth.Api.Models;
 
 namespace MotionBooth.Api.DTOs.Templates;
 
-public class CreateTemplateDto
+public class CreateTemplateRequest
 {
     public string Name { get; set; } = string.Empty;
     public int Width { get; set; }
