@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
+using Npgsql;
+using YamlDotNet.Core.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +25,17 @@ builder.Services.AddCors(options =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<MotionBoothDbContext>(options =>
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
+// Database
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(
+    builder.Configuration.GetConnectionString("DefaultConnection")
+);
+
+dataSourceBuilder.EnableDynamicJson();
+
+builder.Services.AddSingleton(dataSourceBuilder.Build());
+
+builder.Services.AddDbContext<MotionBoothDbContext>((services, options) =>
+    options.UseNpgsql(services.GetRequiredService<NpgsqlDataSource>())
 );
 
 var app = builder.Build();
