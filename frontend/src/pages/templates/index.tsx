@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useTemplates } from "@/features/templates/hooks/useTemplates";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 function TemplatesPage() {
+  const navigate = useNavigate();
   const { data: templates } = useTemplates();
 
   return (
@@ -28,7 +29,11 @@ function TemplatesPage() {
       <section className="grid grid-cols-3 gap-4">
         {templates &&
           templates.map((template) => (
-            <Card key={template.id} className="flex aspect-4/3 w-full flex-col">
+            <Card
+              key={template.id}
+              className="flex aspect-4/3 w-full flex-col"
+              onClick={() => navigate(`/templates/${template.id}`)}
+            >
               <CardContent className="flex min-h-0 flex-1 justify-center">
                 <TemplateCanvas layout={template} className="border" />
               </CardContent>
