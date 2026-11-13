@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 import type { Photo } from "../types/photo";
 import useBoothExport from "../hooks/useBoothExport";
 import { Film, Image, Loader2, QrCode, RotateCcw } from "lucide-react";
 
 interface Props {
-  template: TemplateLayout;
+  template: Template;
   photos: Photo[];
   holdMs: number;
   onNewSession: () => void;

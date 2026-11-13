@@ -1,5 +1,5 @@
 import type { Photo } from "@/features/booth/types/photo";
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 
 export function drawImageCover(
   ctx: CanvasRenderingContext2D,
@@ -53,7 +53,7 @@ export function loadBackgroundImage(
 
 export function drawTemplate(
   ctx: CanvasRenderingContext2D,
-  layout: TemplateLayout,
+  layout: Template,
   photos: (HTMLImageElement | null)[] = [],
   background?: HTMLImageElement | null,
 ) {

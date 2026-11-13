@@ -1,6 +1,6 @@
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 
-export const templateFormats: TemplateLayout[] = [
+export const templateFormats: Template[] = [
   {
     id: "strip",
     name: "Strip",

@@ -10,7 +10,7 @@ import { exportMotionVideo } from "@/features/booth/services/exportMotion";
 import { transcodeToMp4 } from "@/features/booth/services/transcodeToMp4";
 
 import type { Photo } from "@/features/booth/types/photo";
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 
 export type ExportStage = "idle" | "recording" | "converting";
 
@@ -27,7 +27,7 @@ function downloadBlob(blob: Blob, filename: string) {
 }
 
 export default function useBoothExport(
-  selectedTemplate: TemplateLayout,
+  selectedTemplate: Template,
   photos: Photo[],
   holdMs = 3000,
 ) {
