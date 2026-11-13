@@ -1,20 +1,45 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useCreateTemplate } from "@/features/templates/hooks/useCreateTemplate";
 
 import PageHeading from "@/components/shared/PageHeading";
 import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
 import CustomTemplateViewer from "@/features/templates/components/CustomTemplateViewer";
 
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
+import type { CreateTemplateRequest } from "@/features/templates/types/template";
 
 type Mode = "edit" | "test";
 
 function CreateTemplatePage() {
+  const navigate = useNavigate();
+  const mutation = useCreateTemplate();
+
   const [mode, setMode] = useState<Mode>("edit");
 
   const templateEditor = useTemplateEditor();
+
+  const handleSubmit = () => {
+    const { selectedLayout, slots, backgroundImage } = templateEditor;
+
+    const template: CreateTemplateRequest = {
+      name: selectedLayout.name,
+      width: selectedLayout.width,
+      height: selectedLayout.height,
+      slots: slots,
+      backgroundImage: backgroundImage,
+    };
+
+    console.log("submit", template);
+
+    mutation.mutate(template, {
+      onSuccess: () => {
+        navigate("/templates");
+      },
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -37,7 +62,7 @@ function CreateTemplatePage() {
             <Button variant="outline" onClick={() => setMode("test")}>
               Test template
             </Button>
-            <Button>Create template</Button>
+            <Button onClick={handleSubmit}>Create template</Button>
           </div>
         ) : (
           <Button variant="outline" onClick={() => setMode("edit")}>
