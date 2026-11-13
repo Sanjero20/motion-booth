@@ -1,21 +1,20 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { Trash } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEvent } from "@/features/events/hooks/useEvent";
 import { useUpdateEvent } from "@/features/events/hooks/useUpdateEvent";
+import { useDeleteEvent } from "@/features/events/hooks/useDeleteEvent";
 
 import EventFormHeader from "@/features/events/components/EventFormHeader";
 import EventForm from "@/features/events/components/EventForm";
-import DeleteConfirmationDialog from "@/components/shared/dialog/DeleteConfirmationDialog";
 
-import { useDeleteEvent } from "@/features/events/hooks/useDeleteEvent";
 import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
+
+import DangerZone from "@/components/shared/DangerZone";
 
 function EditEventPage() {
   const { eventId } = useParams();
@@ -29,8 +28,6 @@ function EditEventPage() {
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
-
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
     if (event) {
@@ -93,30 +90,9 @@ function EditEventPage() {
 
       <Separator />
 
-      <section className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold">Danger Zone</h3>
-          <p className="text-muted-foreground text-sm">
-            Permanently delete this event and its associated data. This action
-            cannot be undone.
-          </p>
-        </div>
-
-        <Button
-          variant="destructive"
-          onClick={() => setIsDeleteDialogOpen(true)}
-        >
-          <Trash />
-          Delete Event
-        </Button>
-      </section>
-
-      <DeleteConfirmationDialog
-        open={isDeleteDialogOpen}
-        onOpenChange={setIsDeleteDialogOpen}
-        title="Delete Event?"
-        description="Are you sure you want to delete this event? This action cannot be undone."
-        confirmLabel="Delete"
+      <DangerZone
+        resourceName="Event"
+        description="Permanently delete this event and its associated data. This action cannot be undone."
         isDeleting={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
