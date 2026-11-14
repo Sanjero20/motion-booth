@@ -26,7 +26,7 @@ function Templates() {
                 <div className="bg-background flex h-72 items-center justify-center overflow-hidden rounded-lg p-4">
                   <div className="flex h-full w-full items-center justify-center">
                     <TemplateCanvas
-                      layout={template}
+                      template={template}
                       className="max-h-full max-w-full shadow-lg"
                     />
                   </div>

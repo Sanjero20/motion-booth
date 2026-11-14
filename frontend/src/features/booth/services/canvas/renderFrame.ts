@@ -3,7 +3,7 @@ import { drawImageCover, drawTemplate } from "@/features/booth/services/canvas";
 
 interface RenderFrameOptions {
   ctx: CanvasRenderingContext2D;
-  layout: Template;
+  template: Template;
   stills: (HTMLImageElement | null)[];
   videos: (HTMLVideoElement | null)[];
   finishedAt: (number | null)[];
@@ -20,7 +20,7 @@ interface RenderFrameOptions {
  */
 export function renderFrame({
   ctx,
-  layout,
+  template,
   stills,
   videos,
   finishedAt,
@@ -29,12 +29,12 @@ export function renderFrame({
   background,
 }: RenderFrameOptions) {
   // Draw background first.
-  drawTemplate(ctx, layout, [], background);
+  drawTemplate(ctx, template, [], background);
 
   let allDone = true;
   let lastFinish = 0;
 
-  layout.slots.forEach((slot, index) => {
+  template.slots.forEach((slot, index) => {
     const video = videos[index];
     const still = stills[index];
     const doneAt = finishedAt[index];

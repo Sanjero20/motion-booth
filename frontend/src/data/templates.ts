@@ -1,12 +1,11 @@
+import { DEFAULT_LAYOUTS } from "@/data/layout";
 import type { Template } from "@/features/templates/types/template";
 
 export const templates: Template[] = [
   {
     id: "classic-strip",
     name: "Classic Strip",
-    width: 600,
-    height: 1800,
-    branding: "Motion Booth",
+    layout: DEFAULT_LAYOUTS.find((layout) => layout.format === "strip")!,
     slots: [
       { x: 40, y: 100, w: 520, h: 350 },
       { x: 40, y: 470, w: 520, h: 350 },
@@ -17,9 +16,7 @@ export const templates: Template[] = [
   {
     id: "grid",
     name: "Grid",
-    width: 1800,
-    height: 1200,
-    branding: "Motion Booth",
+    layout: DEFAULT_LAYOUTS.find((layout) => layout.format === "landscape")!,
     slots: [
       { x: 60, y: 60, w: 820, h: 450 },
       { x: 920, y: 60, w: 820, h: 450 },
@@ -30,9 +27,7 @@ export const templates: Template[] = [
   {
     id: "single",
     name: "Single Shot",
-    width: 1200,
-    height: 1800,
-    branding: "Motion Booth",
+    layout: DEFAULT_LAYOUTS.find((layout) => layout.format === "portrait")!,
     slots: [{ x: 60, y: 60, w: 1080, h: 1500 }],
   },
 ];

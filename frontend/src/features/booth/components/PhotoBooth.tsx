@@ -63,7 +63,7 @@ function PhotoBooth({ template }: Props) {
             <div className="bg-secondary border-border flex min-h-[45dvh] w-full min-w-0 flex-1 items-center justify-center overflow-hidden rounded-md border-2 p-3 sm:min-h-[55dvh] sm:p-5 md:h-full md:max-h-[calc(100dvh-7rem)]">
               <div className="flex h-full w-full items-center justify-center">
                 <TemplateCanvas
-                  layout={template}
+                  template={template}
                   photos={photos}
                   mode="motion"
                   holdMs={HOLD_MS}

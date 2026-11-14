@@ -1,9 +1,9 @@
-import { Rnd } from "react-rnd";
-import type { Slot, Template } from "../types/template";
 import { useEffect, useRef, useState } from "react";
+import { Rnd } from "react-rnd";
+import type { Layout, Slot } from "../types/template";
 
 interface Props {
-  layout: Template;
+  layout: Layout;
   slots: Slot[];
   onSlotsChange: (slots: Slot[]) => void;
   selectedSlot: number | null;

@@ -44,7 +44,7 @@ function TemplateDetailsPage() {
       <Separator />
 
       <section className="bg-secondary flex h-125 items-center justify-center p-8">
-        <TemplateCanvas layout={template} />
+        <TemplateCanvas template={template} />
       </section>
     </div>
   );

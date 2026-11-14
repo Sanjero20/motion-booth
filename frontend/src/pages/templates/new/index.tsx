@@ -25,9 +25,8 @@ function CreateTemplatePage() {
     const { selectedLayout, slots, backgroundImage } = templateEditor;
 
     const template: CreateTemplateRequest = {
-      name: selectedLayout.name,
-      width: selectedLayout.width,
-      height: selectedLayout.height,
+      name: selectedLayout.format,
+      layout: selectedLayout,
       slots: slots,
       backgroundImage: backgroundImage,
     };
@@ -77,9 +76,17 @@ function CreateTemplatePage() {
         <CustomTemplateEditor {...templateEditor} />
       ) : (
         <CustomTemplateViewer
-          layout={templateEditor.selectedLayout}
-          slots={templateEditor.slots}
-          backgroundImage={templateEditor.backgroundImage}
+          template={{
+            id: "",
+            name: "",
+            layout: {
+              format: "strip",
+              width: 0,
+              height: 0,
+            },
+            slots: [],
+            backgroundImage: undefined,
+          }}
         />
       )}
     </div>

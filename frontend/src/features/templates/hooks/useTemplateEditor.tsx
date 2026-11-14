@@ -1,35 +1,30 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-import { DEFAULT_TEMPLATE_ID, templateFormats } from "@/data/templateFormat";
-import type { Slot } from "@/features/templates/types/template";
-
-type Format = "strip" | "portrait" | "landscape";
+import { DEFAULT_LAYOUTS, DEFAULT_LAYOUT } from "@/data/layout";
+import type {
+  Layout,
+  Slot,
+  Template,
+} from "@/features/templates/types/template";
 
 // Columns per photo count.
-const COLUMNS: Record<Format, Record<number, number>> = {
+const COLUMNS: Record<Layout["format"], Record<number, number>> = {
   strip: { 1: 1, 2: 1, 3: 1, 4: 1 },
   portrait: { 1: 1, 2: 1, 3: 2, 4: 2 },
   landscape: { 1: 1, 2: 2, 3: 2, 4: 2 },
 };
 
 // Space reserved for footer.
-const FOOTER: Record<Format, number> = {
+const FOOTER: Record<Layout["format"], number> = {
   strip: 0.12,
   portrait: 0.12,
   landscape: 0.08,
 };
 
-function getFormat(width: number, height: number): Format {
-  const ratio = height / width;
+function createSlots(layout: Layout, count: number): Slot[] {
+  const { width, height, format } = layout;
 
-  if (ratio >= 2) return "strip";
-
-  return ratio > 1 ? "portrait" : "landscape";
-}
-
-function createSlots(width: number, height: number, count: number): Slot[] {
   const n = Math.min(Math.max(Math.round(count), 1), 4);
-  const format = getFormat(width, height);
 
   const margin = Math.round(Math.min(width, height) * 0.06);
   const gap = Math.round(margin / 2);
@@ -65,42 +60,40 @@ function createSlots(width: number, height: number, count: number): Slot[] {
   });
 }
 
-function useTemplateEditor() {
-  const initialLayout =
-    templateFormats.find((template) => template.id === DEFAULT_TEMPLATE_ID) ??
-    templateFormats[0];
-
-  const [selectedTemplateId, setSelectedTemplateId] = useState(
-    initialLayout.id,
-  );
-
-  const selectedLayout =
-    templateFormats.find((template) => template.id === selectedTemplateId) ??
-    initialLayout;
+function useTemplateEditor(initialTemplate?: Template) {
+  const [selectedLayout, setSelectedLayout] = useState<Layout>(() => ({
+    ...(initialTemplate?.layout ?? DEFAULT_LAYOUT),
+  }));
 
   const [slots, setSlots] = useState<Slot[]>(() =>
-    createSlots(initialLayout.width, initialLayout.height, 3),
+    initialTemplate?.slots.length
+      ? initialTemplate.slots
+      : createSlots(initialTemplate?.layout ?? DEFAULT_LAYOUT, 3),
   );
 
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(
+    initialTemplate?.backgroundImage ?? null,
+  );
 
-  // Change print format.
-  const changeTemplate = (id: string) => {
-    const layout = templateFormats.find((template) => template.id === id);
+  const backgroundUrlRef = useRef<string | null>(null);
+
+  // Change layout.
+  const changeLayout = (format: Layout["format"]) => {
+    const layout = DEFAULT_LAYOUTS.find((item) => item.format === format);
 
     if (!layout) return;
 
-    setSelectedTemplateId(id);
+    setSelectedLayout(layout);
 
-    setSlots((prev) => createSlots(layout.width, layout.height, prev.length));
+    setSlots((prev) => createSlots(layout, prev.length));
   };
 
   // Change number of photo slots.
   const changeSlotCount = (count: number) => {
-    setSlots(createSlots(selectedLayout.width, selectedLayout.height, count));
+    setSlots(createSlots(selectedLayout, count));
   };
 
-  // Update all slots (used by TemplateEditor drag and resize).
+  // Update all slots.
   const updateSlots = (newSlots: Slot[]) => {
     setSlots(newSlots);
   };
@@ -119,27 +112,38 @@ function useTemplateEditor() {
 
   // Upload background.
   const uploadBackground = (file: File) => {
-    setBackgroundImage(URL.createObjectURL(file));
+    if (backgroundUrlRef.current) {
+      URL.revokeObjectURL(backgroundUrlRef.current);
+    }
+
+    const url = URL.createObjectURL(file);
+
+    backgroundUrlRef.current = url;
+    setBackgroundImage(url);
   };
 
   // Remove background.
   const removeBackground = () => {
+    if (backgroundUrlRef.current) {
+      URL.revokeObjectURL(backgroundUrlRef.current);
+      backgroundUrlRef.current = null;
+    }
+
     setBackgroundImage(null);
   };
 
-  // Clean up object URLs when replaced or unmounted.
+  // Clean up object URLs on unmount.
   useEffect(() => {
     return () => {
-      if (backgroundImage) {
-        URL.revokeObjectURL(backgroundImage);
+      if (backgroundUrlRef.current) {
+        URL.revokeObjectURL(backgroundUrlRef.current);
       }
     };
-  }, [backgroundImage]);
+  }, []);
 
   return {
-    selectedTemplateId,
     selectedLayout,
-    changeTemplate,
+    changeLayout,
 
     slots,
     setSlots: updateSlots,

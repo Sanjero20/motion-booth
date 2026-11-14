@@ -18,7 +18,6 @@ export type Template = {
   name: string;
   layout: Layout;
   slots: Slot[];
-  branding?: string;
   backgroundImage?: string | null;
 };
 

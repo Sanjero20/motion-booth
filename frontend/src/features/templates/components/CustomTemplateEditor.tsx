@@ -9,16 +9,15 @@ import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import TemplateEditor from "@/features/templates/components/TemplateEditor";
 
 import type useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
-import { templateFormats } from "@/data/templateFormat";
+import { DEFAULT_LAYOUTS } from "@/data/layout";
 
 type Mode = "edit" | "preview";
 
 type Props = ReturnType<typeof useTemplateEditor>;
 
 function CustomTemplateEditor({
-  selectedTemplateId,
   selectedLayout,
-  changeTemplate,
+  changeLayout,
   slots,
   setSlots,
   changeSlotCount,
@@ -30,10 +29,10 @@ function CustomTemplateEditor({
   const [mode, setMode] = useState<Mode>("edit");
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
 
-  const handleTemplateChange = (value: string[]) => {
+  const handleLayoutChange = (value: string[]) => {
     if (!value.length) return;
 
-    changeTemplate(value[0]);
+    changeLayout(value[0] as typeof selectedLayout.format);
     setSelectedSlot(null);
   };
 
@@ -76,7 +75,7 @@ function CustomTemplateEditor({
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
         {/* Canvas */}
-        <div className="bg-secondary relative flex h-150 items-center justify-center rounded-xl border p-16 lg:col-span-3">
+        <div className="bg-secondary relative flex h-150 items-center justify-center overflow-hidden rounded-xl border p-16 lg:col-span-3">
           <div className="absolute top-2 left-2">
             <Tabs
               value={mode}
@@ -100,7 +99,17 @@ function CustomTemplateEditor({
             />
           ) : (
             <TemplateCanvas
-              layout={{ ...selectedLayout, slots, backgroundImage }}
+              template={{
+                id: "",
+                name: "",
+                layout: {
+                  format: "strip",
+                  width: 0,
+                  height: 0,
+                },
+                slots: [],
+                backgroundImage: undefined,
+              }}
             />
           )}
         </div>
@@ -123,16 +132,17 @@ function CustomTemplateEditor({
                 <p className="text-sm font-medium">Print Format</p>
 
                 <ToggleGroup
-                  value={[selectedTemplateId]}
-                  onValueChange={handleTemplateChange}
+                  value={[selectedLayout.format]}
+                  onValueChange={handleLayoutChange}
                 >
-                  {templateFormats.map((template) => (
+                  {DEFAULT_LAYOUTS.map((layout) => (
                     <ToggleGroupItem
                       variant="outline"
-                      key={template.id}
-                      value={template.id}
+                      key={layout.format}
+                      value={layout.format}
                     >
-                      {template.name}
+                      {layout.format.charAt(0).toUpperCase() +
+                        layout.format.slice(1)}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>

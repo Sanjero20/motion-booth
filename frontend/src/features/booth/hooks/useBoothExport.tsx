@@ -39,9 +39,11 @@ export default function useBoothExport(
     try {
       setExportError(null);
 
+      const { layout } = selectedTemplate;
+
       const canvas = document.createElement("canvas");
-      canvas.width = selectedTemplate.width;
-      canvas.height = selectedTemplate.height;
+      canvas.width = layout.width;
+      canvas.height = layout.height;
 
       const ctx = canvas.getContext("2d");
 

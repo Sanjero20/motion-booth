@@ -10,7 +10,7 @@ import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
 
 interface Props {
-  layout: Template;
+  template: Template;
   photos?: Photo[];
   className?: string;
   mode?: "photo" | "motion";
@@ -20,7 +20,7 @@ interface Props {
 }
 
 function TemplateCanvas({
-  layout,
+  template,
   photos = [],
   className,
   mode = "photo",
@@ -65,22 +65,22 @@ function TemplateCanvas({
       onCanvasReady?.(canvas);
 
       void Promise.all([
-        loadBackgroundImage(layout.backgroundImage),
-        Promise.all(photos.slice(0, layout.slots.length).map(loadPhotoImage)),
+        loadBackgroundImage(template.backgroundImage),
+        Promise.all(photos.slice(0, template.slots.length).map(loadPhotoImage)),
       ]).then(([background, images]) => {
         if (cancelled) return;
 
-        drawTemplate(ctx, layout, images, background);
+        drawTemplate(ctx, template, images, background);
       });
 
       return cleanup;
     }
 
     async function setupMotionPreview() {
-      const clips = photos.slice(0, layout.slots.length);
+      const clips = photos.slice(0, template.slots.length);
 
       // Load background and still photos.
-      const background = await loadBackgroundImage(layout.backgroundImage);
+      const background = await loadBackgroundImage(template.backgroundImage);
 
       if (cancelled) return;
 
@@ -89,7 +89,7 @@ function TemplateCanvas({
       if (cancelled) return;
 
       // Display the initial still-photo frame.
-      drawTemplate(ctx!, layout, stills, background);
+      drawTemplate(ctx!, template, stills, background);
 
       const readyVideos = await Promise.all(
         clips.map(async (photo, index): Promise<HTMLVideoElement | null> => {
@@ -172,7 +172,7 @@ function TemplateCanvas({
         const now = performance.now();
 
         // Update clip completion times before drawing the shared frame.
-        layout.slots.forEach((_, index) => {
+        template.slots.forEach((_, index) => {
           if (finishedAt[index] !== null) return;
 
           const photo = clips[index];
@@ -194,7 +194,7 @@ function TemplateCanvas({
         // Render the background before rendering the motion frame.
         const { allDone, lastFinish } = renderFrame({
           ctx: ctx!,
-          layout,
+          template,
           stills,
           videos,
           finishedAt,
@@ -216,18 +216,18 @@ function TemplateCanvas({
     void setupMotionPreview();
 
     return cleanup;
-  }, [layout, photos, mode, holdMs, flashMs, onCanvasReady]);
+  }, [template, photos, mode, holdMs, flashMs, onCanvasReady]);
 
   return (
     <canvas
       ref={canvasRef}
-      width={layout.width}
-      height={layout.height}
+      width={template.layout.width}
+      height={template.layout.height}
       role="img"
-      aria-label={`${layout.name} template preview`}
+      aria-label={`${template.name ?? "Template"} template preview`}
       className={`block h-auto max-h-full w-auto max-w-full object-contain ${className ?? ""}`}
       style={{
-        aspectRatio: `${layout.width} / ${layout.height}`,
+        aspectRatio: `${template.layout.width} / ${template.layout.height}`,
       }}
     />
   );

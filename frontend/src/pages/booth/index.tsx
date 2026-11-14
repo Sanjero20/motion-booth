@@ -89,7 +89,7 @@ function BoothPage() {
                   className="flex h-full w-full items-center justify-center"
                 >
                   <TemplateCanvas
-                    layout={selectedTemplate}
+                    template={selectedTemplate}
                     photos={photos}
                     mode="motion"
                     holdMs={HOLD_MS}

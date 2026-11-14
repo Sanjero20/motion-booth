@@ -105,25 +105,25 @@ function DashboardPage() {
         <div className="grid grid-cols-4 gap-4">
           <Card className="aspect-4/3 w-full">
             <div className="flex h-full w-full justify-center">
-              <TemplateCanvas layout={templates[0]} className="border" />
+              <TemplateCanvas template={templates[0]} className="border" />
             </div>
           </Card>
 
           <Card className="aspect-4/3 w-full">
             <div className="flex h-full w-full justify-center">
-              <TemplateCanvas layout={templates[1]} className="border" />
+              <TemplateCanvas template={templates[1]} className="border" />
             </div>
           </Card>
 
           <Card className="aspect-4/3 w-full">
             <div className="flex h-full w-full justify-center">
-              <TemplateCanvas layout={templates[2]} className="border" />
+              <TemplateCanvas template={templates[2]} className="border" />
             </div>
           </Card>
 
           <Card className="aspect-4/3 w-full">
             <div className="flex h-full w-full justify-center">
-              <TemplateCanvas layout={templates[1]} className="border" />
+              <TemplateCanvas template={templates[1]} className="border" />
             </div>
           </Card>
         </div>

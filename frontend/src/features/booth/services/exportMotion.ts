@@ -38,7 +38,7 @@ export interface ExportedVideo {
 }
 
 export async function exportMotionVideo(
-  layout: Template,
+  template: Template,
   photos: Photo[],
   { holdMs = 3000, flashMs = 300, fps = 30, onProgress }: Options = {},
 ): Promise<ExportedVideo> {
@@ -48,11 +48,11 @@ export async function exportMotionVideo(
     throw new Error("Video export is not supported by this browser.");
   }
 
-  const clips = photos.slice(0, layout.slots.length);
+  const clips = photos.slice(0, template.slots.length);
 
   const canvas = document.createElement("canvas");
-  canvas.width = layout.width;
-  canvas.height = layout.height;
+  canvas.width = template.layout.width;
+  canvas.height = template.layout.height;
 
   const ctx = canvas.getContext("2d");
 
@@ -79,7 +79,7 @@ export async function exportMotionVideo(
 
   try {
     const [background, loadedVideos, stills] = await Promise.all([
-      loadBackgroundImage(layout.backgroundImage),
+      loadBackgroundImage(template.backgroundImage),
 
       Promise.all(
         clips.map(async (photo) => {
@@ -173,7 +173,7 @@ export async function exportMotionVideo(
 
         const { allDone, lastFinish } = renderFrame({
           ctx,
-          layout,
+          template,
           stills,
           videos,
           finishedAt,

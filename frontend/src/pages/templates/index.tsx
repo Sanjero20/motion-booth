@@ -35,7 +35,7 @@ function TemplatesPage() {
               onClick={() => navigate(`/templates/${template.id}`)}
             >
               <CardContent className="flex min-h-0 flex-1 justify-center">
-                <TemplateCanvas layout={template} className="border" />
+                <TemplateCanvas template={template} className="border" />
               </CardContent>
 
               <CardFooter className="flex justify-between pt-0">

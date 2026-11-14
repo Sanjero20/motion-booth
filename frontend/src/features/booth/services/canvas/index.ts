@@ -53,11 +53,12 @@ export function loadBackgroundImage(
 
 export function drawTemplate(
   ctx: CanvasRenderingContext2D,
-  layout: Template,
+  template: Template,
   photos: (HTMLImageElement | null)[] = [],
   background?: HTMLImageElement | null,
 ) {
-  const { width, height, slots, branding } = layout;
+  const { layout, slots } = template;
+  const { width, height } = layout;
 
   ctx.clearRect(0, 0, width, height);
 
@@ -83,15 +84,6 @@ export function drawTemplate(
       drawImageCover(ctx, image, x, y, w, h);
     }
   });
-
-  // Branding
-  if (branding) {
-    ctx.fillStyle = "#191916";
-    ctx.font = `500 ${width * 0.035}px "Fraunces", serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(branding.toUpperCase(), width / 2, height * 0.95);
-  }
 }
 
 export function loadPhotoImage(photo: Photo): Promise<HTMLImageElement | null> {

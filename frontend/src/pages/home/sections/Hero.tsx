@@ -85,7 +85,7 @@ function Hero() {
                 className="flex h-full items-center justify-center"
               >
                 <TemplateCanvas
-                  layout={selectedTemplate}
+                  template={selectedTemplate}
                   className="max-h-full max-w-full shadow-lg"
                 />
               </motion.div>
