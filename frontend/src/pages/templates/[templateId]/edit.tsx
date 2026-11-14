@@ -12,6 +12,7 @@ import { useDeleteTemplate } from "@/features/templates/hooks/useDeleteTemplate"
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 import type { TemplateFormMode } from "@/features/templates/types/form-mode";
+import { useUpdateTemplate } from "@/features/templates/hooks/useUpdateTemplate";
 
 function EditTemplatePage() {
   const [mode, setMode] = useState<TemplateFormMode>("edit");
@@ -19,9 +20,31 @@ function EditTemplatePage() {
   const navigate = useNavigate();
 
   const { data: template, isLoading } = useTemplate(templateId!);
+  const updateMutation = useUpdateTemplate();
   const deleteMutation = useDeleteTemplate();
 
   const templateEditor = useTemplateEditor(template);
+
+  const handleSubmit = () => {
+    if (!template) return;
+
+    updateMutation.mutate(
+      {
+        id: template.id,
+        data: {
+          name: templateEditor.selectedLayout.format,
+          layout: templateEditor.selectedLayout,
+          slots: templateEditor.slots,
+          backgroundImage: templateEditor.backgroundImage,
+        },
+      },
+      {
+        onSuccess: () => {
+          navigate(`/templates/${templateId}`);
+        },
+      },
+    );
+  };
 
   const handleDelete = () => {
     if (!templateId) return;
@@ -44,7 +67,7 @@ function EditTemplatePage() {
         isSubmitting={false}
         onCancel={() => navigate(`/templates/${template.id}`)}
         onChangeMode={setMode}
-        onSubmit={() => {}}
+        onSubmit={handleSubmit}
       />
 
       <Separator />

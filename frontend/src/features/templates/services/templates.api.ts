@@ -22,8 +22,8 @@ export const templatesApi = {
     return data;
   },
 
-  post: async (id: string, request: UpdateTemplateRequest): Promise<void> => {
-    const { data } = await api.post(`/templates/${id}`, request);
+  update: async (id: string, request: UpdateTemplateRequest): Promise<void> => {
+    const { data } = await api.put(`/templates/${id}`, request);
     return data;
   },
 
