@@ -25,7 +25,7 @@ export function useUpdateEvent() {
 
       toast.add({
         type: "success",
-        description: "Event created successfully!",
+        description: "Event updated successfully!",
       });
     },
 
