@@ -1,3 +1,11 @@
+export type Format = "strip" | "portrait" | "landscape";
+
+export type Layout = {
+  format: Format;
+  width: number;
+  height: number;
+};
+
 export type Slot = {
   x: number;
   y: number;
@@ -8,8 +16,7 @@ export type Slot = {
 export type Template = {
   id: string;
   name: string;
-  width: number;
-  height: number;
+  layout: Layout;
   slots: Slot[];
   branding?: string;
   backgroundImage?: string | null;
@@ -18,16 +25,14 @@ export type Template = {
 // DTOs
 export type CreateTemplateRequest = {
   name: string;
-  width: number;
-  height: number;
+  layout: Layout;
   slots: Slot[];
   backgroundImage: string | null;
 };
 
 export type UpdateTemplateRequest = {
   name: string;
-  width: number;
-  height: number;
+  layout: Layout;
   slots: Slot[];
   backgroundImage: string | null;
 };

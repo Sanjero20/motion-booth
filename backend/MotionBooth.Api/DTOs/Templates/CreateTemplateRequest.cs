@@ -11,11 +11,7 @@ public class CreateTemplateRequest : ITemplateRequest
     [NotWhitespace]
     public string Name { get; set; } = string.Empty;
 
-    [Range(1, 10000)]
-    public int Width { get; set; }
-
-    [Range(1, 10000)]
-    public int Height { get; set; }
+    public Layout Layout { get; set; } = new();
 
     [Required]
     [MinLength(1)]

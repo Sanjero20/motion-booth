@@ -54,8 +54,9 @@ namespace MotionBooth.Api.Migrations
                     b.Property<string>("BackgroundImage")
                         .HasColumnType("text");
 
-                    b.Property<int>("Height")
-                        .HasColumnType("integer");
+                    b.Property<Layout>("Layout")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -64,9 +65,6 @@ namespace MotionBooth.Api.Migrations
                     b.Property<List<Slot>>("Slots")
                         .IsRequired()
                         .HasColumnType("jsonb");
-
-                    b.Property<int>("Width")
-                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
