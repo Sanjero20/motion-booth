@@ -102,13 +102,9 @@ function CustomTemplateEditor({
               template={{
                 id: "",
                 name: "",
-                layout: {
-                  format: "strip",
-                  width: 0,
-                  height: 0,
-                },
-                slots: [],
-                backgroundImage: undefined,
+                layout: selectedLayout,
+                slots: slots,
+                backgroundImage: backgroundImage,
               }}
             />
           )}
