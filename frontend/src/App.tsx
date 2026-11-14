@@ -23,6 +23,7 @@ import EditEventPage from "./pages/events/[eventId]/edit";
 import TemplatesPage from "./pages/templates";
 import CreateTemplatePage from "./pages/templates/new";
 import TemplateDetailsPage from "./pages/templates/[templateId]";
+import EditTemplatePage from "./pages/templates/[templateId]/edit";
 
 import NotFoundPage from "./pages/not-found";
 
@@ -56,6 +57,10 @@ function App() {
           <Route
             path="/templates/:templateId"
             element={<TemplateDetailsPage />}
+          />
+          <Route
+            path="/templates/:templateId/edit"
+            element={<EditTemplatePage />}
           />
         </Route>
 

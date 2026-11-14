@@ -3,10 +3,13 @@ import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { templates } from "@/data/templates";
-import { Link } from "react-router";
+import { useTemplates } from "@/features/templates/hooks/useTemplates";
+import { Link, useNavigate } from "react-router";
 
 function TemplatesPage() {
+  const navigate = useNavigate();
+  const { data: templates } = useTemplates();
+
   return (
     <div className="space-y-4">
       <section className="flex items-end justify-between">
@@ -23,23 +26,26 @@ function TemplatesPage() {
 
       <Separator />
 
-      <h3 className="text-base font-semibold">Built-in Templates</h3>
-
       <section className="grid grid-cols-3 gap-4">
-        {templates.map((template) => (
-          <Card key={template.id} className="flex aspect-4/3 w-full flex-col">
-            <CardContent className="flex min-h-0 flex-1 justify-center">
-              <TemplateCanvas layout={template} className="border" />
-            </CardContent>
+        {templates &&
+          templates.map((template) => (
+            <Card
+              key={template.id}
+              className="flex aspect-4/3 w-full flex-col"
+              onClick={() => navigate(`/templates/${template.id}`)}
+            >
+              <CardContent className="flex min-h-0 flex-1 justify-center">
+                <TemplateCanvas layout={template} className="border" />
+              </CardContent>
 
-            <CardFooter className="flex justify-between pt-0">
-              <p className="font-semibold">{template.name}</p>
-              <p className="text-muted-foreground text-xs">
-                {template.slots.length} photos
-              </p>
-            </CardFooter>
-          </Card>
-        ))}
+              <CardFooter className="flex justify-between pt-0">
+                <p className="font-semibold">{template.name}</p>
+                <p className="text-muted-foreground text-xs">
+                  {template.slots.length} photos
+                </p>
+              </CardFooter>
+            </Card>
+          ))}
       </section>
     </div>
   );

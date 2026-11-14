@@ -25,8 +25,7 @@ public class TemplatesController : ControllerBase
             {
                 Id = t.Id,
                 Name = t.Name,
-                Width = t.Width,
-                Height = t.Height,
+                Layout = t.Layout,
                 Slots = t.Slots,
                 BackgroundImage = t.BackgroundImage
             })
@@ -52,8 +51,7 @@ public class TemplatesController : ControllerBase
         {
             Id = template.Id,
             Name = template.Name,
-            Width = template.Width,
-            Height = template.Height,
+            Layout = template.Layout,
             Slots = template.Slots,
             BackgroundImage = template.BackgroundImage
         };
@@ -68,8 +66,7 @@ public class TemplatesController : ControllerBase
         var template = new Template
         {
             Name = request.Name,
-            Width = request.Width,
-            Height = request.Height,
+            Layout = request.Layout,
             Slots = request.Slots,
             BackgroundImage = request.BackgroundImage
         };
@@ -81,8 +78,7 @@ public class TemplatesController : ControllerBase
         {
             Id = template.Id,
             Name = template.Name,
-            Width = template.Width,
-            Height = template.Height,
+            Layout = template.Layout,
             Slots = template.Slots,
             BackgroundImage = template.BackgroundImage
         };
@@ -108,8 +104,7 @@ public class TemplatesController : ControllerBase
         }
 
         template.Name = request.Name;
-        template.Width = request.Width;
-        template.Height = request.Height;
+        template.Layout = request.Layout;
         template.Slots = request.Slots;
         template.BackgroundImage = request.BackgroundImage;
 

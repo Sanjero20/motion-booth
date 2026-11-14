@@ -1,8 +1,8 @@
-import type { Slot, TemplateLayout } from "../types/template";
+import type { Slot, Template } from "../types/template";
 import PhotoBooth from "@/features/booth/components/PhotoBooth";
 
 interface Props {
-  layout: TemplateLayout;
+  layout: Template;
   slots: Slot[];
   backgroundImage: string | null;
 }

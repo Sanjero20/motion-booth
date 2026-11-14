@@ -5,8 +5,8 @@ namespace MotionBooth.Api.DTOs.Templates;
 
 public interface ITemplateRequest
 {
-    int Width { get; set; }
-    int Height { get; set; }
+    string Name { get; set; }
+    Layout Layout { get; set; }
     List<Slot> Slots { get; set; }
-
+    string? BackgroundImage { get; set; }
 }

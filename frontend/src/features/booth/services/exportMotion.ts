@@ -1,5 +1,5 @@
 import type { Photo } from "@/features/booth/types/photo";
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 
 import {
   loadBackgroundImage,
@@ -38,7 +38,7 @@ export interface ExportedVideo {
 }
 
 export async function exportMotionVideo(
-  layout: TemplateLayout,
+  layout: Template,
   photos: Photo[],
   { holdMs = 3000, flashMs = 300, fps = 30, onProgress }: Options = {},
 ): Promise<ExportedVideo> {

@@ -4,6 +4,8 @@ import { useCreateEvent } from "@/features/events/hooks/useCreateEvent";
 
 import EventFormHeader from "@/features/events/components/EventFormHeader";
 import EventForm from "@/features/events/components/EventForm";
+import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
+import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 function CreateEventPage() {
   const navigate = useNavigate();
@@ -11,6 +13,8 @@ function CreateEventPage() {
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
+
+  const templateEditor = useTemplateEditor();
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,6 +48,8 @@ function CreateEventPage() {
         onEventDateChange={setEventDate}
         onSubmit={handleSubmit}
       />
+
+      <CustomTemplateEditor {...templateEditor} />
     </div>
   );
 }

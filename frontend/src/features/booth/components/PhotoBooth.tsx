@@ -10,11 +10,11 @@ import useCamera from "../hooks/useCamera";
 import usePhotoCapture from "../hooks/usePhotoCapture";
 import useMotionRecording from "../hooks/useMotionRecording";
 
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 import { AnimatePresence, motion } from "motion/react";
 
 interface Props {
-  template: TemplateLayout;
+  template: Template;
 }
 
 const COUNTDOWN_SECONDS = 5;

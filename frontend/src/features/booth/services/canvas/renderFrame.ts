@@ -1,9 +1,9 @@
-import type { TemplateLayout } from "@/features/templates/types/template";
+import type { Template } from "@/features/templates/types/template";
 import { drawImageCover, drawTemplate } from "@/features/booth/services/canvas";
 
 interface RenderFrameOptions {
   ctx: CanvasRenderingContext2D;
-  layout: TemplateLayout;
+  layout: Template;
   stills: (HTMLImageElement | null)[];
   videos: (HTMLVideoElement | null)[];
   finishedAt: (number | null)[];

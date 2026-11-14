@@ -19,8 +19,13 @@ public class MotionBoothDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Template>()
-            .Property(t => t.Slots)
-            .HasColumnType("jsonb");
+        modelBuilder.Entity<Template>(entity =>
+        {
+            entity.Property(e => e.Layout)
+                .HasColumnType("jsonb");
+
+            entity.Property(e => e.Slots)
+                .HasColumnType("jsonb");
+        });
     }
 }

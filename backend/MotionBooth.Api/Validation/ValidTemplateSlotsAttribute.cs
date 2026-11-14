@@ -22,8 +22,8 @@ public class ValidTemplateSlotsAttribute : ValidationAttribute
                 return new ValidationResult("Slot width and height must be greater than zero.");
             }
 
-            if (slot.X + slot.W > request.Width ||
-                slot.Y + slot.H > request.Height)
+            if (slot.X + slot.W > request.Layout.Width ||
+                slot.Y + slot.H > request.Layout.Height)
             {
                 return new ValidationResult("Slot must fit within the template dimensions.");
             }
