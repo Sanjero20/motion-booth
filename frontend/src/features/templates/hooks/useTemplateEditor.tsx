@@ -76,6 +76,19 @@ function useTemplateEditor(initialTemplate?: Template) {
   );
 
   const backgroundUrlRef = useRef<string | null>(null);
+  const initializedTemplateId = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!initialTemplate) return;
+
+    if (initializedTemplateId.current === initialTemplate.id) return;
+
+    initializedTemplateId.current = initialTemplate.id;
+
+    setSelectedLayout({ ...initialTemplate.layout });
+    setSlots(initialTemplate.slots);
+    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+  }, [initialTemplate]);
 
   // Change layout.
   const changeLayout = (format: Layout["format"]) => {
