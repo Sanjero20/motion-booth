@@ -31,8 +31,6 @@ function CreateTemplatePage() {
       backgroundImage: backgroundImage,
     };
 
-    console.log("submit", template);
-
     mutation.mutate(template, {
       onSuccess: () => {
         navigate("/templates");
@@ -77,15 +75,11 @@ function CreateTemplatePage() {
       ) : (
         <CustomTemplateViewer
           template={{
-            id: "",
-            name: "",
-            layout: {
-              format: "strip",
-              width: 0,
-              height: 0,
-            },
-            slots: [],
-            backgroundImage: undefined,
+            id: templateEditor.selectedLayout.format,
+            name: templateEditor.selectedLayout.format,
+            layout: templateEditor.selectedLayout,
+            slots: templateEditor.slots,
+            backgroundImage: templateEditor.backgroundImage,
           }}
         />
       )}
