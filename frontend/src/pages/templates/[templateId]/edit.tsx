@@ -1,18 +1,27 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Separator } from "@/components/ui/separator";
 
-import PageHeading from "@/components/shared/PageHeading";
+import TemplateFormHeader from "@/features/templates/components/TemplateFormHeader";
+import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
+import CustomTemplateViewer from "@/features/templates/components/CustomTemplateViewer";
 import DangerZone from "@/components/shared/DangerZone";
 
 import { useTemplate } from "@/features/templates/hooks/useTemplate";
 import { useDeleteTemplate } from "@/features/templates/hooks/useDeleteTemplate";
+import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
+
+import type { TemplateFormMode } from "@/features/templates/types/form-mode";
 
 function EditTemplatePage() {
+  const [mode, setMode] = useState<TemplateFormMode>("edit");
   const { templateId } = useParams();
   const navigate = useNavigate();
 
   const { data: template, isLoading } = useTemplate(templateId!);
   const deleteMutation = useDeleteTemplate();
+
+  const templateEditor = useTemplateEditor(template);
 
   const handleDelete = () => {
     if (!templateId) return;
@@ -29,22 +38,41 @@ function EditTemplatePage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <PageHeading
-          eyebrow="Template Settings"
-          title="Edit Template"
-          description="Design your photo layout and customize how your event photos are displayed."
-        />
-      </div>
+      <TemplateFormHeader
+        mode={mode}
+        isEditing={true}
+        isSubmitting={false}
+        onCancel={() => navigate(`/templates/${template.id}`)}
+        onChangeMode={setMode}
+        onSubmit={() => {}}
+      />
 
       <Separator />
 
-      <DangerZone
-        resourceName="template"
-        description="Permanently delete this template. This action cannot be undone."
-        isDeleting={deleteMutation.isPending}
-        onConfirm={handleDelete}
-      />
+      {mode === "edit" ? (
+        <>
+          <CustomTemplateEditor {...templateEditor} />
+
+          <Separator />
+
+          <DangerZone
+            resourceName="template"
+            description="Permanently delete this template. This action cannot be undone."
+            isDeleting={deleteMutation.isPending}
+            onConfirm={handleDelete}
+          />
+        </>
+      ) : (
+        <CustomTemplateViewer
+          template={{
+            id: "",
+            name: "Untitled Template",
+            layout: templateEditor.selectedLayout,
+            slots: templateEditor.slots,
+            backgroundImage: templateEditor.backgroundImage,
+          }}
+        />
+      )}
     </div>
   );
 }
