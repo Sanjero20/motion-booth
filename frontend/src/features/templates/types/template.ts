@@ -21,6 +21,12 @@ export type Template = {
   backgroundImage?: string | null;
 };
 
+export type EventTemplate = {
+  layout: Layout;
+  slots: Slot[];
+  backgroundImage?: string | null;
+};
+
 // DTOs
 export type CreateTemplateRequest = {
   name: string;

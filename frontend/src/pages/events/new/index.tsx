@@ -6,6 +6,7 @@ import EventFormHeader from "@/features/events/components/EventFormHeader";
 import EventForm from "@/features/events/components/EventForm";
 import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
+import type { EventTemplate } from "@/features/templates/types/template";
 
 function CreateEventPage() {
   const navigate = useNavigate();
@@ -19,9 +20,15 @@ function CreateEventPage() {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    const template: EventTemplate = {
+      layout: templateEditor.selectedLayout,
+      slots: templateEditor.slots,
+    };
+
     mutation.mutate(
       {
         name: name.trim(),
+        template,
         eventDate,
       },
       {
