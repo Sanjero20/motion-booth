@@ -28,6 +28,7 @@ public class EventsController : ControllerBase
             {
                 Id = e.Id,
                 Name = e.Name,
+                Template = e.Template,
                 EventDate = e.EventDate,
                 CreatedAt = e.CreatedAt
             })
@@ -47,6 +48,7 @@ public class EventsController : ControllerBase
             {
                 Id = e.Id,
                 Name = e.Name,
+                Template = e.Template,
                 EventDate = e.EventDate,
                 CreatedAt = e.CreatedAt
             })
@@ -67,6 +69,7 @@ public class EventsController : ControllerBase
         var newEvent = new Event
         {
             Name = request.Name,
+            Template = request.Template!,
             EventDate = request.EventDate!.Value,
             CreatedAt = DateTime.UtcNow,
         };
@@ -78,6 +81,7 @@ public class EventsController : ControllerBase
         {
             Id = newEvent.Id,
             Name = newEvent.Name,
+            Template = newEvent.Template,
             EventDate = newEvent.EventDate,
             CreatedAt = newEvent.CreatedAt
         };
@@ -103,6 +107,7 @@ public class EventsController : ControllerBase
         }
 
         eventItem.Name = request.Name;
+        eventItem.Template = request.Template!;
         eventItem.EventDate = request.EventDate!.Value;
 
         await _dbContext.SaveChangesAsync();
