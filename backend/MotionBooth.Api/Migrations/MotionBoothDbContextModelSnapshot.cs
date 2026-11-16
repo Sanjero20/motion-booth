@@ -70,6 +70,77 @@ namespace MotionBooth.Api.Migrations
 
                     b.ToTable("Templates");
                 });
+
+            modelBuilder.Entity("MotionBooth.Api.Models.Event", b =>
+                {
+                    b.OwnsOne("MotionBooth.Api.Models.EventTemplate", "Template", b1 =>
+                        {
+                            b1.Property<Guid>("EventId");
+
+                            b1.Property<string>("BackgroundImage");
+
+                            b1.HasKey("EventId");
+
+                            b1.ToTable("Events");
+
+                            b1
+                                .ToJson("Template")
+                                .HasColumnType("jsonb");
+
+                            b1.WithOwner()
+                                .HasForeignKey("EventId");
+
+                            b1.OwnsOne("MotionBooth.Api.Models.Layout", "Layout", b2 =>
+                                {
+                                    b2.Property<Guid>("EventTemplateEventId");
+
+                                    b2.Property<string>("Format")
+                                        .IsRequired();
+
+                                    b2.Property<int>("Height");
+
+                                    b2.Property<int>("Width");
+
+                                    b2.HasKey("EventTemplateEventId");
+
+                                    b2.ToTable("Events");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("EventTemplateEventId");
+                                });
+
+                            b1.OwnsMany("MotionBooth.Api.Models.Slot", "Slots", b2 =>
+                                {
+                                    b2.Property<Guid>("EventTemplateEventId");
+
+                                    b2.Property<int>("__synthesizedOrdinal")
+                                        .ValueGeneratedOnAdd();
+
+                                    b2.Property<double>("H");
+
+                                    b2.Property<double>("W");
+
+                                    b2.Property<double>("X");
+
+                                    b2.Property<double>("Y");
+
+                                    b2.HasKey("EventTemplateEventId", "__synthesizedOrdinal");
+
+                                    b2.ToTable("Events");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("EventTemplateEventId");
+                                });
+
+                            b1.Navigation("Layout")
+                                .IsRequired();
+
+                            b1.Navigation("Slots");
+                        });
+
+                    b.Navigation("Template")
+                        .IsRequired();
+                });
 #pragma warning restore 612, 618
         }
     }
