@@ -64,6 +64,8 @@ function useTemplateEditor(
   initialTemplate?: TemplateConfiguration,
   initialTemplateKey?: string,
 ) {
+  const [name, setName] = useState("");
+
   const [selectedLayout, setSelectedLayout] = useState<Layout>(() => ({
     ...(initialTemplate?.layout ?? DEFAULT_LAYOUT),
   }));
@@ -89,6 +91,7 @@ function useTemplateEditor(
 
     initializedTemplateId.current = initialTemplateKey ?? null;
 
+    setName(initialTemplate.name);
     setSelectedLayout({ ...initialTemplate.layout });
     setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
     setBackgroundImage(initialTemplate.backgroundImage ?? null);
@@ -159,6 +162,9 @@ function useTemplateEditor(
   }, []);
 
   return {
+    name,
+    setName,
+
     selectedLayout,
     changeLayout,
 

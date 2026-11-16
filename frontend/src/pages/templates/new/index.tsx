@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Separator } from "@/components/ui/separator";
 import { useCreateTemplate } from "@/features/templates/hooks/useCreateTemplate";
 
 import TemplateFormHeader from "@/features/templates/components/TemplateFormHeader";
@@ -11,6 +10,7 @@ import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 import type { CreateTemplateRequest } from "@/features/templates/types/template";
 import type { TemplateFormMode } from "@/features/templates/types/form-mode";
+import TemplateDetails from "@/features/templates/components/TemplateDetails";
 
 function CreateTemplatePage() {
   const navigate = useNavigate();
@@ -21,10 +21,10 @@ function CreateTemplatePage() {
   const templateEditor = useTemplateEditor();
 
   const handleSubmit = () => {
-    const { selectedLayout, slots, backgroundImage } = templateEditor;
+    const { name, selectedLayout, slots, backgroundImage } = templateEditor;
 
     const template: CreateTemplateRequest = {
-      name: selectedLayout.format,
+      name,
       layout: selectedLayout,
       slots: slots,
       backgroundImage: backgroundImage,
@@ -41,14 +41,17 @@ function CreateTemplatePage() {
     <div className="space-y-4">
       <TemplateFormHeader
         mode={mode}
-        isEditing={true}
+        isEditing={false}
         isSubmitting={false}
         onCancel={() => navigate(`/templates`)}
         onChangeMode={setMode}
         onSubmit={handleSubmit}
       />
 
-      <Separator />
+      <TemplateDetails
+        name={templateEditor.name}
+        setName={templateEditor.setName}
+      />
 
       {mode == "edit" ? (
         <CustomTemplateEditor {...templateEditor} />

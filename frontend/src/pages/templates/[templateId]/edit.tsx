@@ -13,6 +13,7 @@ import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 import type { TemplateFormMode } from "@/features/templates/types/form-mode";
 import { useUpdateTemplate } from "@/features/templates/hooks/useUpdateTemplate";
+import TemplateDetails from "@/features/templates/components/TemplateDetails";
 
 function EditTemplatePage() {
   const [mode, setMode] = useState<TemplateFormMode>("edit");
@@ -28,14 +29,16 @@ function EditTemplatePage() {
   const handleSubmit = () => {
     if (!template) return;
 
+    const { name, selectedLayout, slots, backgroundImage } = templateEditor;
+
     updateMutation.mutate(
       {
         id: template.id,
         data: {
-          name: templateEditor.selectedLayout.format,
-          layout: templateEditor.selectedLayout,
-          slots: templateEditor.slots,
-          backgroundImage: templateEditor.backgroundImage,
+          name,
+          layout: selectedLayout,
+          slots,
+          backgroundImage,
         },
       },
       {
@@ -70,7 +73,10 @@ function EditTemplatePage() {
         onSubmit={handleSubmit}
       />
 
-      <Separator />
+      <TemplateDetails
+        name={templateEditor.name}
+        setName={templateEditor.setName}
+      />
 
       {mode === "edit" ? (
         <>

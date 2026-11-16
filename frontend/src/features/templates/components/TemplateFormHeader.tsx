@@ -42,7 +42,7 @@ function TemplateFormHeader({
               ? "Saving..."
               : isEditing
                 ? "Save changes"
-                : "Create event"}
+                : "Create template"}
           </Button>
         </div>
       ) : (
