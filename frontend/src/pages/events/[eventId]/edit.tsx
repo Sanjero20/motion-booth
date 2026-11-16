@@ -15,6 +15,7 @@ import CustomTemplateEditor from "@/features/templates/components/CustomTemplate
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
 import DangerZone from "@/components/shared/DangerZone";
+import type { EventTemplate } from "@/features/templates/types/template";
 
 function EditEventPage() {
   const { eventId } = useParams();
@@ -24,7 +25,7 @@ function EditEventPage() {
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
 
-  const templateEditor = useTemplateEditor();
+  const templateEditor = useTemplateEditor(event?.template, event?.id);
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -41,11 +42,17 @@ function EditEventPage() {
 
     if (!eventId) return;
 
+    const template: EventTemplate = {
+      layout: templateEditor.selectedLayout,
+      slots: templateEditor.slots,
+    };
+
     updateMutation.mutate(
       {
         id: eventId,
         data: {
           name: name.trim(),
+          template,
           eventDate,
         },
       },

@@ -19,6 +19,16 @@ public class MotionBoothDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.Entity<Event>(entity =>
+        {
+            entity.OwnsOne(e => e.Template, template =>
+            {
+                template.ToJson();
+                template.OwnsOne(t => t.Layout);
+                template.OwnsMany(t => t.Slots);
+            });
+        });
+
         modelBuilder.Entity<Template>(entity =>
         {
             entity.Property(e => e.Layout)

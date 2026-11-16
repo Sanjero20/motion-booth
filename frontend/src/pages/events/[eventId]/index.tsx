@@ -1,4 +1,5 @@
 import PageHeading from "@/components/shared/PageHeading";
+import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +11,6 @@ import {
   MapPin,
   Images,
   Download,
-  LayoutTemplate,
   Clock,
 } from "lucide-react";
 import { Link, useParams } from "react-router";
@@ -64,13 +64,10 @@ function EventDetailsPage() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-4">
           {/* Template Canvas */}
-          <div className="bg-secondary flex min-h-125 items-center justify-center rounded-xl border lg:col-span-3">
-            <div className="space-y-2 text-center">
-              <LayoutTemplate className="text-muted-foreground mx-auto size-8" />
-              <p className="text-muted-foreground text-sm">
-                Template preview will appear here
-              </p>
-            </div>
+          <div className="bg-secondary flex h-125 items-center justify-center rounded-xl border p-8 lg:col-span-3">
+            <TemplateCanvas
+              template={{ id: event.id, name: event.name, ...event.template }}
+            />
           </div>
 
           {/* Event Information */}
