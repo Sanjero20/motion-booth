@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Camera } from "lucide-react";
 import { Link } from "react-router";
 
-import type { Event } from "@/features/events/types/event";
+import type { EventListItem } from "@/features/events/types/event";
 
 interface Props {
-  event: Event;
+  event: EventListItem;
 }
 
 function EventCard({ event }: Props) {

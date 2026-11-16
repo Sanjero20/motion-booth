@@ -12,24 +12,17 @@ import MetricCard from "@/components/shared/MetricCard";
 import PageHeading from "@/components/shared/PageHeading";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import EventCard from "@/features/events/components/EventCard";
-import type { Event } from "@/features/events/types/event";
-
-const upcomingEvents: Event[] = [
-  {
-    id: "event-1",
-    name: "Sarah & James Wedding",
-    eventDate: "2026-11-11",
-    createdAt: "2026-11-04",
-  },
-  {
-    id: "event-2",
-    name: "Alex's 18th Birthday",
-    eventDate: "2026-11-21",
-    createdAt: "2026-11-04",
-  },
-];
+import { useEvents } from "@/features/events/hooks/useEvents";
 
 function DashboardPage() {
+  const { data: events } = useEvents();
+
+  // Get the 3 upcoming events
+  const upcomingEvents =
+    events
+      ?.filter((e) => e.eventDate > new Date().toISOString().split("T")[0])
+      .slice(0, 3) ?? [];
+
   return (
     <div className="space-y-4">
       <PageHeading
@@ -82,7 +75,7 @@ function DashboardPage() {
 
         <Card>
           <CardContent className="space-y-4">
-            {upcomingEvents.map((event) => (
+            {upcomingEvents?.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </CardContent>

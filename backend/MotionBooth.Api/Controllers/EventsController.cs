@@ -19,16 +19,15 @@ public class EventsController : ControllerBase
 
     // GET: api/events
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvents()
+    public async Task<ActionResult<IEnumerable<EventListResponse>>> GetEvents()
     {
         var events = await _dbContext.Events
             .AsNoTracking()
             .OrderByDescending(e => e.CreatedAt)
-            .Select(e => new EventResponse
+            .Select(e => new EventListResponse
             {
                 Id = e.Id,
                 Name = e.Name,
-                Template = e.Template,
                 EventDate = e.EventDate,
                 CreatedAt = e.CreatedAt
             })

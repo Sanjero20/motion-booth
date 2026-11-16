@@ -4,11 +4,12 @@ import type {
   Event,
   CreateEventRequest,
   UpdateEventRequest,
+  EventListItem,
 } from "../types/event";
 
 export const eventsApi = {
-  getAll: async (): Promise<Event[]> => {
-    const { data } = await api.get<Event[]>("/events");
+  getAll: async (): Promise<EventListItem[]> => {
+    const { data } = await api.get<EventListItem[]>("/events");
     return data;
   },
 
