@@ -25,7 +25,7 @@ function EditEventPage() {
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
 
-  const templateEditor = useTemplateEditor();
+  const templateEditor = useTemplateEditor(event?.template, event?.id);
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");

@@ -4,7 +4,7 @@ import { DEFAULT_LAYOUTS, DEFAULT_LAYOUT } from "@/data/layout";
 import type {
   Layout,
   Slot,
-  Template,
+  TemplateConfiguration,
 } from "@/features/templates/types/template";
 
 // Columns per photo count.
@@ -60,7 +60,10 @@ function createSlots(layout: Layout, count: number): Slot[] {
   });
 }
 
-function useTemplateEditor(initialTemplate?: Template) {
+function useTemplateEditor(
+  initialTemplate?: TemplateConfiguration,
+  initialTemplateKey?: string,
+) {
   const [selectedLayout, setSelectedLayout] = useState<Layout>(() => ({
     ...(initialTemplate?.layout ?? DEFAULT_LAYOUT),
   }));
@@ -78,17 +81,18 @@ function useTemplateEditor(initialTemplate?: Template) {
   const backgroundUrlRef = useRef<string | null>(null);
   const initializedTemplateId = useRef<string | null>(null);
 
+  // Initialize or load a reusable template.
   useEffect(() => {
     if (!initialTemplate) return;
 
-    if (initializedTemplateId.current === initialTemplate.id) return;
+    if (initializedTemplateId.current === initialTemplateKey) return;
 
-    initializedTemplateId.current = initialTemplate.id;
+    initializedTemplateId.current = initialTemplateKey ?? null;
 
     setSelectedLayout({ ...initialTemplate.layout });
-    setSlots(initialTemplate.slots);
+    setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
     setBackgroundImage(initialTemplate.backgroundImage ?? null);
-  }, [initialTemplate]);
+  }, [initialTemplate, initialTemplateKey]);
 
   // Change layout.
   const changeLayout = (format: Layout["format"]) => {
