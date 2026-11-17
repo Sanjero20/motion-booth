@@ -7,11 +7,14 @@ import type {
   TemplateConfiguration,
 } from "@/features/templates/types/template";
 
+//
+export const MAX_PHOTO_SLOTS = 8;
+
 // Columns per photo count.
-const COLUMNS: Record<Layout["format"], Record<number, number>> = {
-  strip: { 1: 1, 2: 1, 3: 1, 4: 1 },
-  portrait: { 1: 1, 2: 1, 3: 2, 4: 2 },
-  landscape: { 1: 1, 2: 2, 3: 2, 4: 2 },
+const COLUMNS: Record<Layout["format"], (count: number) => number> = {
+  strip: () => 1,
+  portrait: (count) => (count <= 2 ? 1 : 2),
+  landscape: (count) => (count === 1 ? 1 : 2),
 };
 
 // Space reserved for footer.
@@ -24,12 +27,12 @@ const FOOTER: Record<Layout["format"], number> = {
 function createSlots(layout: Layout, count: number): Slot[] {
   const { width, height, format } = layout;
 
-  const n = Math.min(Math.max(Math.round(count), 1), 4);
+  const n = Math.min(Math.max(Math.round(count), 1), MAX_PHOTO_SLOTS);
 
   const margin = Math.round(Math.min(width, height) * 0.06);
   const gap = Math.round(margin / 2);
 
-  const columns = COLUMNS[format][n];
+  const columns = COLUMNS[format](n);
   const rows = Math.ceil(n / columns);
 
   const availableWidth = width - margin * 2;
@@ -73,7 +76,7 @@ function useTemplateEditor(
   const [slots, setSlots] = useState<Slot[]>(() =>
     initialTemplate?.slots.length
       ? initialTemplate.slots
-      : createSlots(initialTemplate?.layout ?? DEFAULT_LAYOUT, 3),
+      : createSlots(initialTemplate?.layout ?? DEFAULT_LAYOUT, 4),
   );
 
   const [backgroundImage, setBackgroundImage] = useState<string | null>(
@@ -108,9 +111,23 @@ function useTemplateEditor(
     setSlots((prev) => createSlots(layout, prev.length));
   };
 
-  // Change number of photo slots.
-  const changeSlotCount = (count: number) => {
-    setSlots(createSlots(selectedLayout, count));
+  // Add a slot.
+  const addSlot = () => {
+    setSlots((prev) => {
+      if (prev.length >= MAX_PHOTO_SLOTS) return prev;
+
+      const firstSlot = prev[0];
+      const offset = 20;
+
+      const newSlot: Slot = {
+        x: firstSlot.x,
+        y: Math.min(offset, selectedLayout.height - firstSlot.h),
+        w: firstSlot.w,
+        h: firstSlot.h,
+      };
+
+      return [...prev, newSlot];
+    });
   };
 
   // Update all slots.
@@ -127,7 +144,15 @@ function useTemplateEditor(
 
   // Delete a slot.
   const removeSlot = (index: number) => {
-    setSlots((prev) => prev.filter((_, i) => i !== index));
+    setSlots((prev) => {
+      if (prev.length <= 1) return prev;
+
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const autoArrangeSlots = () => {
+    setSlots((prev) => createSlots(selectedLayout, prev.length));
   };
 
   // Upload background.
@@ -170,9 +195,10 @@ function useTemplateEditor(
 
     slots,
     setSlots: updateSlots,
-    changeSlotCount,
+    addSlot,
     updateSlot,
     removeSlot,
+    autoArrangeSlots,
 
     backgroundImage,
     uploadBackground,
