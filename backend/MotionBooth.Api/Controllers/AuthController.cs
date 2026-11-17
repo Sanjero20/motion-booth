@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MotionBooth.Api.DTOs.Auth;
@@ -70,6 +71,7 @@ public class AuthController : ControllerBase
         };
     }
 
+    [Authorize]
     [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
@@ -80,6 +82,7 @@ public class AuthController : ControllerBase
         });
     }
 
+    [Authorize]
     [HttpGet("me")]
     public async Task<ActionResult<AuthResponse>> GetCurrentUser()
     {

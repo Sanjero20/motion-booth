@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.DTOs.Events;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MotionBooth.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/events")]
 public class EventsController : ControllerBase

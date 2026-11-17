@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.DTOs.Templates;
 using MotionBooth.Api.Models;
 
+[Authorize]
 [ApiController]
 [Route("api/templates")]
 public class TemplatesController : ControllerBase
