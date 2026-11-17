@@ -22,6 +22,16 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+
+    options.Cookie.Name = "MotionBooth.Antiforgery";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.None;
+
+});
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -39,6 +49,7 @@ builder.Services.AddDbContext<MotionBoothDbContext>((services, options) =>
     options.UseNpgsql(services.GetRequiredService<NpgsqlDataSource>())
 );
 
+// Identity
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -53,6 +64,7 @@ builder.Services
     .AddEntityFrameworkStores<MotionBoothDbContext>()
     .AddDefaultTokenProviders();
 
+// Authentication Cookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "MotionBooth.Auth";
