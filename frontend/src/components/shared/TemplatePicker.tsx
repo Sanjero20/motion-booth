@@ -44,7 +44,7 @@ function TemplatePicker({
             value={template.id}
             aria-label={template.name}
             className={cn(
-              "bg-card aria-pressed:border-primary aria-pressed:bg-card aria-pressed:text-foreground flex h-auto gap-2 rounded-lg border py-3",
+              "flex h-auto gap-2 rounded-lg border py-3",
               layout === "grid"
                 ? "flex-col gap-1.5"
                 : "w-full justify-start px-4",

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { LayoutGrid, Plus, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +10,9 @@ import TemplateCanvas from "@/components/shared/TemplateCanvas";
 import TemplateEditor from "@/features/templates/components/TemplateEditor";
 
 import type useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
+
 import { DEFAULT_LAYOUTS } from "@/data/layout";
+import { MAX_PHOTO_SLOTS } from "@/features/templates/hooks/useTemplateEditor";
 
 type Mode = "edit" | "preview";
 
@@ -20,8 +23,10 @@ function CustomTemplateEditor({
   changeLayout,
   slots,
   setSlots,
-  changeSlotCount,
+  addSlot,
   removeSlot,
+  autoArrangeSlots,
+  resetEditor,
   backgroundImage,
   uploadBackground,
   removeBackground,
@@ -36,11 +41,11 @@ function CustomTemplateEditor({
     setSelectedSlot(null);
   };
 
-  const handleSlotCountChange = (value: string[]) => {
-    if (!value.length) return;
+  const handleAddSlot = () => {
+    if (slots.length >= MAX_PHOTO_SLOTS) return;
 
-    changeSlotCount(Number(value[0]));
-    setSelectedSlot(null);
+    addSlot();
+    setSelectedSlot(slots.length);
   };
 
   const handleBackgroundChange = (
@@ -86,6 +91,19 @@ function CustomTemplateEditor({
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </Tabs>
+          </div>
+
+          <div className="absolute top-2 right-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={resetEditor}
+              className="bg-white"
+            >
+              <RotateCcw className="mr-2 size-4" />
+              Reset
+            </Button>
           </div>
 
           {mode === "edit" ? (
@@ -146,23 +164,38 @@ function CustomTemplateEditor({
 
               {/* Photo Slots */}
               <div className="space-y-3">
-                <p className="text-sm font-medium">Photo Slots</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">Photo Slots</p>
 
-                <ToggleGroup
-                  className="grid w-full grid-cols-4"
-                  value={[String(slots.length)]}
-                  onValueChange={handleSlotCountChange}
+                  <Button
+                    variant="ghost"
+                    size={"xs"}
+                    onClick={() => {
+                      autoArrangeSlots();
+                      setSelectedSlot(null);
+                    }}
+                    disabled={slots.length == 0}
+                  >
+                    <LayoutGrid />
+                    Auto-arrange
+                  </Button>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full justify-between"
+                  disabled={slots.length >= MAX_PHOTO_SLOTS}
+                  onClick={handleAddSlot}
                 >
-                  {[1, 2, 3, 4].map((count) => (
-                    <ToggleGroupItem
-                      key={count}
-                      variant="outline"
-                      value={String(count)}
-                    >
-                      {count}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
+                  <span className="flex items-center">
+                    <Plus className="mr-2 size-4" />
+                    Add Photo Slot
+                  </span>
+
+                  <span className="text-muted-foreground text-xs">
+                    {slots.length}/{MAX_PHOTO_SLOTS}
+                  </span>
+                </Button>
               </div>
 
               {/* Background */}
@@ -244,6 +277,7 @@ function CustomTemplateEditor({
                       size="sm"
                       className="w-full"
                       onClick={deleteSelectedSlot}
+                      disabled={slots.length == 1}
                     >
                       Delete slot
                     </Button>
