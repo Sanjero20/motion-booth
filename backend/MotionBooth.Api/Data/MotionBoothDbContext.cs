@@ -23,7 +23,7 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
         // Event Ownership
         modelBuilder.Entity<Event>()
             .HasOne(e => e.User)
-            .WithMany()
+            .WithMany(u => u.Events)
             .HasForeignKey(e => e.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
@@ -31,7 +31,7 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
         // Template Ownership
         modelBuilder.Entity<Template>()
             .HasOne(t => t.User)
-            .WithMany()
+            .WithMany(u => u.Templates)
             .HasForeignKey(t => t.UserId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
