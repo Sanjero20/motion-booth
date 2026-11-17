@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Models;
 
 namespace MotionBooth.Api.Data;
 
-public class MotionBoothDbContext : DbContext
+public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
 {
     public MotionBoothDbContext(
       DbContextOptions<MotionBoothDbContext> options)
