@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { LayoutGrid, Plus } from "lucide-react";
+import { LayoutGrid, Plus, RotateCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,6 +26,7 @@ function CustomTemplateEditor({
   addSlot,
   removeSlot,
   autoArrangeSlots,
+  resetEditor,
   backgroundImage,
   uploadBackground,
   removeBackground,
@@ -90,6 +91,19 @@ function CustomTemplateEditor({
                 <TabsTrigger value="preview">Preview</TabsTrigger>
               </TabsList>
             </Tabs>
+          </div>
+
+          <div className="absolute top-2 right-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={resetEditor}
+              className="bg-white"
+            >
+              <RotateCcw className="mr-2 size-4" />
+              Reset
+            </Button>
           </div>
 
           {mode === "edit" ? (

@@ -172,6 +172,19 @@ function useTemplateEditor(
     setSlots((prev) => createSlots(selectedLayout, prev.length));
   };
 
+  const resetEditor = () => {
+    if (!initialTemplate) {
+      setSelectedLayout({ ...DEFAULT_LAYOUT });
+      setSlots(createSlots(DEFAULT_LAYOUT, 3));
+      setBackgroundImage(null);
+      return;
+    }
+
+    setSelectedLayout({ ...initialTemplate.layout });
+    setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
+    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+  };
+
   // Upload background.
   const uploadBackground = (file: File) => {
     if (backgroundUrlRef.current) {
@@ -216,6 +229,7 @@ function useTemplateEditor(
     updateSlot,
     removeSlot,
     autoArrangeSlots,
+    resetEditor,
 
     backgroundImage,
     uploadBackground,
