@@ -47,8 +47,19 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        if (user is null)
+        {
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
+        }
+
         var result = await _signInManager.PasswordSignInAsync(
-            request.Email,
+            user,
             request.Password,
             isPersistent: true,
             lockoutOnFailure: false
@@ -61,8 +72,6 @@ public class AuthController : ControllerBase
                 message = "Invalid email or password."
             });
         }
-
-        var user = await _userManager.FindByEmailAsync(request.Email);
 
         return new AuthResponse
         {
