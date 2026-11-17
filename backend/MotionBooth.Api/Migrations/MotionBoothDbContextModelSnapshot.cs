@@ -236,7 +236,13 @@ namespace MotionBooth.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -262,7 +268,13 @@ namespace MotionBooth.Api.Migrations
                         .IsRequired()
                         .HasColumnType("jsonb");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Templates");
                 });
@@ -320,6 +332,12 @@ namespace MotionBooth.Api.Migrations
 
             modelBuilder.Entity("MotionBooth.Api.Models.Event", b =>
                 {
+                    b.HasOne("MotionBooth.Api.Models.ApplicationUser", "User")
+                        .WithMany("Events")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("MotionBooth.Api.Models.EventTemplate", "Template", b1 =>
                         {
                             b1.Property<Guid>("EventId");
@@ -387,6 +405,26 @@ namespace MotionBooth.Api.Migrations
 
                     b.Navigation("Template")
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MotionBooth.Api.Models.Template", b =>
+                {
+                    b.HasOne("MotionBooth.Api.Models.ApplicationUser", "User")
+                        .WithMany("Templates")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MotionBooth.Api.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Events");
+
+                    b.Navigation("Templates");
                 });
 #pragma warning restore 612, 618
         }
