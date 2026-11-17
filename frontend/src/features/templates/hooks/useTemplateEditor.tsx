@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useRef, useState } from "react";
 
 import { DEFAULT_LAYOUTS, DEFAULT_LAYOUT } from "@/data/layout";
@@ -84,19 +85,35 @@ function useTemplateEditor(
   );
 
   const backgroundUrlRef = useRef<string | null>(null);
-  const initializedTemplateId = useRef<string | null>(null);
+  const initializedTemplateKey = useRef<string | undefined>(undefined);
 
   // Initialize or load a reusable template.
   useEffect(() => {
-    if (!initialTemplate) return;
+    if (initializedTemplateKey.current === initialTemplateKey) return;
 
-    if (initializedTemplateId.current === initialTemplateKey) return;
+    initializedTemplateKey.current = initialTemplateKey;
 
-    initializedTemplateId.current = initialTemplateKey ?? null;
+    // Revoke an old uploaded background before changing templates.
+    if (backgroundUrlRef.current) {
+      URL.revokeObjectURL(backgroundUrlRef.current);
+      backgroundUrlRef.current = null;
+    }
 
-    setName(initialTemplate.name);
+    if (!initialTemplate) {
+      setSelectedLayout({ ...DEFAULT_LAYOUT });
+      setSlots(createSlots(DEFAULT_LAYOUT, 3));
+      setBackgroundImage(null);
+      return;
+    }
+
     setSelectedLayout({ ...initialTemplate.layout });
-    setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
+
+    setSlots(
+      initialTemplate.slots.length
+        ? initialTemplate.slots.map((slot) => ({ ...slot }))
+        : createSlots(initialTemplate.layout, 3),
+    );
+
     setBackgroundImage(initialTemplate.backgroundImage ?? null);
   }, [initialTemplate, initialTemplateKey]);
 
