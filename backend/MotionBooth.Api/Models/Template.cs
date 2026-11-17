@@ -8,4 +8,7 @@ public class Template
     public Layout Layout { get; set; } = new();
     public List<Slot> Slots { get; set; } = [];
     public string? BackgroundImage { get; set; }
+
+    public string UserId { get; set; } = string.Empty;
+    public ApplicationUser User { get; set; } = null!;
 }

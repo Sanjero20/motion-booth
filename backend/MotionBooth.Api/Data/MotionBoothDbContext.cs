@@ -20,6 +20,22 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
 
+        // Event Ownership
+        modelBuilder.Entity<Event>()
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Template Ownership
+        modelBuilder.Entity<Template>()
+            .HasOne(t => t.User)
+            .WithMany()
+            .HasForeignKey(t => t.UserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
         modelBuilder.Entity<Event>(entity =>
         {
             entity.OwnsOne(e => e.Template, template =>
