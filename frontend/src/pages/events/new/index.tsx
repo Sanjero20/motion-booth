@@ -7,11 +7,14 @@ import EventForm from "@/features/events/components/EventForm";
 import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 import type { EventTemplate } from "@/features/templates/types/template";
+import { Separator } from "@/components/ui/separator";
+import TemplateSourcePicker from "@/features/templates/components/TemplateSourcePicker";
 
 function CreateEventPage() {
   const navigate = useNavigate();
   const mutation = useCreateEvent();
 
+  const [source, setSource] = useState(["scratch"]);
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
 
@@ -55,6 +58,12 @@ function CreateEventPage() {
         onEventDateChange={setEventDate}
         onSubmit={handleSubmit}
       />
+
+      <Separator />
+
+      <TemplateSourcePicker value={source} onChange={setSource} />
+
+      {source[0] == "existing" && <div>templates</div>}
 
       <CustomTemplateEditor {...templateEditor} />
     </div>
