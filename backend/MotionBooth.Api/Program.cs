@@ -53,6 +53,17 @@ builder.Services
     .AddEntityFrameworkStores<MotionBoothDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "MotionBooth.Auth";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
