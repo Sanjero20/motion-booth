@@ -66,4 +66,31 @@ public class AuthController : ControllerBase
             message = "Login successful.",
         });
     }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok(new
+        {
+            message = "Logged out successfully."
+        });
+    }
+
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(new
+        {
+            id = user.Id,
+            email = user.Email
+        });
+    }
 }
