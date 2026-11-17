@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequest request)
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
         var result = await _signInManager.PasswordSignInAsync(
             request.Email,
@@ -61,10 +61,13 @@ public class AuthController : ControllerBase
             });
         }
 
-        return Ok(new
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        return new AuthResponse
         {
-            message = "Login successful.",
-        });
+            Id = user!.Id,
+            Email = user.Email!
+        };
     }
 
     [HttpPost("logout")]
@@ -78,7 +81,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("me")]
-    public async Task<IActionResult> GetCurrentUser()
+    public async Task<ActionResult<AuthResponse>> GetCurrentUser()
     {
         var user = await _userManager.GetUserAsync(User);
 
@@ -87,10 +90,10 @@ public class AuthController : ControllerBase
             return Unauthorized();
         }
 
-        return Ok(new
+        return new AuthResponse
         {
-            id = user.Id,
-            email = user.Email
-        });
+            Id = user.Id,
+            Email = user.Email!
+        };
     }
 }
