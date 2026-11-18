@@ -35,10 +35,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Routes location={location} key={location.pathname}>
+        {/* Landing page */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/booth" element={<BoothPage />} />
+
         {/* Accessible to all */}
         <Route element={<PublicLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/booth" element={<BoothPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
         </Route>

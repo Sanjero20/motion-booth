@@ -1,8 +1,19 @@
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import AuthenticatedHeader from "@/components/shared/AuthenticatedHeader";
 import Footer from "@/components/shared/Footer";
+import { useCurrentUser } from "@/features/auth/hooks/useCurrentUser";
 
 function PrivateLayout() {
+  const { data: user, isLoading, isError } = useCurrentUser();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (isError || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return (
     <div className="bg-background flex min-h-screen w-full flex-col">
       <AuthenticatedHeader />
