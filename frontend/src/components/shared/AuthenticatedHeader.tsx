@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -8,6 +8,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/shared/Logo";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -16,6 +17,17 @@ const NAV_ITEMS = [
 ];
 
 function AuthenticatedHeader() {
+  const navigate = useNavigate();
+  const mutation = useLogout();
+
+  const handleLogout = () => {
+    mutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate("/login");
+      },
+    });
+  };
+
   return (
     <header className="border-border/60 bg-background/70 sticky top-0 z-50 border-b px-4 backdrop-blur-md lg:px-0">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between">
@@ -54,12 +66,15 @@ function AuthenticatedHeader() {
           })}
         </nav>
 
+        {/* TODO: will make this a dropdown */}
         <Button
           size={"icon"}
-          className={"border-primary rounded-full border-2 bg-white"}
+          className={"border-primary hidden rounded-full border-2 bg-white"}
         >
           <User />
         </Button>
+
+        <Button onClick={handleLogout}>Logout</Button>
       </div>
     </header>
   );
