@@ -11,6 +11,17 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
+  
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite 
+    container_name: motionbooth-azure
+    command: azurite-blob --blobHost 0.0.0.0 --location /data
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite_data:/data
+    restart: unless-stopped
 
 volumes:
   pgdata:
+  azurite_data:
