@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Models;
 
 namespace MotionBooth.Api.Data;
 
-public class MotionBoothDbContext : DbContext
+public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
 {
     public MotionBoothDbContext(
       DbContextOptions<MotionBoothDbContext> options)
@@ -18,6 +19,22 @@ public class MotionBoothDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // Event Ownership
+        modelBuilder.Entity<Event>()
+            .HasOne(e => e.User)
+            .WithMany(u => u.Events)
+            .HasForeignKey(e => e.UserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Template Ownership
+        modelBuilder.Entity<Template>()
+            .HasOne(t => t.User)
+            .WithMany(u => u.Templates)
+            .HasForeignKey(t => t.UserId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Event>(entity =>
         {

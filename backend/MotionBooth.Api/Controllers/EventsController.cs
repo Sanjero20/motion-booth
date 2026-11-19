@@ -3,14 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.DTOs.Events;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace MotionBooth.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/events")]
 public class EventsController : ControllerBase
 {
     private readonly MotionBoothDbContext _dbContext;
+
+    private string GetUserId()
+    {
+        return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+    }
 
     public EventsController(MotionBoothDbContext dbContext)
     {
@@ -21,8 +29,11 @@ public class EventsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EventListResponse>>> GetEvents()
     {
+        var userId = GetUserId();
+
         var events = await _dbContext.Events
             .AsNoTracking()
+            .Where(e => e.UserId == userId)
             .OrderByDescending(e => e.CreatedAt)
             .Select(e => new EventListResponse
             {
@@ -38,11 +49,13 @@ public class EventsController : ControllerBase
 
     // GET: api/events/{id}
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<IEnumerable<EventResponse>>> GetEvent(Guid id)
+    public async Task<ActionResult<EventResponse>> GetEvent(Guid id)
     {
+        var userId = GetUserId();
+
         var eventItem = await _dbContext.Events
             .AsNoTracking()
-            .Where(e => e.Id == id)
+            .Where(e => e.Id == id && e.UserId == userId)
             .Select(e => new EventResponse
             {
                 Id = e.Id,
@@ -71,6 +84,7 @@ public class EventsController : ControllerBase
             Template = request.Template!,
             EventDate = request.EventDate!.Value,
             CreatedAt = DateTime.UtcNow,
+            UserId = GetUserId()
         };
 
         _dbContext.Events.Add(newEvent);
@@ -98,7 +112,10 @@ public class EventsController : ControllerBase
         Guid id,
         UpdateEventRequest request)
     {
-        var eventItem = await _dbContext.Events.FindAsync(id);
+        var userId = GetUserId();
+
+        var eventItem = await _dbContext.Events
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
         if (eventItem is null)
         {
@@ -118,7 +135,10 @@ public class EventsController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteEvent(Guid id)
     {
-        var eventItem = await _dbContext.Events.FindAsync(id);
+        var userId = GetUserId();
+
+        var eventItem = await _dbContext.Events
+            .FirstOrDefaultAsync(e => e.Id == id && e.UserId == userId);
 
         if (eventItem == null)
         {
