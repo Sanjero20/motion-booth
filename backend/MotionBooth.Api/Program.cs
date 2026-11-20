@@ -1,7 +1,10 @@
+using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MotionBooth.Api.Configuration;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.Data;
+using MotionBooth.Api.Services.Storage;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -79,6 +82,24 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
 });
+
+// Azure Blob Storage
+builder.Services.Configure<StorageOptions>(
+    builder.Configuration.GetSection(StorageOptions.SectionName));
+
+builder.Services.AddSingleton(sp =>
+{
+    var configuration = sp.GetRequiredService<IConfiguration>();
+
+    var connectionString = configuration
+        .GetConnectionString("AzureStorage")
+        ?? throw new InvalidOperationException(
+            "Azure Storage connection string is missing.");
+
+    return new BlobServiceClient(connectionString);
+});
+
+builder.Services.AddScoped<IFileStorageService, BlobStorageService>();
 
 var app = builder.Build();
 
