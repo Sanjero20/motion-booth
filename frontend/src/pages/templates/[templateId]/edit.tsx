@@ -29,7 +29,13 @@ function EditTemplatePage() {
   const handleSubmit = () => {
     if (!template) return;
 
-    const { name, selectedLayout, slots, backgroundImage } = templateEditor;
+    const {
+      name,
+      selectedLayout,
+      slots,
+      backgroundImageFile,
+      removeBackgroundImage,
+    } = templateEditor;
 
     updateMutation.mutate(
       {
@@ -38,7 +44,8 @@ function EditTemplatePage() {
           name,
           layout: selectedLayout,
           slots,
-          backgroundImage,
+          backgroundImageFile,
+          removeBackgroundImage,
         },
       },
       {
@@ -67,7 +74,7 @@ function EditTemplatePage() {
       <TemplateFormHeader
         mode={mode}
         isEditing={true}
-        isSubmitting={false}
+        isSubmitting={updateMutation.isPending}
         onCancel={() => navigate(`/templates/${template.id}`)}
         onChangeMode={setMode}
         onSubmit={handleSubmit}

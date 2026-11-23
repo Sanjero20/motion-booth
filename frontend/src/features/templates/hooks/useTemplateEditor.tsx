@@ -8,7 +8,6 @@ import type {
   TemplateConfiguration,
 } from "@/features/templates/types/template";
 
-//
 export const MAX_PHOTO_SLOTS = 8;
 
 // Columns per photo count.
@@ -84,6 +83,12 @@ function useTemplateEditor(
     initialTemplate?.backgroundImage ?? null,
   );
 
+  const [backgroundImageFile, setBackgroundImageFile] = useState<File | null>(
+    null,
+  );
+
+  const [removeBackgroundImage, setRemoveBackgroundImage] = useState(false);
+
   const backgroundUrlRef = useRef<string | null>(null);
   const initializedTemplateKey = useRef<string | undefined>(undefined);
 
@@ -98,6 +103,9 @@ function useTemplateEditor(
       URL.revokeObjectURL(backgroundUrlRef.current);
       backgroundUrlRef.current = null;
     }
+
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(false);
 
     if (!initialTemplate) {
       setSelectedLayout({ ...DEFAULT_LAYOUT });
@@ -173,6 +181,14 @@ function useTemplateEditor(
   };
 
   const resetEditor = () => {
+    if (backgroundUrlRef.current) {
+      URL.revokeObjectURL(backgroundUrlRef.current);
+      backgroundUrlRef.current = null;
+    }
+
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(false);
+
     if (!initialTemplate) {
       setSelectedLayout({ ...DEFAULT_LAYOUT });
       setSlots(createSlots(DEFAULT_LAYOUT, 3));
@@ -194,7 +210,10 @@ function useTemplateEditor(
     const url = URL.createObjectURL(file);
 
     backgroundUrlRef.current = url;
+
     setBackgroundImage(url);
+    setBackgroundImageFile(file);
+    setRemoveBackgroundImage(false);
   };
 
   // Remove background.
@@ -205,6 +224,8 @@ function useTemplateEditor(
     }
 
     setBackgroundImage(null);
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(true);
   };
 
   // Clean up object URLs on unmount.
@@ -234,6 +255,9 @@ function useTemplateEditor(
     backgroundImage,
     uploadBackground,
     removeBackground,
+
+    backgroundImageFile,
+    removeBackgroundImage,
   };
 }
 
