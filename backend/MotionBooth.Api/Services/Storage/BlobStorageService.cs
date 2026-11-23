@@ -26,7 +26,10 @@ public class BlobStorageService : IFileStorageService
     {
         await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
-        var blobClient = _containerClient.GetBlobClient(fileName);
+        var extension = Path.GetExtension(fileName);
+        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+
+        var blobClient = _containerClient.GetBlobClient(uniqueFileName);
 
         await blobClient.UploadAsync(
             file,
@@ -36,7 +39,8 @@ public class BlobStorageService : IFileStorageService
                 {
                     ContentType = contentType
                 }
-            });
+            },
+            cancellationToken);
 
         return blobClient.Name;
     }
