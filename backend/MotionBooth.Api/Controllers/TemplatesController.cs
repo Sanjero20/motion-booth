@@ -164,7 +164,12 @@ public class TemplatesController : ControllerBase
 
     // PUT: api/templates/{id}
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateTemplate(Guid id, UpdateTemplateRequest request)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UpdateTemplate(
+        Guid id,
+        [FromForm] SaveTemplateRequest request,
+        CancellationToken cancellationToken
+    )
     {
         var userId = GetUserId();
 
@@ -172,38 +177,83 @@ public class TemplatesController : ControllerBase
             t.Id == id && t.UserId == userId
         );
 
-        if (template == null)
+        if (template is null)
         {
             return NotFound();
         }
 
-        template.Name = request.Name;
-        template.Layout = request.Layout;
-        template.Slots = request.Slots;
-        template.BackgroundImage = request.BackgroundImage;
-
-        await _dbContext.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    // DELETE: api/templates/{id}
-    [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTemplate(Guid id)
-    {
-        var userId = GetUserId();
-
-        var template = await _dbContext.Templates.FirstOrDefaultAsync(t =>
-            t.Id == id && t.UserId == userId
-        );
-
-        if (template == null)
+        if (!TemplateRequestHelper.TryDeserialize(request, out var layout, out var slots))
         {
-            return NotFound();
+            return BadRequest(new { message = "Invalid template data." });
         }
 
-        _dbContext.Templates.Remove(template);
-        await _dbContext.SaveChangesAsync();
+        var file = request.BackgroundImageFile;
+        string? fileExtension = null;
+
+        if (
+            file is not null
+            && !ImageValidationHelper.TryValidate(file, out fileExtension, out var errorMessage)
+        )
+        {
+            return BadRequest(new { message = errorMessage });
+        }
+
+        var oldBlobName = template.BackgroundImage;
+        string? newBlobName = null;
+
+        try
+        {
+            // Upload the new image first, if provided.
+            if (file is not null)
+            {
+                await using var stream = file.OpenReadStream();
+
+                newBlobName = await _fileStorageService.UploadAsync(
+                    stream,
+                    $"background{fileExtension}",
+                    file.ContentType,
+                    cancellationToken
+                );
+            }
+
+            template.Name = request.Name;
+            template.Layout = layout!;
+            template.Slots = slots!;
+
+            if (request.RemoveBackgroundImage)
+            {
+                template.BackgroundImage = null;
+            }
+            else if (newBlobName is not null)
+            {
+                template.BackgroundImage = newBlobName;
+            }
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Clean up the new image if the database update fails.
+            if (newBlobName is not null)
+            {
+                try
+                {
+                    await _fileStorageService.DeleteAsync(newBlobName, CancellationToken.None);
+                }
+                catch
+                {
+                    // Preserve the original exception.
+                }
+            }
+
+            throw;
+        }
+
+        // Delete the old image only after the database update succeeds.
+        if (oldBlobName is not null && (request.RemoveBackgroundImage || newBlobName is not null))
+        {
+            await _fileStorageService.DeleteAsync(oldBlobName, cancellationToken);
+        }
 
         return NoContent();
     }
