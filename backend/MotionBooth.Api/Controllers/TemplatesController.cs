@@ -257,4 +257,32 @@ public class TemplatesController : ControllerBase
 
         return NoContent();
     }
+
+    // DELETE: api/templates/{id}
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteTemplate(Guid id, CancellationToken cancellationToken)
+    {
+        var userId = GetUserId();
+
+        var template = await _dbContext.Templates.FirstOrDefaultAsync(t =>
+            t.Id == id && t.UserId == userId
+        );
+
+        if (template is null)
+        {
+            return NotFound();
+        }
+
+        // Delete the background image from storage, if one exists.
+        if (!string.IsNullOrEmpty(template.BackgroundImage))
+        {
+            await _fileStorageService.DeleteAsync(template.BackgroundImage, cancellationToken);
+        }
+
+        _dbContext.Templates.Remove(template);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return NoContent();
+    }
 }
