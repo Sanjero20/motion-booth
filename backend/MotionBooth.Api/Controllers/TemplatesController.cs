@@ -1,10 +1,10 @@
 using System.Security.Claims;
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.DTOs.Templates;
+using MotionBooth.Api.Helpers;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.Services.Storage;
 
@@ -87,68 +87,34 @@ public class TemplatesController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        // Deserialize the JSON strings sent through multipart/form-data.
-        Layout? layout;
-        List<Slot>? slots;
-
-        try
-        {
-            var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
-
-            layout = JsonSerializer.Deserialize<Layout>(request.Layout, jsonOptions);
-            slots = JsonSerializer.Deserialize<List<Slot>>(request.Slots, jsonOptions);
-        }
-        catch (JsonException)
-        {
-            return BadRequest(new { message = "Invalid layout or slots data." });
-        }
-
-        if (layout is null || slots is null || slots.Count == 0)
+        if (!TemplateRequestHelper.TryDeserialize(request, out var layout, out var slots))
         {
             return BadRequest(new { message = "Invalid template data." });
         }
 
-        // Validate the optional background image
         var file = request.BackgroundImageFile;
         string? fileExtension = null;
-        string? blobName = null;
 
-        if (file is not null)
+        if (
+            file is not null
+            && !ImageValidationHelper.TryValidate(file, out fileExtension, out var errorMessage)
+        )
         {
-            if (file.Length == 0 || file.Length > 5 * 1024 * 1024)
-            {
-                return BadRequest(
-                    new { message = "The background image must be between 1 byte and 5MB." }
-                );
-            }
-
-            fileExtension = file.ContentType switch
-            {
-                "image/jpeg" => ".jpg",
-                "image/png" => ".png",
-                "image/webp" => ".webp",
-                _ => null,
-            };
-
-            if (fileExtension is null)
-            {
-                return BadRequest(
-                    new { message = "Only JPEG, PNG, and WebP images are supported." }
-                );
-            }
+            return BadRequest(new { message = errorMessage });
         }
 
         var template = new Template
         {
             Name = request.Name,
-            Layout = layout,
-            Slots = slots,
+            Layout = layout!,
+            Slots = slots!,
             UserId = GetUserId(),
         };
 
+        string? blobName = null;
+
         try
         {
-            // Upload the image, if one was provided
             if (file is not null)
             {
                 await using var stream = file.OpenReadStream();
@@ -169,7 +135,6 @@ public class TemplatesController : ControllerBase
         }
         catch
         {
-            // Clean up the uploaded blob if saving the template fails
             if (blobName is not null)
             {
                 try
@@ -178,7 +143,7 @@ public class TemplatesController : ControllerBase
                 }
                 catch
                 {
-                    // Preserve the original exception
+                    // Preserve the original exception.
                 }
             }
 
