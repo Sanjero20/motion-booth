@@ -24,7 +24,7 @@ function EditTemplatePage() {
   const updateMutation = useUpdateTemplate();
   const deleteMutation = useDeleteTemplate();
 
-  const templateEditor = useTemplateEditor(template);
+  const templateEditor = useTemplateEditor(template, template?.id);
 
   const handleSubmit = () => {
     if (!template) return;

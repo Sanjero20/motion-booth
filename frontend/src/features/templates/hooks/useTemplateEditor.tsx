@@ -94,7 +94,12 @@ function useTemplateEditor(
 
   // Initialize or load a reusable template.
   useEffect(() => {
-    if (initializedTemplateKey.current === initialTemplateKey) return;
+    if (
+      initialTemplateKey !== undefined &&
+      initializedTemplateKey.current === initialTemplateKey
+    ) {
+      return;
+    }
 
     initializedTemplateKey.current = initialTemplateKey;
 
@@ -108,12 +113,14 @@ function useTemplateEditor(
     setRemoveBackgroundImage(false);
 
     if (!initialTemplate) {
+      setName("");
       setSelectedLayout({ ...DEFAULT_LAYOUT });
       setSlots(createSlots(DEFAULT_LAYOUT, 3));
       setBackgroundImage(null);
       return;
     }
 
+    setName(initialTemplate.name);
     setSelectedLayout({ ...initialTemplate.layout });
 
     setSlots(
