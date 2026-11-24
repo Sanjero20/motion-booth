@@ -39,6 +39,8 @@ function CreateEventPage() {
       : "scratch",
   );
 
+  const isSubmitting = mutation.isPending || templateEditor.isBackgroundLoading;
+
   function handleSourceChange(value: string[]) {
     if (!value.length) return;
 
@@ -52,17 +54,28 @@ function CreateEventPage() {
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    const backgroundImageFile =
+      templateEditor.backgroundImageFile ??
+      (templateEditor.backgroundBlob
+        ? new File([templateEditor.backgroundBlob], "background.png", {
+            type: templateEditor.backgroundBlob.type,
+          })
+        : null);
+
     const template: EventTemplate = {
       layout: { ...templateEditor.selectedLayout },
       slots: templateEditor.slots.map((slot) => ({ ...slot })),
-      backgroundImage: templateEditor.backgroundImage,
+      backgroundImage: null,
     };
+
+    console.log(backgroundImageFile);
 
     mutation.mutate(
       {
         name: name.trim(),
         template,
         eventDate,
+        backgroundImageFile,
       },
       {
         onSuccess: () => navigate("/events"),
@@ -74,7 +87,7 @@ function CreateEventPage() {
     <div className="space-y-6">
       <EventFormHeader
         isEditing={false}
-        isSubmitting={mutation.isPending}
+        isSubmitting={isSubmitting}
         onCancel={() => navigate("/events")}
       />
 

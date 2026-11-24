@@ -67,6 +67,7 @@ function EventDetailsPage() {
           <div className="bg-secondary flex h-125 items-center justify-center rounded-xl border p-8 lg:col-span-3">
             <TemplateCanvas
               template={{ id: event.id, name: event.name, ...event.template }}
+              backgroundSource="event"
             />
           </div>
 

@@ -25,7 +25,7 @@ function EditEventPage() {
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
 
-  const templateEditor = useTemplateEditor(event?.template, event?.id);
+  const templateEditor = useTemplateEditor(event?.template, event?.id, "event");
 
   const [name, setName] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -54,6 +54,8 @@ function EditEventPage() {
           name: name.trim(),
           template,
           eventDate,
+          backgroundImageFile: templateEditor.backgroundImageFile,
+          removeBackgroundImage: templateEditor.removeBackgroundImage,
         },
       },
       {

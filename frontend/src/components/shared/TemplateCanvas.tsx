@@ -10,6 +10,7 @@ import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
 import { useTemplateBackground } from "@/features/templates/hooks/useTemplateBackground";
 import { useObjectUrl } from "@/hooks/useObjectUrl";
+import { useEventBackground } from "@/features/events/hooks/useEventBackground";
 
 interface Props {
   template: Template;
@@ -19,6 +20,7 @@ interface Props {
   holdMs?: number;
   flashMs?: number;
   onCanvasReady?: (canvas: HTMLCanvasElement | null) => void;
+  backgroundSource?: "template" | "event";
 }
 
 function TemplateCanvas({
@@ -29,13 +31,27 @@ function TemplateCanvas({
   holdMs = 3000,
   flashMs = 300,
   onCanvasReady,
+  backgroundSource = "template",
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const { data: backgroundBlob } = useTemplateBackground(
+  const hasBackground = Boolean(template.backgroundImage);
+
+  const templateBackgroundQuery = useTemplateBackground(
     template.id,
-    Boolean(template.backgroundImage),
+    backgroundSource === "template" && hasBackground,
   );
+
+  const eventBackgroundQuery = useEventBackground(
+    template.id,
+    backgroundSource === "event" && hasBackground,
+  );
+
+  const backgroundBlob = hasBackground
+    ? backgroundSource === "event"
+      ? eventBackgroundQuery.data
+      : templateBackgroundQuery.data
+    : undefined;
 
   const backgroundUrl = useObjectUrl(backgroundBlob);
 

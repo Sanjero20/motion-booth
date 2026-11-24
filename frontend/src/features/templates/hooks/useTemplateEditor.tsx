@@ -11,6 +11,7 @@ import type {
 } from "@/features/templates/types/template";
 
 import { useTemplateBackground } from "./useTemplateBackground";
+import { useEventBackground } from "@/features/events/hooks/useEventBackground";
 
 export const MAX_PHOTO_SLOTS = 8;
 
@@ -70,6 +71,7 @@ function createSlots(layout: Layout, count: number): Slot[] {
 function useTemplateEditor(
   initialTemplate?: TemplateConfiguration,
   initialTemplateKey?: string,
+  backgroundSource: "template" | "event" = "template",
 ) {
   const [name, setName] = useState("");
 
@@ -97,15 +99,32 @@ function useTemplateEditor(
   const removeBackgroundImageRef = useRef(false);
   const initializedTemplateKey = useRef<string | undefined>(undefined);
 
-  // Retrieve the existing template background.
-  const {
-    data: backgroundBlob,
-    isLoading: isBackgroundLoading,
-    isError: isBackgroundError,
-  } = useTemplateBackground(
+  // Retrieve the existing background from the appropriate resource.
+  const templateBackgroundQuery = useTemplateBackground(
     initialTemplateKey ?? "",
-    Boolean(initialTemplate?.backgroundImage),
+    backgroundSource === "template" &&
+      Boolean(initialTemplate?.backgroundImage),
   );
+
+  const eventBackgroundQuery = useEventBackground(
+    initialTemplateKey ?? "",
+    backgroundSource === "event" && Boolean(initialTemplate?.backgroundImage),
+  );
+
+  const backgroundBlob =
+    backgroundSource === "event"
+      ? eventBackgroundQuery.data
+      : templateBackgroundQuery.data;
+
+  const isBackgroundLoading =
+    backgroundSource === "event"
+      ? eventBackgroundQuery.isLoading
+      : templateBackgroundQuery.isLoading;
+
+  const isBackgroundError =
+    backgroundSource === "event"
+      ? eventBackgroundQuery.isError
+      : templateBackgroundQuery.isError;
 
   // Convert the retrieved Blob into an object URL.
   const savedBackgroundUrl = useObjectUrl(backgroundBlob);
@@ -299,10 +318,11 @@ function useTemplateEditor(
     resetEditor,
 
     backgroundImage,
+    backgroundImageFile,
+    backgroundBlob,
+
     uploadBackground,
     removeBackground,
-
-    backgroundImageFile,
     removeBackgroundImage,
 
     isBackgroundLoading,
