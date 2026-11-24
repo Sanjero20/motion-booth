@@ -79,17 +79,16 @@ function EditTemplatePage() {
         onChangeMode={setMode}
         onSubmit={handleSubmit}
       />
-
-      <TemplateDetails
-        name={templateEditor.name}
-        setName={templateEditor.setName}
-      />
+      <Separator />
 
       {mode === "edit" ? (
         <>
-          <CustomTemplateEditor {...templateEditor} />
+          <TemplateDetails
+            name={templateEditor.name}
+            setName={templateEditor.setName}
+          />
 
-          <Separator />
+          <CustomTemplateEditor {...templateEditor} />
 
           <DangerZone
             resourceName="template"
