@@ -1,15 +1,15 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import {
   drawTemplate,
   loadBackgroundImage,
   loadPhotoImage,
 } from "@/features/booth/services/canvas";
 import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
 import { useTemplateBackground } from "@/features/templates/hooks/useTemplateBackground";
+import { useObjectUrl } from "@/hooks/useObjectUrl";
 
 interface Props {
   template: Template;
@@ -37,19 +37,7 @@ function TemplateCanvas({
     Boolean(template.backgroundImage),
   );
 
-  const [backgroundUrl, setBackgroundUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!backgroundBlob) {
-      setBackgroundUrl(null);
-      return;
-    }
-
-    const url = URL.createObjectURL(backgroundBlob);
-    setBackgroundUrl(url);
-
-    return () => URL.revokeObjectURL(url);
-  }, [backgroundBlob]);
+  const backgroundUrl = useObjectUrl(backgroundBlob);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -101,7 +89,7 @@ function TemplateCanvas({
       const clips = photos.slice(0, template.slots.length);
 
       // Load background and still photos.
-      const background = await loadBackgroundImage(template.backgroundImage);
+      const background = await loadBackgroundImage(backgroundUrl);
 
       if (cancelled) return;
 
