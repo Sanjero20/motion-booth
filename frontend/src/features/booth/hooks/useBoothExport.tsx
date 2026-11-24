@@ -8,6 +8,7 @@ import {
 
 import { exportMotionVideo } from "@/features/booth/services/exportMotion";
 import { transcodeToMp4 } from "@/features/booth/services/transcodeToMp4";
+import { templatesApi } from "@/features/templates/services/templates.api";
 
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
@@ -36,6 +37,8 @@ export default function useBoothExport(
   const [exportError, setExportError] = useState<string | null>(null);
 
   const handleSaveImage = async () => {
+    let backgroundUrl: string | null = null;
+
     try {
       setExportError(null);
 
@@ -51,8 +54,18 @@ export default function useBoothExport(
         throw new Error("Unable to create the image canvas.");
       }
 
+      // Retrieve the saved background Blob.
+      const backgroundBlob = selectedTemplate.backgroundImage
+        ? await templatesApi.getBackground(selectedTemplate.id)
+        : null;
+
+      // Convert the Blob into a temporary object URL.
+      backgroundUrl = backgroundBlob
+        ? URL.createObjectURL(backgroundBlob)
+        : null;
+
       const [background, images] = await Promise.all([
-        loadBackgroundImage(selectedTemplate.backgroundImage),
+        loadBackgroundImage(backgroundUrl),
         Promise.all(
           photos.slice(0, selectedTemplate.slots.length).map(loadPhotoImage),
         ),
@@ -75,6 +88,10 @@ export default function useBoothExport(
       setExportError(
         error instanceof Error ? error.message : "Failed to export the image.",
       );
+    } finally {
+      if (backgroundUrl) {
+        URL.revokeObjectURL(backgroundUrl);
+      }
     }
   };
 
