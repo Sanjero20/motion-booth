@@ -32,7 +32,9 @@ public class TemplatesController : ControllerBase
 
     // GET: api/templates
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<TemplateResponse>>> GetTemplates()
+    public async Task<
+        ActionResult<IEnumerable<TemplateResponse>>
+    > GetTemplates()
     {
         var userId = GetUserId();
 
@@ -87,7 +89,13 @@ public class TemplatesController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (!TemplateRequestHelper.TryDeserialize(request, out var layout, out var slots))
+        if (
+            !TemplateRequestHelper.TryDeserialize(
+                request,
+                out var layout,
+                out var slots
+            )
+        )
         {
             return BadRequest(new { message = "Invalid template data." });
         }
@@ -97,7 +105,11 @@ public class TemplatesController : ControllerBase
 
         if (
             file is not null
-            && !ImageValidationHelper.TryValidate(file, out fileExtension, out var errorMessage)
+            && !ImageValidationHelper.TryValidate(
+                file,
+                out fileExtension,
+                out var errorMessage
+            )
         )
         {
             return BadRequest(new { message = errorMessage });
@@ -123,6 +135,7 @@ public class TemplatesController : ControllerBase
                     stream,
                     $"background{fileExtension}",
                     file.ContentType,
+                    "templates",
                     cancellationToken
                 );
 
@@ -139,7 +152,10 @@ public class TemplatesController : ControllerBase
             {
                 try
                 {
-                    await _fileStorageService.DeleteAsync(blobName, cancellationToken);
+                    await _fileStorageService.DeleteAsync(
+                        blobName,
+                        cancellationToken
+                    );
                 }
                 catch
                 {
@@ -159,7 +175,11 @@ public class TemplatesController : ControllerBase
             BackgroundImage = template.BackgroundImage,
         };
 
-        return CreatedAtAction(nameof(GetTemplate), new { id = template.Id }, response);
+        return CreatedAtAction(
+            nameof(GetTemplate),
+            new { id = template.Id },
+            response
+        );
     }
 
     // PUT: api/templates/{id}
@@ -182,7 +202,13 @@ public class TemplatesController : ControllerBase
             return NotFound();
         }
 
-        if (!TemplateRequestHelper.TryDeserialize(request, out var layout, out var slots))
+        if (
+            !TemplateRequestHelper.TryDeserialize(
+                request,
+                out var layout,
+                out var slots
+            )
+        )
         {
             return BadRequest(new { message = "Invalid template data." });
         }
@@ -192,7 +218,11 @@ public class TemplatesController : ControllerBase
 
         if (
             file is not null
-            && !ImageValidationHelper.TryValidate(file, out fileExtension, out var errorMessage)
+            && !ImageValidationHelper.TryValidate(
+                file,
+                out fileExtension,
+                out var errorMessage
+            )
         )
         {
             return BadRequest(new { message = errorMessage });
@@ -212,6 +242,7 @@ public class TemplatesController : ControllerBase
                     stream,
                     $"background{fileExtension}",
                     file.ContentType,
+                    "templates",
                     cancellationToken
                 );
             }
@@ -238,7 +269,10 @@ public class TemplatesController : ControllerBase
             {
                 try
                 {
-                    await _fileStorageService.DeleteAsync(newBlobName, CancellationToken.None);
+                    await _fileStorageService.DeleteAsync(
+                        newBlobName,
+                        CancellationToken.None
+                    );
                 }
                 catch
                 {
@@ -250,9 +284,15 @@ public class TemplatesController : ControllerBase
         }
 
         // Delete the old image only after the database update succeeds.
-        if (oldBlobName is not null && (request.RemoveBackgroundImage || newBlobName is not null))
+        if (
+            oldBlobName is not null
+            && (request.RemoveBackgroundImage || newBlobName is not null)
+        )
         {
-            await _fileStorageService.DeleteAsync(oldBlobName, cancellationToken);
+            await _fileStorageService.DeleteAsync(
+                oldBlobName,
+                cancellationToken
+            );
         }
 
         return NoContent();
@@ -260,7 +300,10 @@ public class TemplatesController : ControllerBase
 
     // DELETE: api/templates/{id}
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> DeleteTemplate(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> DeleteTemplate(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
         var userId = GetUserId();
 
@@ -276,7 +319,10 @@ public class TemplatesController : ControllerBase
         // Delete the background image from storage, if one exists.
         if (!string.IsNullOrEmpty(template.BackgroundImage))
         {
-            await _fileStorageService.DeleteAsync(template.BackgroundImage, cancellationToken);
+            await _fileStorageService.DeleteAsync(
+                template.BackgroundImage,
+                cancellationToken
+            );
         }
 
         _dbContext.Templates.Remove(template);

@@ -11,7 +11,8 @@ public class BlobStorageService : IFileStorageService
 
     public BlobStorageService(
         BlobServiceClient blobServiceClient,
-        IOptions<StorageOptions> options)
+        IOptions<StorageOptions> options
+    )
     {
         _containerClient = blobServiceClient.GetBlobContainerClient(
             options.Value.ContainerName
@@ -22,32 +23,36 @@ public class BlobStorageService : IFileStorageService
         Stream file,
         string fileName,
         string contentType,
-        CancellationToken cancellationToken = default)
+        string folder,
+        CancellationToken cancellationToken = default
+    )
     {
-        await _containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+        await _containerClient.CreateIfNotExistsAsync(
+            cancellationToken: cancellationToken
+        );
 
         var extension = Path.GetExtension(fileName);
         var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+        var blobName = $"{folder.Trim('/')}/{uniqueFileName}";
 
-        var blobClient = _containerClient.GetBlobClient(uniqueFileName);
+        var blobClient = _containerClient.GetBlobClient(blobName);
 
         await blobClient.UploadAsync(
             file,
             new BlobUploadOptions
             {
-                HttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = contentType
-                }
+                HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
             },
-            cancellationToken);
+            cancellationToken
+        );
 
         return blobClient.Name;
     }
 
     public async Task<Stream?> GetAsync(
         string fileName,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var blobClient = _containerClient.GetBlobClient(fileName);
 
@@ -56,16 +61,20 @@ public class BlobStorageService : IFileStorageService
             return null;
         }
 
-        var response = await blobClient.DownloadStreamingAsync(cancellationToken: cancellationToken);
+        var response = await blobClient.DownloadStreamingAsync(
+            cancellationToken: cancellationToken
+        );
         return response.Value.Content;
     }
 
     public async Task DeleteAsync(
         string fileName,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         var blobClient = _containerClient.GetBlobClient(fileName);
-        await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        await blobClient.DeleteIfExistsAsync(
+            cancellationToken: cancellationToken
+        );
     }
 }
-

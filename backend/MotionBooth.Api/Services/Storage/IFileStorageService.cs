@@ -6,6 +6,7 @@ public interface IFileStorageService
         Stream file,
         string fileName,
         string contentType,
+        string folder,
         CancellationToken cancellationToken = default
     );
 
