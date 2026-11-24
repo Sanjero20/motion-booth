@@ -3,14 +3,14 @@ import { useNavigate } from "react-router";
 import { useCreateTemplate } from "@/features/templates/hooks/useCreateTemplate";
 
 import TemplateFormHeader from "@/features/templates/components/TemplateFormHeader";
+import TemplateDetails from "@/features/templates/components/TemplateDetails";
 import CustomTemplateEditor from "@/features/templates/components/CustomTemplateEditor";
 import CustomTemplateViewer from "@/features/templates/components/CustomTemplateViewer";
 
 import useTemplateEditor from "@/features/templates/hooks/useTemplateEditor";
 
-import type { CreateTemplateRequest } from "@/features/templates/types/template";
+import type { SaveTemplateRequest } from "@/features/templates/types/template";
 import type { TemplateFormMode } from "@/features/templates/types/form-mode";
-import TemplateDetails from "@/features/templates/components/TemplateDetails";
 
 function CreateTemplatePage() {
   const navigate = useNavigate();
@@ -21,13 +21,13 @@ function CreateTemplatePage() {
   const templateEditor = useTemplateEditor();
 
   const handleSubmit = () => {
-    const { name, selectedLayout, slots, backgroundImage } = templateEditor;
+    const { name, selectedLayout, slots, backgroundImageFile } = templateEditor;
 
-    const template: CreateTemplateRequest = {
+    const template: SaveTemplateRequest = {
       name,
       layout: selectedLayout,
       slots: slots,
-      backgroundImage: backgroundImage,
+      backgroundImageFile,
     };
 
     mutation.mutate(template, {
@@ -42,7 +42,7 @@ function CreateTemplatePage() {
       <TemplateFormHeader
         mode={mode}
         isEditing={false}
-        isSubmitting={false}
+        isSubmitting={mutation.isPending}
         onCancel={() => navigate(`/templates`)}
         onChangeMode={setMode}
         onSubmit={handleSubmit}

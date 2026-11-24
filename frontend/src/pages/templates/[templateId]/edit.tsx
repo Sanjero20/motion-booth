@@ -24,12 +24,18 @@ function EditTemplatePage() {
   const updateMutation = useUpdateTemplate();
   const deleteMutation = useDeleteTemplate();
 
-  const templateEditor = useTemplateEditor(template);
+  const templateEditor = useTemplateEditor(template, template?.id);
 
   const handleSubmit = () => {
     if (!template) return;
 
-    const { name, selectedLayout, slots, backgroundImage } = templateEditor;
+    const {
+      name,
+      selectedLayout,
+      slots,
+      backgroundImageFile,
+      removeBackgroundImage,
+    } = templateEditor;
 
     updateMutation.mutate(
       {
@@ -38,7 +44,8 @@ function EditTemplatePage() {
           name,
           layout: selectedLayout,
           slots,
-          backgroundImage,
+          backgroundImageFile,
+          removeBackgroundImage,
         },
       },
       {
@@ -67,22 +74,21 @@ function EditTemplatePage() {
       <TemplateFormHeader
         mode={mode}
         isEditing={true}
-        isSubmitting={false}
+        isSubmitting={updateMutation.isPending}
         onCancel={() => navigate(`/templates/${template.id}`)}
         onChangeMode={setMode}
         onSubmit={handleSubmit}
       />
-
-      <TemplateDetails
-        name={templateEditor.name}
-        setName={templateEditor.setName}
-      />
+      <Separator />
 
       {mode === "edit" ? (
         <>
-          <CustomTemplateEditor {...templateEditor} />
+          <TemplateDetails
+            name={templateEditor.name}
+            setName={templateEditor.setName}
+          />
 
-          <Separator />
+          <CustomTemplateEditor {...templateEditor} />
 
           <DangerZone
             resourceName="template"
@@ -94,8 +100,8 @@ function EditTemplatePage() {
       ) : (
         <CustomTemplateViewer
           template={{
-            id: "",
-            name: "Untitled Template",
+            id: template.id,
+            name: templateEditor.name,
             layout: templateEditor.selectedLayout,
             slots: templateEditor.slots,
             backgroundImage: templateEditor.backgroundImage,

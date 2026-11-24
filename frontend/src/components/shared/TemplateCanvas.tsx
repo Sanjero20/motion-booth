@@ -8,6 +8,8 @@ import { useEffect, useRef } from "react";
 
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
+import { useTemplateBackground } from "@/features/templates/hooks/useTemplateBackground";
+import { useObjectUrl } from "@/hooks/useObjectUrl";
 
 interface Props {
   template: Template;
@@ -29,6 +31,13 @@ function TemplateCanvas({
   onCanvasReady,
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const { data: backgroundBlob } = useTemplateBackground(
+    template.id,
+    Boolean(template.backgroundImage),
+  );
+
+  const backgroundUrl = useObjectUrl(backgroundBlob);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -65,7 +74,7 @@ function TemplateCanvas({
       onCanvasReady?.(canvas);
 
       void Promise.all([
-        loadBackgroundImage(template.backgroundImage),
+        loadBackgroundImage(backgroundUrl),
         Promise.all(photos.slice(0, template.slots.length).map(loadPhotoImage)),
       ]).then(([background, images]) => {
         if (cancelled) return;
@@ -80,7 +89,7 @@ function TemplateCanvas({
       const clips = photos.slice(0, template.slots.length);
 
       // Load background and still photos.
-      const background = await loadBackgroundImage(template.backgroundImage);
+      const background = await loadBackgroundImage(backgroundUrl);
 
       if (cancelled) return;
 
@@ -216,7 +225,7 @@ function TemplateCanvas({
     void setupMotionPreview();
 
     return cleanup;
-  }, [template, photos, mode, holdMs, flashMs, onCanvasReady]);
+  }, [template, photos, mode, holdMs, flashMs, onCanvasReady, backgroundUrl]);
 
   return (
     <canvas

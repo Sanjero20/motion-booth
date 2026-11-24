@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { templateKeys } from "../queries/templates.keys";
 import { templatesApi } from "../services/templates.api";
-import type { UpdateTemplateRequest } from "../types/template";
+import type { SaveTemplateRequest } from "../types/template";
 import { toast } from "@/components/ui/toast";
 
 interface UpdateTemplatePayload {
   id: string;
-  data: UpdateTemplateRequest;
+  data: SaveTemplateRequest;
 }
 
 export function useUpdateTemplate() {

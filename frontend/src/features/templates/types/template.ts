@@ -28,22 +28,18 @@ export type EventTemplate = {
 };
 
 export type TemplateConfiguration = {
+  id?: string;
+  name?: string;
   layout: Layout;
   slots: Slot[];
   backgroundImage?: string | null;
 };
 
 // DTOs
-export type CreateTemplateRequest = {
+export type SaveTemplateRequest = {
   name: string;
   layout: Layout;
   slots: Slot[];
-  backgroundImage: string | null;
-};
-
-export type UpdateTemplateRequest = {
-  name: string;
-  layout: Layout;
-  slots: Slot[];
-  backgroundImage: string | null;
+  backgroundImageFile?: File | null;
+  removeBackgroundImage?: boolean;
 };

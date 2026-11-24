@@ -7,6 +7,7 @@ import {
 } from "@/features/booth/services/canvas";
 
 import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
+import { templatesApi } from "@/features/templates/services/templates.api";
 
 const MIME_CANDIDATES = [
   "video/mp4;codecs=avc1.42E01E",
@@ -78,8 +79,10 @@ export async function exportMotionVideo(
   let stream: MediaStream | null = null;
 
   try {
-    const [background, loadedVideos, stills] = await Promise.all([
-      loadBackgroundImage(template.backgroundImage),
+    const [backgroundBlob, loadedVideos, stills] = await Promise.all([
+      template.backgroundImage
+        ? templatesApi.getBackground(template.id)
+        : Promise.resolve(null),
 
       Promise.all(
         clips.map(async (photo) => {
@@ -108,6 +111,17 @@ export async function exportMotionVideo(
 
       Promise.all(clips.map(loadPhotoImage)),
     ]);
+
+    // Convert the retrieved background Blob into an object URL.
+    const backgroundUrl = backgroundBlob
+      ? URL.createObjectURL(backgroundBlob)
+      : null;
+
+    if (backgroundUrl) {
+      urls.push(backgroundUrl);
+    }
+
+    const background = await loadBackgroundImage(backgroundUrl);
 
     loadedVideos.forEach((video, index) => {
       videos[index] = video;
@@ -140,7 +154,6 @@ export async function exportMotionVideo(
 
     const finishedAt: (number | null)[] = clips.map(() => null);
 
-    // Draw the initial frame before recording.
     const startedAt = performance.now();
 
     recorder.start(100);

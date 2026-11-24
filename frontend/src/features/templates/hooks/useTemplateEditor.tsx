@@ -2,13 +2,16 @@
 import { useEffect, useRef, useState } from "react";
 
 import { DEFAULT_LAYOUTS, DEFAULT_LAYOUT } from "@/data/layout";
+import { useObjectUrl } from "@/hooks/useObjectUrl";
+
 import type {
   Layout,
   Slot,
   TemplateConfiguration,
 } from "@/features/templates/types/template";
 
-//
+import { useTemplateBackground } from "./useTemplateBackground";
+
 export const MAX_PHOTO_SLOTS = 8;
 
 // Columns per photo count.
@@ -80,16 +83,52 @@ function useTemplateEditor(
       : createSlots(initialTemplate?.layout ?? DEFAULT_LAYOUT, 4),
   );
 
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(
-    initialTemplate?.backgroundImage ?? null,
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+
+  const [backgroundImageFile, setBackgroundImageFile] = useState<File | null>(
+    null,
   );
 
+  const [removeBackgroundImage, setRemoveBackgroundImage] = useState(false);
+
   const backgroundUrlRef = useRef<string | null>(null);
+  const savedBackgroundUrlRef = useRef<string | null>(null);
+
+  const removeBackgroundImageRef = useRef(false);
   const initializedTemplateKey = useRef<string | undefined>(undefined);
+
+  // Retrieve the existing template background.
+  const {
+    data: backgroundBlob,
+    isLoading: isBackgroundLoading,
+    isError: isBackgroundError,
+  } = useTemplateBackground(
+    initialTemplateKey ?? "",
+    Boolean(initialTemplate?.backgroundImage),
+  );
+
+  // Convert the retrieved Blob into an object URL.
+  const savedBackgroundUrl = useObjectUrl(backgroundBlob);
+
+  useEffect(() => {
+    if (!savedBackgroundUrl) return;
+
+    savedBackgroundUrlRef.current = savedBackgroundUrl;
+
+    // Don't overwrite a newly uploaded or removed background.
+    if (!backgroundUrlRef.current && !removeBackgroundImageRef.current) {
+      setBackgroundImage(savedBackgroundUrl);
+    }
+  }, [savedBackgroundUrl]);
 
   // Initialize or load a reusable template.
   useEffect(() => {
-    if (initializedTemplateKey.current === initialTemplateKey) return;
+    if (
+      initialTemplateKey !== undefined &&
+      initializedTemplateKey.current === initialTemplateKey
+    ) {
+      return;
+    }
 
     initializedTemplateKey.current = initialTemplateKey;
 
@@ -99,13 +138,19 @@ function useTemplateEditor(
       backgroundUrlRef.current = null;
     }
 
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(false);
+    removeBackgroundImageRef.current = false;
+
     if (!initialTemplate) {
+      setName("");
       setSelectedLayout({ ...DEFAULT_LAYOUT });
       setSlots(createSlots(DEFAULT_LAYOUT, 3));
       setBackgroundImage(null);
       return;
     }
 
+    setName(initialTemplate.name ?? "");
     setSelectedLayout({ ...initialTemplate.layout });
 
     setSlots(
@@ -114,7 +159,8 @@ function useTemplateEditor(
         : createSlots(initialTemplate.layout, 3),
     );
 
-    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+    // The actual image will be loaded by the background query.
+    setBackgroundImage(null);
   }, [initialTemplate, initialTemplateKey]);
 
   // Change layout.
@@ -124,7 +170,6 @@ function useTemplateEditor(
     if (!layout) return;
 
     setSelectedLayout(layout);
-
     setSlots((prev) => createSlots(layout, prev.length));
   };
 
@@ -172,17 +217,31 @@ function useTemplateEditor(
     setSlots((prev) => createSlots(selectedLayout, prev.length));
   };
 
+  // Reset editor.
   const resetEditor = () => {
+    if (backgroundUrlRef.current) {
+      URL.revokeObjectURL(backgroundUrlRef.current);
+      backgroundUrlRef.current = null;
+    }
+
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(false);
+    removeBackgroundImageRef.current = false;
+
     if (!initialTemplate) {
+      setName("");
       setSelectedLayout({ ...DEFAULT_LAYOUT });
       setSlots(createSlots(DEFAULT_LAYOUT, 3));
       setBackgroundImage(null);
       return;
     }
 
+    setName(initialTemplate.name ?? "");
     setSelectedLayout({ ...initialTemplate.layout });
+
     setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
-    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+
+    setBackgroundImage(savedBackgroundUrlRef.current);
   };
 
   // Upload background.
@@ -194,7 +253,11 @@ function useTemplateEditor(
     const url = URL.createObjectURL(file);
 
     backgroundUrlRef.current = url;
+    removeBackgroundImageRef.current = false;
+
     setBackgroundImage(url);
+    setBackgroundImageFile(file);
+    setRemoveBackgroundImage(false);
   };
 
   // Remove background.
@@ -204,10 +267,14 @@ function useTemplateEditor(
       backgroundUrlRef.current = null;
     }
 
+    removeBackgroundImageRef.current = true;
+
     setBackgroundImage(null);
+    setBackgroundImageFile(null);
+    setRemoveBackgroundImage(true);
   };
 
-  // Clean up object URLs on unmount.
+  // Clean up uploaded object URLs on unmount.
   useEffect(() => {
     return () => {
       if (backgroundUrlRef.current) {
@@ -234,6 +301,12 @@ function useTemplateEditor(
     backgroundImage,
     uploadBackground,
     removeBackground,
+
+    backgroundImageFile,
+    removeBackgroundImage,
+
+    isBackgroundLoading,
+    isBackgroundError,
   };
 }
 

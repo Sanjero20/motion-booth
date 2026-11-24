@@ -1,12 +1,19 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router";
+import { Camera, Edit, Eye } from "lucide-react";
+
 import PageHeading from "@/components/shared/PageHeading";
 import TemplateCanvas from "@/components/shared/TemplateCanvas";
+import CustomTemplateViewer from "@/features/templates/components/CustomTemplateViewer";
+
 import { Separator } from "@/components/ui/separator";
-import { useTemplate } from "@/features/templates/hooks/useTemplate";
 import { Button } from "@/components/ui/button";
-import { Camera, Edit } from "lucide-react";
+
+import { useTemplate } from "@/features/templates/hooks/useTemplate";
 
 function TemplateDetailsPage() {
+  const [isTestMode, setIsTestMode] = useState(false);
+
   const { templateId } = useParams();
   const { data: template, isLoading } = useTemplate(templateId!);
 
@@ -34,18 +41,25 @@ function TemplateDetailsPage() {
             Edit
           </Button>
 
-          <Button>
-            <Camera size={16} />
-            Test Template
+          <Button
+            variant={isTestMode ? "outline" : "default"}
+            onClick={() => setIsTestMode((prev) => !prev)}
+          >
+            {isTestMode ? <Eye size={16} /> : <Camera size={16} />}
+            {isTestMode ? "Preview Template" : "Test Template"}
           </Button>
         </div>
       </section>
 
       <Separator />
 
-      <section className="bg-secondary flex h-125 items-center justify-center p-8">
-        <TemplateCanvas template={template} />
-      </section>
+      {isTestMode ? (
+        <CustomTemplateViewer template={template} />
+      ) : (
+        <section className="bg-secondary flex h-125 items-center justify-center p-8">
+          <TemplateCanvas template={template} />
+        </section>
+      )}
     </div>
   );
 }
