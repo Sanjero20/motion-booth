@@ -6,4 +6,6 @@ export const eventKeys = {
   details: () => [...eventKeys.all, "detail"] as const,
 
   detail: (id: string) => [...eventKeys.details(), id] as const,
+
+  background: (id: string) => [...eventKeys.all, "background", id] as const,
 };

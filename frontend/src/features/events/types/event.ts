@@ -15,14 +15,10 @@ export interface Event {
   createdAt: string;
 }
 
-export interface CreateEventRequest {
+export interface EventRequest {
   name: string;
   template: EventTemplate;
   eventDate: string;
-}
-
-export interface UpdateEventRequest {
-  name: string;
-  template: EventTemplate;
-  eventDate: string;
+  backgroundImageFile?: File | null;
+  removeBackgroundImage?: boolean;
 }

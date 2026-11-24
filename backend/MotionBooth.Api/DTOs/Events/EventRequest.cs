@@ -1,11 +1,9 @@
-
 using System.ComponentModel.DataAnnotations;
-using MotionBooth.Api.Models;
 using MotionBooth.Api.Validation;
 
 namespace MotionBooth.Api.DTOs.Events;
 
-public class UpdateEventRequest
+public class EventRequest
 {
     [Required]
     [NotWhitespace]
@@ -13,7 +11,11 @@ public class UpdateEventRequest
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public EventTemplate? Template { get; set; }
+    public string Template { get; set; } = string.Empty;
+
+    public IFormFile? BackgroundImageFile { get; set; }
+
+    public bool RemoveBackgroundImage { get; set; }
 
     [Required]
     public DateOnly? EventDate { get; set; }

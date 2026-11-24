@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { eventsApi } from "../services/events.api";
-import type { UpdateEventRequest } from "../types/event";
 import { eventKeys } from "../queries/events.keys";
 import { toast } from "@/components/ui/toast";
+import type { EventRequest } from "../types/event";
 
 interface UpdateEventPayload {
   id: string;
-  data: UpdateEventRequest;
+  data: EventRequest;
 }
 
 export function useUpdateEvent() {
@@ -21,6 +21,10 @@ export function useUpdateEvent() {
 
       queryClient.invalidateQueries({
         queryKey: eventKeys.detail(variables.id),
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: eventKeys.background(variables.id),
       });
 
       toast.add({
