@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Apache.Arrow.C;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -330,5 +331,39 @@ public class TemplatesController : ControllerBase
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
+    }
+
+    [HttpGet("{id:guid}/background")]
+    public async Task<IActionResult> GetBackground(
+        Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        var userId = GetUserId();
+
+        var template = await _dbContext.Templates.FirstOrDefaultAsync(
+            t => t.Id == id && t.UserId == userId,
+            cancellationToken
+        );
+
+        if (
+            template is null
+            || string.IsNullOrWhiteSpace(template.BackgroundImage)
+        )
+        {
+            return NotFound();
+        }
+
+        var image = await _fileStorageService.GetAsync(
+            template.BackgroundImage,
+            cancellationToken
+        );
+
+        if (image is null)
+        {
+            return NotFound();
+        }
+
+        return File(image.Content, image.ContentType);
     }
 }
