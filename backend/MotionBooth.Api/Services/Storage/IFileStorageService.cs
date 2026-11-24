@@ -1,3 +1,5 @@
+using MotionBooth.Api.Models;
+
 namespace MotionBooth.Api.Services.Storage;
 
 public interface IFileStorageService
@@ -10,7 +12,7 @@ public interface IFileStorageService
         CancellationToken cancellationToken = default
     );
 
-    Task<Stream?> GetAsync(
+    Task<StoredFile?> GetAsync(
         string fileName,
         CancellationToken cancellationToken = default
     );

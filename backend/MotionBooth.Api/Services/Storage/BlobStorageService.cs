@@ -2,6 +2,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
 using MotionBooth.Api.Configuration;
+using MotionBooth.Api.Models;
 
 namespace MotionBooth.Api.Services.Storage;
 
@@ -49,7 +50,7 @@ public class BlobStorageService : IFileStorageService
         return blobClient.Name;
     }
 
-    public async Task<Stream?> GetAsync(
+    public async Task<StoredFile?> GetAsync(
         string fileName,
         CancellationToken cancellationToken = default
     )
@@ -64,7 +65,11 @@ public class BlobStorageService : IFileStorageService
         var response = await blobClient.DownloadStreamingAsync(
             cancellationToken: cancellationToken
         );
-        return response.Value.Content;
+
+        return new StoredFile(
+            response.Value.Content,
+            response.Value.Details.ContentType
+        );
     }
 
     public async Task DeleteAsync(
