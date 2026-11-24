@@ -28,7 +28,8 @@ export type EventTemplate = {
 };
 
 export type TemplateConfiguration = {
-  name: string;
+  id?: string;
+  name?: string;
   layout: Layout;
   slots: Slot[];
   backgroundImage?: string | null;

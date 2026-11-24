@@ -8,6 +8,8 @@ import type {
   TemplateConfiguration,
 } from "@/features/templates/types/template";
 
+import { useTemplateBackground } from "./useTemplateBackground";
+
 export const MAX_PHOTO_SLOTS = 8;
 
 // Columns per photo count.
@@ -79,9 +81,7 @@ function useTemplateEditor(
       : createSlots(initialTemplate?.layout ?? DEFAULT_LAYOUT, 4),
   );
 
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(
-    initialTemplate?.backgroundImage ?? null,
-  );
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   const [backgroundImageFile, setBackgroundImageFile] = useState<File | null>(
     null,
@@ -90,7 +90,20 @@ function useTemplateEditor(
   const [removeBackgroundImage, setRemoveBackgroundImage] = useState(false);
 
   const backgroundUrlRef = useRef<string | null>(null);
+  const savedBackgroundUrlRef = useRef<string | null>(null);
+
+  const removeBackgroundImageRef = useRef(false);
   const initializedTemplateKey = useRef<string | undefined>(undefined);
+
+  // Retrieve the existing template background.
+  const {
+    data: backgroundBlob,
+    isLoading: isBackgroundLoading,
+    isError: isBackgroundError,
+  } = useTemplateBackground(
+    initialTemplateKey ?? "",
+    Boolean(initialTemplate?.backgroundImage),
+  );
 
   // Initialize or load a reusable template.
   useEffect(() => {
@@ -111,6 +124,7 @@ function useTemplateEditor(
 
     setBackgroundImageFile(null);
     setRemoveBackgroundImage(false);
+    removeBackgroundImageRef.current = false;
 
     if (!initialTemplate) {
       setName("");
@@ -120,7 +134,7 @@ function useTemplateEditor(
       return;
     }
 
-    setName(initialTemplate.name);
+    setName(initialTemplate.name ?? "");
     setSelectedLayout({ ...initialTemplate.layout });
 
     setSlots(
@@ -129,8 +143,31 @@ function useTemplateEditor(
         : createSlots(initialTemplate.layout, 3),
     );
 
-    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+    // The actual image will be loaded by the background query.
+    setBackgroundImage(null);
   }, [initialTemplate, initialTemplateKey]);
+
+  // Convert the retrieved Blob into an object URL.
+  useEffect(() => {
+    if (!backgroundBlob) return;
+
+    const url = URL.createObjectURL(backgroundBlob);
+
+    savedBackgroundUrlRef.current = url;
+
+    // Don't overwrite a newly uploaded or removed background.
+    if (!backgroundUrlRef.current && !removeBackgroundImageRef.current) {
+      setBackgroundImage(url);
+    }
+
+    return () => {
+      URL.revokeObjectURL(url);
+
+      if (savedBackgroundUrlRef.current === url) {
+        savedBackgroundUrlRef.current = null;
+      }
+    };
+  }, [backgroundBlob]);
 
   // Change layout.
   const changeLayout = (format: Layout["format"]) => {
@@ -139,7 +176,6 @@ function useTemplateEditor(
     if (!layout) return;
 
     setSelectedLayout(layout);
-
     setSlots((prev) => createSlots(layout, prev.length));
   };
 
@@ -187,6 +223,7 @@ function useTemplateEditor(
     setSlots((prev) => createSlots(selectedLayout, prev.length));
   };
 
+  // Reset editor.
   const resetEditor = () => {
     if (backgroundUrlRef.current) {
       URL.revokeObjectURL(backgroundUrlRef.current);
@@ -195,17 +232,22 @@ function useTemplateEditor(
 
     setBackgroundImageFile(null);
     setRemoveBackgroundImage(false);
+    removeBackgroundImageRef.current = false;
 
     if (!initialTemplate) {
+      setName("");
       setSelectedLayout({ ...DEFAULT_LAYOUT });
       setSlots(createSlots(DEFAULT_LAYOUT, 3));
       setBackgroundImage(null);
       return;
     }
 
+    setName(initialTemplate.name ?? "");
     setSelectedLayout({ ...initialTemplate.layout });
+
     setSlots(initialTemplate.slots.map((slot) => ({ ...slot })));
-    setBackgroundImage(initialTemplate.backgroundImage ?? null);
+
+    setBackgroundImage(savedBackgroundUrlRef.current);
   };
 
   // Upload background.
@@ -217,6 +259,7 @@ function useTemplateEditor(
     const url = URL.createObjectURL(file);
 
     backgroundUrlRef.current = url;
+    removeBackgroundImageRef.current = false;
 
     setBackgroundImage(url);
     setBackgroundImageFile(file);
@@ -230,12 +273,14 @@ function useTemplateEditor(
       backgroundUrlRef.current = null;
     }
 
+    removeBackgroundImageRef.current = true;
+
     setBackgroundImage(null);
     setBackgroundImageFile(null);
     setRemoveBackgroundImage(true);
   };
 
-  // Clean up object URLs on unmount.
+  // Clean up uploaded object URLs on unmount.
   useEffect(() => {
     return () => {
       if (backgroundUrlRef.current) {
@@ -265,6 +310,9 @@ function useTemplateEditor(
 
     backgroundImageFile,
     removeBackgroundImage,
+
+    isBackgroundLoading,
+    isBackgroundError,
   };
 }
 

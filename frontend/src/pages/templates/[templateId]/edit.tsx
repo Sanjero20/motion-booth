@@ -101,8 +101,8 @@ function EditTemplatePage() {
       ) : (
         <CustomTemplateViewer
           template={{
-            id: "",
-            name: "Untitled Template",
+            id: template.id,
+            name: templateEditor.name,
             layout: templateEditor.selectedLayout,
             slots: templateEditor.slots,
             backgroundImage: templateEditor.backgroundImage,

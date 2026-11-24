@@ -45,4 +45,12 @@ export const templatesApi = {
   delete: async (id: string): Promise<void> => {
     await api.delete(`/templates/${id}`);
   },
+
+  getBackground: async (id: string): Promise<Blob> => {
+    const { data } = await api.get<Blob>(`/templates/${id}/background`, {
+      responseType: "blob",
+    });
+
+    return data;
+  },
 };
