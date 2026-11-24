@@ -365,4 +365,36 @@ public class EventsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("{id:guid}/background")]
+    public async Task<IActionResult> GetBackground(
+        Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        var userId = GetUserId();
+
+        var eventItem = await _dbContext.Events.FirstOrDefaultAsync(
+            e => e.Id == id && e.UserId == userId,
+            cancellationToken
+        );
+
+        if (
+            eventItem is null
+            || string.IsNullOrWhiteSpace(eventItem.Template.BackgroundImage)
+        )
+        {
+            return NotFound();
+        }
+
+        var image = await _fileStorageService.GetAsync(
+            eventItem.Template.BackgroundImage,
+            cancellationToken
+        );
+
+        if (image is null)
+            return NotFound();
+
+        return File(image.Content, image.ContentType);
+    }
 }
