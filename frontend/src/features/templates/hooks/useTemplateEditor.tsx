@@ -2,6 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { DEFAULT_LAYOUTS, DEFAULT_LAYOUT } from "@/data/layout";
+import { useObjectUrl } from "@/hooks/useObjectUrl";
+
 import type {
   Layout,
   Slot,
@@ -105,6 +107,20 @@ function useTemplateEditor(
     Boolean(initialTemplate?.backgroundImage),
   );
 
+  // Convert the retrieved Blob into an object URL.
+  const savedBackgroundUrl = useObjectUrl(backgroundBlob);
+
+  useEffect(() => {
+    if (!savedBackgroundUrl) return;
+
+    savedBackgroundUrlRef.current = savedBackgroundUrl;
+
+    // Don't overwrite a newly uploaded or removed background.
+    if (!backgroundUrlRef.current && !removeBackgroundImageRef.current) {
+      setBackgroundImage(savedBackgroundUrl);
+    }
+  }, [savedBackgroundUrl]);
+
   // Initialize or load a reusable template.
   useEffect(() => {
     if (
@@ -146,28 +162,6 @@ function useTemplateEditor(
     // The actual image will be loaded by the background query.
     setBackgroundImage(null);
   }, [initialTemplate, initialTemplateKey]);
-
-  // Convert the retrieved Blob into an object URL.
-  useEffect(() => {
-    if (!backgroundBlob) return;
-
-    const url = URL.createObjectURL(backgroundBlob);
-
-    savedBackgroundUrlRef.current = url;
-
-    // Don't overwrite a newly uploaded or removed background.
-    if (!backgroundUrlRef.current && !removeBackgroundImageRef.current) {
-      setBackgroundImage(url);
-    }
-
-    return () => {
-      URL.revokeObjectURL(url);
-
-      if (savedBackgroundUrlRef.current === url) {
-        savedBackgroundUrlRef.current = null;
-      }
-    };
-  }, [backgroundBlob]);
 
   // Change layout.
   const changeLayout = (format: Layout["format"]) => {
