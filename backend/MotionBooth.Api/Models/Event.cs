@@ -10,4 +10,6 @@ public class Event
 
     public string UserId { get; set; } = string.Empty;
     public ApplicationUser User { get; set; } = null!;
+
+    public ICollection<EventOutput> Outputs { get; set; } = [];
 }

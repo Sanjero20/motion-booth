@@ -6,13 +6,11 @@ namespace MotionBooth.Api.Data;
 
 public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
 {
-    public MotionBoothDbContext(
-      DbContextOptions<MotionBoothDbContext> options)
-      : base(options)
-    {
-    }
+    public MotionBoothDbContext(DbContextOptions<MotionBoothDbContext> options)
+        : base(options) { }
 
     public DbSet<Event> Events => Set<Event>();
+    public DbSet<EventOutput> EventOutputs => Set<EventOutput>();
 
     public DbSet<Template> Templates => Set<Template>();
 
@@ -21,7 +19,8 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(modelBuilder);
 
         // Event Ownership
-        modelBuilder.Entity<Event>()
+        modelBuilder
+            .Entity<Event>()
             .HasOne(e => e.User)
             .WithMany(u => u.Events)
             .HasForeignKey(e => e.UserId)
@@ -29,7 +28,8 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
             .OnDelete(DeleteBehavior.Cascade);
 
         // Template Ownership
-        modelBuilder.Entity<Template>()
+        modelBuilder
+            .Entity<Template>()
             .HasOne(t => t.User)
             .WithMany(u => u.Templates)
             .HasForeignKey(t => t.UserId)
@@ -38,21 +38,30 @@ public class MotionBoothDbContext : IdentityDbContext<ApplicationUser>
 
         modelBuilder.Entity<Event>(entity =>
         {
-            entity.OwnsOne(e => e.Template, template =>
-            {
-                template.ToJson();
-                template.OwnsOne(t => t.Layout);
-                template.OwnsMany(t => t.Slots);
-            });
+            entity.OwnsOne(
+                e => e.Template,
+                template =>
+                {
+                    template.ToJson();
+                    template.OwnsOne(t => t.Layout);
+                    template.OwnsMany(t => t.Slots);
+                }
+            );
         });
+
+        modelBuilder
+            .Entity<EventOutput>()
+            .HasOne(o => o.Event)
+            .WithMany(e => e.Outputs)
+            .HasForeignKey(o => o.EventId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Template>(entity =>
         {
-            entity.Property(e => e.Layout)
-                .HasColumnType("jsonb");
+            entity.Property(e => e.Layout).HasColumnType("jsonb");
 
-            entity.Property(e => e.Slots)
-                .HasColumnType("jsonb");
+            entity.Property(e => e.Slots).HasColumnType("jsonb");
         });
     }
 }
