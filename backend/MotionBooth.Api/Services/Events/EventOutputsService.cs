@@ -1,10 +1,8 @@
-using Apache.Arrow.C;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Data;
 using MotionBooth.Api.DTOs.Events;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.Services.Storage;
-using YamlDotNet.Core.Tokens;
 
 namespace MotionBooth.Api.Services.Events;
 
@@ -49,7 +47,7 @@ public class EventOutputsService : IEventOutputsService
 
             imagePath = await _fileStorage.UploadAsync(
                 imageStream,
-                "image" + Path.GetExtension(request.Image.FileName),
+                "image",
                 request.Image.ContentType,
                 folder,
                 cancellationToken
@@ -60,7 +58,7 @@ public class EventOutputsService : IEventOutputsService
 
             videoPath = await _fileStorage.UploadAsync(
                 videoStream,
-                "motion" + Path.GetExtension(request.Video.FileName),
+                "motion",
                 request.Video.ContentType,
                 folder,
                 cancellationToken
@@ -101,5 +99,35 @@ public class EventOutputsService : IEventOutputsService
             o => o.Id == outputId,
             cancellationToken
         );
+    }
+
+    public async Task<StoredFile?> GetImageAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var output = await GetAsync(outputId, cancellationToken);
+
+        if (output is null)
+        {
+            return null;
+        }
+
+        return await _fileStorage.GetAsync(output.ImagePath, cancellationToken);
+    }
+
+    public async Task<StoredFile?> GetVideoAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var output = await GetAsync(outputId, cancellationToken);
+
+        if (output is null)
+        {
+            return null;
+        }
+
+        return await _fileStorage.GetAsync(output.VideoPath, cancellationToken);
     }
 }

@@ -15,4 +15,14 @@ public interface IEventOutputsService
         Guid outputId,
         CancellationToken cancellationToken = default
     );
+
+    Task<StoredFile?> GetImageAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<StoredFile?> GetVideoAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    );
 }

@@ -157,7 +157,7 @@ public class EventsController : ControllerBase
 
                 blobName = await _fileStorageService.UploadAsync(
                     stream,
-                    $"background{fileExtension}",
+                    "background",
                     file.ContentType,
                     "events",
                     cancellationToken

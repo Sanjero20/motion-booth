@@ -76,4 +76,40 @@ public class EventOutputsController : ControllerBase
 
         return Ok(response);
     }
+
+    [HttpGet("/outputs/{outputId:guid}/image")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOutputImage(
+        Guid outputId,
+        CancellationToken cancellationToken
+    )
+    {
+        var file = await _eventOutputsService.GetImageAsync(
+            outputId,
+            cancellationToken
+        );
+
+        if (file is null)
+            return NotFound();
+
+        return File(file.Content, file.ContentType);
+    }
+
+    [HttpGet("/outputs/{outputId:guid}/video")]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetOutputVideo(
+        Guid outputId,
+        CancellationToken cancellationToken
+    )
+    {
+        var file = await _eventOutputsService.GetVideoAsync(
+            outputId,
+            cancellationToken
+        );
+
+        if (file is null)
+            return NotFound();
+
+        return File(file.Content, file.ContentType);
+    }
 }
