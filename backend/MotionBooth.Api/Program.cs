@@ -2,8 +2,9 @@ using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MotionBooth.Api.Configuration;
-using MotionBooth.Api.Models;
 using MotionBooth.Api.Data;
+using MotionBooth.Api.Models;
+using MotionBooth.Api.Services.Events;
 using MotionBooth.Api.Services.Storage;
 using Npgsql;
 
@@ -49,13 +50,14 @@ dataSourceBuilder.EnableDynamicJson();
 
 builder.Services.AddSingleton(dataSourceBuilder.Build());
 
-builder.Services.AddDbContext<MotionBoothDbContext>((services, options) =>
-    options.UseNpgsql(services.GetRequiredService<NpgsqlDataSource>())
+builder.Services.AddDbContext<MotionBoothDbContext>(
+    (services, options) =>
+        options.UseNpgsql(services.GetRequiredService<NpgsqlDataSource>())
 );
 
 // Identity
-builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+builder
+    .Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
         options.User.RequireUniqueEmail = true;
 
@@ -85,21 +87,23 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Azure Blob Storage
 builder.Services.Configure<StorageOptions>(
-    builder.Configuration.GetSection(StorageOptions.SectionName));
+    builder.Configuration.GetSection(StorageOptions.SectionName)
+);
 
 builder.Services.AddSingleton(sp =>
 {
     var configuration = sp.GetRequiredService<IConfiguration>();
 
-    var connectionString = configuration
-        .GetConnectionString("AzureStorage")
+    var connectionString = configuration.GetConnectionString("AzureStorage")
         ?? throw new InvalidOperationException(
-            "Azure Storage connection string is missing.");
+            "Azure Storage connection string is missing."
+        );
 
     return new BlobServiceClient(connectionString);
 });
 
 builder.Services.AddScoped<IFileStorageService, BlobStorageService>();
+builder.Services.AddScoped<IEventOutputsService, EventOutputsService>();
 
 var app = builder.Build();
 
