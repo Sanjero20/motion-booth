@@ -10,4 +10,9 @@ public interface IEventOutputsService
         CreateEventOutputRequest request,
         CancellationToken cancellationToken = default
     );
+
+    Task<EventOutput?> GetAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    );
 }

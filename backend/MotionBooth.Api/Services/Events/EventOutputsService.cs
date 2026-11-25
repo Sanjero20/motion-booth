@@ -91,4 +91,15 @@ public class EventOutputsService : IEventOutputsService
             throw;
         }
     }
+
+    public async Task<EventOutput?> GetAsync(
+        Guid outputId,
+        CancellationToken cancellationToken = default
+    )
+    {
+        return await _dbContext.EventOutputs.FirstOrDefaultAsync(
+            o => o.Id == outputId,
+            cancellationToken
+        );
+    }
 }
