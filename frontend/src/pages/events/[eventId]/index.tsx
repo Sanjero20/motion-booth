@@ -44,7 +44,7 @@ function EventDetailsPage() {
             Edit
           </Button>
 
-          <Button>
+          <Button render={<Link to={`/events/${event.id}/booth`} />}>
             <Camera size={16} />
             Launch Booth
           </Button>

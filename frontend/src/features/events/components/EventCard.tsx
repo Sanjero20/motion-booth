@@ -46,7 +46,10 @@ function EventCard({ event }: Props) {
           Manage
         </Button>
 
-        <Button nativeButton={false} render={<Link to={"/booth"} />}>
+        <Button
+          nativeButton={false}
+          render={<Link to={`/events/${event.id}/booth`} />}
+        >
           <Camera size={16} />
           Launch
         </Button>
