@@ -6,6 +6,7 @@ using MotionBooth.Api.Data;
 using MotionBooth.Api.Models;
 using MotionBooth.Api.Services.Events;
 using MotionBooth.Api.Services.Storage;
+using MotionBooth.Api.Services.Templates;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -104,6 +105,7 @@ builder.Services.AddSingleton(sp =>
 
 builder.Services.AddScoped<IFileStorageService, BlobStorageService>();
 builder.Services.AddScoped<IEventOutputsService, EventOutputsService>();
+builder.Services.AddScoped<ITemplatesService, TemplatesService>();
 
 var app = builder.Build();
 

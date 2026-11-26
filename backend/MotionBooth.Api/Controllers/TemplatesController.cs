@@ -1,85 +1,57 @@
 using System.Security.Claims;
-using Apache.Arrow.C;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MotionBooth.Api.Data;
 using MotionBooth.Api.DTOs.Templates;
-using MotionBooth.Api.Helpers;
-using MotionBooth.Api.Models;
-using MotionBooth.Api.Services.Storage;
+using MotionBooth.Api.Services.Templates;
 
 [Authorize]
 [ApiController]
 [Route("api/templates")]
 public class TemplatesController : ControllerBase
 {
-    private readonly MotionBoothDbContext _dbContext;
-    private readonly IFileStorageService _fileStorageService;
+    private readonly ITemplatesService _templatesService;
+
+    public TemplatesController(ITemplatesService templatesService)
+    {
+        _templatesService = templatesService;
+    }
 
     private string GetUserId()
     {
         return User.FindFirstValue(ClaimTypes.NameIdentifier)!;
     }
 
-    public TemplatesController(
-        MotionBoothDbContext dbContext,
-        IFileStorageService fileStorageService
-    )
-    {
-        _dbContext = dbContext;
-        _fileStorageService = fileStorageService;
-    }
-
     // GET: api/templates
     [HttpGet]
-    public async Task<
-        ActionResult<IEnumerable<TemplateResponse>>
-    > GetTemplates()
+    public async Task<ActionResult<IEnumerable<TemplateResponse>>> GetTemplates(
+        CancellationToken cancellationToken
+    )
     {
-        var userId = GetUserId();
-
-        var templates = await _dbContext
-            .Templates.AsNoTracking()
-            .Where(t => t.UserId == userId)
-            .Select(t => new TemplateResponse
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Layout = t.Layout,
-                Slots = t.Slots,
-                BackgroundImage = t.BackgroundImage,
-            })
-            .ToListAsync();
+        var templates = await _templatesService.GetAllAsync(
+            GetUserId(),
+            cancellationToken
+        );
 
         return Ok(templates);
     }
 
     // GET: api/templates/{id}
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TemplateResponse>> GetTemplate(Guid id)
+    public async Task<ActionResult<TemplateResponse>> GetTemplate(
+        Guid id,
+        CancellationToken cancellationToken
+    )
     {
-        var userId = GetUserId();
+        var template = await _templatesService.GetByIdAsync(
+            id,
+            GetUserId(),
+            cancellationToken
+        );
 
-        var template = await _dbContext
-            .Templates.AsNoTracking()
-            .FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
-
-        if (template == null)
-        {
+        if (template is null)
             return NotFound();
-        }
 
-        var response = new TemplateResponse
-        {
-            Id = template.Id,
-            Name = template.Name,
-            Layout = template.Layout,
-            Slots = template.Slots,
-            BackgroundImage = template.BackgroundImage,
-        };
-
-        return Ok(response);
+        return Ok(template);
     }
 
     // POST: api/templates
@@ -90,97 +62,24 @@ public class TemplatesController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        if (
-            !TemplateRequestHelper.TryDeserialize(
-                request,
-                out var layout,
-                out var slots
-            )
-        )
-        {
-            return BadRequest(new { message = "Invalid template data." });
-        }
-
-        var file = request.BackgroundImageFile;
-        string? fileExtension = null;
-
-        if (
-            file is not null
-            && !ImageValidationHelper.TryValidate(
-                file,
-                out fileExtension,
-                out var errorMessage
-            )
-        )
-        {
-            return BadRequest(new { message = errorMessage });
-        }
-
-        var template = new Template
-        {
-            Name = request.Name,
-            Layout = layout!,
-            Slots = slots!,
-            UserId = GetUserId(),
-        };
-
-        string? blobName = null;
-
         try
         {
-            if (file is not null)
-            {
-                await using var stream = file.OpenReadStream();
+            var template = await _templatesService.CreateAsync(
+                request,
+                GetUserId(),
+                cancellationToken
+            );
 
-                blobName = await _fileStorageService.UploadAsync(
-                    stream,
-                    $"background{fileExtension}",
-                    file.ContentType,
-                    "templates",
-                    cancellationToken
-                );
-
-                template.BackgroundImage = blobName;
-            }
-
-            _dbContext.Templates.Add(template);
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            return CreatedAtAction(
+                nameof(GetTemplate),
+                new { id = template.Id },
+                template
+            );
         }
-        catch
+        catch (ArgumentException ex)
         {
-            if (blobName is not null)
-            {
-                try
-                {
-                    await _fileStorageService.DeleteAsync(
-                        blobName,
-                        cancellationToken
-                    );
-                }
-                catch
-                {
-                    // Preserve the original exception.
-                }
-            }
-
-            throw;
+            return BadRequest(new { message = ex.Message });
         }
-
-        var response = new TemplateResponse
-        {
-            Id = template.Id,
-            Name = template.Name,
-            Layout = template.Layout,
-            Slots = template.Slots,
-            BackgroundImage = template.BackgroundImage,
-        };
-
-        return CreatedAtAction(
-            nameof(GetTemplate),
-            new { id = template.Id },
-            response
-        );
     }
 
     // PUT: api/templates/{id}
@@ -192,111 +91,24 @@ public class TemplatesController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var userId = GetUserId();
-
-        var template = await _dbContext.Templates.FirstOrDefaultAsync(t =>
-            t.Id == id && t.UserId == userId
-        );
-
-        if (template is null)
-        {
-            return NotFound();
-        }
-
-        if (
-            !TemplateRequestHelper.TryDeserialize(
-                request,
-                out var layout,
-                out var slots
-            )
-        )
-        {
-            return BadRequest(new { message = "Invalid template data." });
-        }
-
-        var file = request.BackgroundImageFile;
-        string? fileExtension = null;
-
-        if (
-            file is not null
-            && !ImageValidationHelper.TryValidate(
-                file,
-                out fileExtension,
-                out var errorMessage
-            )
-        )
-        {
-            return BadRequest(new { message = errorMessage });
-        }
-
-        var oldBlobName = template.BackgroundImage;
-        string? newBlobName = null;
-
         try
         {
-            // Upload the new image first, if provided.
-            if (file is not null)
-            {
-                await using var stream = file.OpenReadStream();
-
-                newBlobName = await _fileStorageService.UploadAsync(
-                    stream,
-                    $"background{fileExtension}",
-                    file.ContentType,
-                    "templates",
-                    cancellationToken
-                );
-            }
-
-            template.Name = request.Name;
-            template.Layout = layout!;
-            template.Slots = slots!;
-
-            if (request.RemoveBackgroundImage)
-            {
-                template.BackgroundImage = null;
-            }
-            else if (newBlobName is not null)
-            {
-                template.BackgroundImage = newBlobName;
-            }
-
-            await _dbContext.SaveChangesAsync(cancellationToken);
-        }
-        catch
-        {
-            // Clean up the new image if the database update fails.
-            if (newBlobName is not null)
-            {
-                try
-                {
-                    await _fileStorageService.DeleteAsync(
-                        newBlobName,
-                        CancellationToken.None
-                    );
-                }
-                catch
-                {
-                    // Preserve the original exception.
-                }
-            }
-
-            throw;
-        }
-
-        // Delete the old image only after the database update succeeds.
-        if (
-            oldBlobName is not null
-            && (request.RemoveBackgroundImage || newBlobName is not null)
-        )
-        {
-            await _fileStorageService.DeleteAsync(
-                oldBlobName,
+            var updated = await _templatesService.UpdateAsync(
+                id,
+                request,
+                GetUserId(),
                 cancellationToken
             );
-        }
 
-        return NoContent();
+            if (!updated)
+                return NotFound();
+
+            return NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     // DELETE: api/templates/{id}
@@ -306,63 +118,33 @@ public class TemplatesController : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var userId = GetUserId();
-
-        var template = await _dbContext.Templates.FirstOrDefaultAsync(t =>
-            t.Id == id && t.UserId == userId
+        var deleted = await _templatesService.DeleteAsync(
+            id,
+            GetUserId(),
+            cancellationToken
         );
 
-        if (template is null)
-        {
+        if (!deleted)
             return NotFound();
-        }
-
-        // Delete the background image from storage, if one exists.
-        if (!string.IsNullOrEmpty(template.BackgroundImage))
-        {
-            await _fileStorageService.DeleteAsync(
-                template.BackgroundImage,
-                cancellationToken
-            );
-        }
-
-        _dbContext.Templates.Remove(template);
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
         return NoContent();
     }
 
+    // GET: api/templates/{id}/background
     [HttpGet("{id:guid}/background")]
     public async Task<IActionResult> GetBackground(
         Guid id,
         CancellationToken cancellationToken
     )
     {
-        var userId = GetUserId();
-
-        var template = await _dbContext.Templates.FirstOrDefaultAsync(
-            t => t.Id == id && t.UserId == userId,
-            cancellationToken
-        );
-
-        if (
-            template is null
-            || string.IsNullOrWhiteSpace(template.BackgroundImage)
-        )
-        {
-            return NotFound();
-        }
-
-        var image = await _fileStorageService.GetAsync(
-            template.BackgroundImage,
+        var image = await _templatesService.GetBackgroundAsync(
+            id,
+            GetUserId(),
             cancellationToken
         );
 
         if (image is null)
-        {
             return NotFound();
-        }
 
         return File(image.Content, image.ContentType);
     }
