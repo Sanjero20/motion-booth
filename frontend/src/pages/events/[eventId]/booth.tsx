@@ -23,7 +23,7 @@ function EventBoothPage() {
     backgroundImage: event.template.backgroundImage,
   };
 
-  return <PhotoBooth template={template} backgroundSource="event" />;
+  return <PhotoBooth template={template} eventId={eventId} />;
 }
 
 export default EventBoothPage;

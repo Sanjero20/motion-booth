@@ -12,6 +12,7 @@ import { templatesApi } from "@/features/templates/services/templates.api";
 
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
+import { eventsApi } from "@/features/events/services/events.api";
 
 export type ExportStage = "idle" | "recording" | "converting";
 
@@ -31,10 +32,16 @@ export default function useBoothExport(
   selectedTemplate: Template,
   photos: Photo[],
   holdMs = 3000,
+  eventId?: string,
 ) {
   const [exportStage, setExportStage] = useState<ExportStage>("idle");
   const [exportProgress, setExportProgress] = useState(0);
   const [exportError, setExportError] = useState<string | null>(null);
+
+  const getBackground = () =>
+    eventId
+      ? eventsApi.getBackground(eventId)
+      : templatesApi.getBackground(selectedTemplate.id);
 
   const handleSaveImage = async () => {
     let backgroundUrl: string | null = null;
@@ -56,7 +63,7 @@ export default function useBoothExport(
 
       // Retrieve the saved background Blob.
       const backgroundBlob = selectedTemplate.backgroundImage
-        ? await templatesApi.getBackground(selectedTemplate.id)
+        ? await getBackground()
         : null;
 
       // Convert the Blob into a temporary object URL.
@@ -108,6 +115,9 @@ export default function useBoothExport(
         onProgress: (progress) => {
           setExportProgress(Math.round(progress * 100));
         },
+        getBackground: selectedTemplate.backgroundImage
+          ? getBackground
+          : undefined,
       });
 
       let blob = recorded.blob;

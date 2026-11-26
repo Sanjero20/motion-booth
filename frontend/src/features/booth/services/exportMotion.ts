@@ -7,7 +7,6 @@ import {
 } from "@/features/booth/services/canvas";
 
 import { renderFrame } from "@/features/booth/services/canvas/renderFrame";
-import { templatesApi } from "@/features/templates/services/templates.api";
 
 const MIME_CANDIDATES = [
   "video/mp4;codecs=avc1.42E01E",
@@ -31,6 +30,7 @@ interface Options {
   flashMs?: number;
   fps?: number;
   onProgress?: (progress: number) => void;
+  getBackground?: () => Promise<Blob>;
 }
 
 export interface ExportedVideo {
@@ -41,7 +41,13 @@ export interface ExportedVideo {
 export async function exportMotionVideo(
   template: Template,
   photos: Photo[],
-  { holdMs = 3000, flashMs = 300, fps = 30, onProgress }: Options = {},
+  {
+    holdMs = 3000,
+    flashMs = 300,
+    fps = 30,
+    onProgress,
+    getBackground,
+  }: Options = {},
 ): Promise<ExportedVideo> {
   const mimeType = getExportMimeType();
 
@@ -80,8 +86,8 @@ export async function exportMotionVideo(
 
   try {
     const [backgroundBlob, loadedVideos, stills] = await Promise.all([
-      template.backgroundImage
-        ? templatesApi.getBackground(template.id)
+      template.backgroundImage && getBackground
+        ? getBackground()
         : Promise.resolve(null),
 
       Promise.all(

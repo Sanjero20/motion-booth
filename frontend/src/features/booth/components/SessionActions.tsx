@@ -10,6 +10,7 @@ interface Props {
   holdMs: number;
   onNewSession: () => void;
   allowSharing?: boolean;
+  eventId?: string;
 }
 
 function SessionActions({
@@ -18,6 +19,7 @@ function SessionActions({
   holdMs,
   onNewSession,
   allowSharing = false,
+  eventId,
 }: Props) {
   const {
     handleSaveImage,
@@ -25,7 +27,7 @@ function SessionActions({
     exportStage,
     exportProgress,
     exportError,
-  } = useBoothExport(template, photos, holdMs);
+  } = useBoothExport(template, photos, holdMs, eventId);
 
   const isExporting = exportStage !== "idle";
 
