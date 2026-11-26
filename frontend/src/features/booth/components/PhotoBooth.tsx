@@ -15,12 +15,13 @@ import { AnimatePresence, motion } from "motion/react";
 
 interface Props {
   template: Template;
+  eventId?: string;
 }
 
 const COUNTDOWN_SECONDS = 5;
 const HOLD_MS = 2000;
 
-function PhotoBooth({ template }: Props) {
+function PhotoBooth({ template, eventId }: Props) {
   const { videoRef, videoElement, canvasRef, cameraError, capturePhoto } =
     useCamera();
 
@@ -68,6 +69,7 @@ function PhotoBooth({ template }: Props) {
                   mode="motion"
                   holdMs={HOLD_MS}
                   className="max-h-full max-w-full"
+                  backgroundSource={eventId ? "event" : "template"}
                 />
               </div>
             </div>
@@ -91,6 +93,7 @@ function PhotoBooth({ template }: Props) {
                 photos={photos}
                 holdMs={HOLD_MS}
                 onNewSession={resetCapture}
+                eventId={eventId}
               />
             </aside>
           </motion.section>

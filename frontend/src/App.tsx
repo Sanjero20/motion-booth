@@ -19,6 +19,7 @@ import EventsPage from "./pages/events";
 import CreateEventPage from "./pages/events/new";
 import EventDetailsPage from "./pages/events/[eventId]";
 import EditEventPage from "./pages/events/[eventId]/edit";
+import EventBoothPage from "./pages/events/[eventId]/booth";
 
 import TemplatesPage from "./pages/templates";
 import CreateTemplatePage from "./pages/templates/new";
@@ -53,6 +54,7 @@ function App() {
           <Route path="/events/new" element={<CreateEventPage />} />
           <Route path="/events/:eventId" element={<EventDetailsPage />} />
           <Route path="/events/:eventId/edit" element={<EditEventPage />} />
+          <Route path="/events/:eventId/booth" element={<EventBoothPage />} />
 
           <Route path="/templates" element={<TemplatesPage />} />
           <Route path="/templates/new" element={<CreateTemplatePage />} />
