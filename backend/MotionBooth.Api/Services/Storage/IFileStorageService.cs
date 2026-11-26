@@ -6,19 +6,18 @@ public interface IFileStorageService
 {
     Task<string> UploadAsync(
         Stream file,
-        string fileName,
+        string blobName,
         string contentType,
-        string folder,
         CancellationToken cancellationToken = default
     );
 
     Task<StoredFile?> GetAsync(
-        string fileName,
+        string blobName,
         CancellationToken cancellationToken = default
     );
 
     Task DeleteAsync(
-        string fileName,
+        string blobName,
         CancellationToken cancellationToken = default
     );
 }

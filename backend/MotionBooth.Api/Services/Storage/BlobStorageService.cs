@@ -22,19 +22,14 @@ public class BlobStorageService : IFileStorageService
 
     public async Task<string> UploadAsync(
         Stream file,
-        string fileName,
+        string blobName,
         string contentType,
-        string folder,
         CancellationToken cancellationToken = default
     )
     {
         await _containerClient.CreateIfNotExistsAsync(
             cancellationToken: cancellationToken
         );
-
-        var extension = Path.GetExtension(fileName);
-        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
-        var blobName = $"{folder.Trim('/')}/{uniqueFileName}";
 
         var blobClient = _containerClient.GetBlobClient(blobName);
 
