@@ -1,3 +1,4 @@
+using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Options;
@@ -22,19 +23,15 @@ public class BlobStorageService : IFileStorageService
 
     public async Task<string> UploadAsync(
         Stream file,
-        string fileName,
+        string blobName,
         string contentType,
-        string folder,
+        bool overwrite = false,
         CancellationToken cancellationToken = default
     )
     {
         await _containerClient.CreateIfNotExistsAsync(
             cancellationToken: cancellationToken
         );
-
-        var extension = Path.GetExtension(fileName);
-        var uniqueFileName = $"{Guid.NewGuid()}{extension}";
-        var blobName = $"{folder.Trim('/')}/{uniqueFileName}";
 
         var blobClient = _containerClient.GetBlobClient(blobName);
 
@@ -43,6 +40,9 @@ public class BlobStorageService : IFileStorageService
             new BlobUploadOptions
             {
                 HttpHeaders = new BlobHttpHeaders { ContentType = contentType },
+                Conditions = overwrite
+                    ? null
+                    : new BlobRequestConditions { IfNoneMatch = ETag.All },
             },
             cancellationToken
         );
@@ -51,16 +51,14 @@ public class BlobStorageService : IFileStorageService
     }
 
     public async Task<StoredFile?> GetAsync(
-        string fileName,
+        string blobName,
         CancellationToken cancellationToken = default
     )
     {
-        var blobClient = _containerClient.GetBlobClient(fileName);
+        var blobClient = _containerClient.GetBlobClient(blobName);
 
         if (!await blobClient.ExistsAsync(cancellationToken))
-        {
             return null;
-        }
 
         var response = await blobClient.DownloadStreamingAsync(
             cancellationToken: cancellationToken
@@ -73,11 +71,12 @@ public class BlobStorageService : IFileStorageService
     }
 
     public async Task DeleteAsync(
-        string fileName,
+        string blobName,
         CancellationToken cancellationToken = default
     )
     {
-        var blobClient = _containerClient.GetBlobClient(fileName);
+        var blobClient = _containerClient.GetBlobClient(blobName);
+
         await blobClient.DeleteIfExistsAsync(
             cancellationToken: cancellationToken
         );

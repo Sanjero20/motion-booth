@@ -247,6 +247,33 @@ namespace MotionBooth.Api.Migrations
                     b.ToTable("Events");
                 });
 
+            modelBuilder.Entity("MotionBooth.Api.Models.EventOutput", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("EventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VideoPath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("EventOutputs");
+                });
+
             modelBuilder.Entity("MotionBooth.Api.Models.Template", b =>
                 {
                     b.Property<Guid>("Id")
@@ -409,6 +436,17 @@ namespace MotionBooth.Api.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("MotionBooth.Api.Models.EventOutput", b =>
+                {
+                    b.HasOne("MotionBooth.Api.Models.Event", "Event")
+                        .WithMany("Outputs")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+                });
+
             modelBuilder.Entity("MotionBooth.Api.Models.Template", b =>
                 {
                     b.HasOne("MotionBooth.Api.Models.ApplicationUser", "User")
@@ -425,6 +463,11 @@ namespace MotionBooth.Api.Migrations
                     b.Navigation("Events");
 
                     b.Navigation("Templates");
+                });
+
+            modelBuilder.Entity("MotionBooth.Api.Models.Event", b =>
+                {
+                    b.Navigation("Outputs");
                 });
 #pragma warning restore 612, 618
         }
