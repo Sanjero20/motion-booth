@@ -8,6 +8,7 @@ public interface IFileStorageService
         Stream file,
         string blobName,
         string contentType,
+        bool overwrite = false,
         CancellationToken cancellationToken = default
     );
 
