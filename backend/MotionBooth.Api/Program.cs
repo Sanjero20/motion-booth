@@ -104,6 +104,7 @@ builder.Services.AddSingleton(sp =>
 });
 
 builder.Services.AddScoped<IFileStorageService, BlobStorageService>();
+builder.Services.AddScoped<IEventsService, EventsService>();
 builder.Services.AddScoped<IEventOutputsService, EventOutputsService>();
 builder.Services.AddScoped<ITemplatesService, TemplatesService>();
 

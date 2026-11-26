@@ -26,43 +26,47 @@ public class EventOutputsService : IEventOutputsService
         CancellationToken cancellationToken = default
     )
     {
-        var eventExist = await _dbContext.Events.AnyAsync(
+        var eventExists = await _dbContext.Events.AnyAsync(
             e => e.Id == eventId,
             cancellationToken
         );
 
-        if (!eventExist)
+        if (!eventExists)
             throw new KeyNotFoundException("Event not found");
 
         var outputId = Guid.NewGuid();
-        var folder = $"events/{eventId}/outputs/{outputId}";
 
-        string? imagePath = null;
-        string? videoPath = null;
+        var imagePath = $"outputs/{eventId}/images/{outputId}.png";
+        var videoPath = $"outputs/{eventId}/videos/{outputId}.mp4";
+
+        var imageUploaded = false;
+        var videoUploaded = false;
 
         try
         {
-            // Save Image
+            // Upload image
             await using var imageStream = request.Image.OpenReadStream();
 
-            imagePath = await _fileStorage.UploadAsync(
+            await _fileStorage.UploadAsync(
                 imageStream,
-                "image",
+                imagePath,
                 request.Image.ContentType,
-                folder,
-                cancellationToken
+                cancellationToken: cancellationToken
             );
 
-            // Save video
+            imageUploaded = true;
+
+            // Upload video
             await using var videoStream = request.Video.OpenReadStream();
 
-            videoPath = await _fileStorage.UploadAsync(
+            await _fileStorage.UploadAsync(
                 videoStream,
-                "motion",
+                videoPath,
                 request.Video.ContentType,
-                folder,
-                cancellationToken
+                cancellationToken: cancellationToken
             );
+
+            videoUploaded = true;
 
             var output = new EventOutput
             {
@@ -80,11 +84,35 @@ public class EventOutputsService : IEventOutputsService
         }
         catch
         {
-            if (imagePath is not null)
-                await _fileStorage.DeleteAsync(imagePath);
+            if (imageUploaded)
+            {
+                try
+                {
+                    await _fileStorage.DeleteAsync(
+                        imagePath,
+                        CancellationToken.None
+                    );
+                }
+                catch
+                {
+                    // Preserve the original exception.
+                }
+            }
 
-            if (videoPath is not null)
-                await _fileStorage.DeleteAsync(videoPath);
+            if (videoUploaded)
+            {
+                try
+                {
+                    await _fileStorage.DeleteAsync(
+                        videoPath,
+                        CancellationToken.None
+                    );
+                }
+                catch
+                {
+                    // Preserve the original exception.
+                }
+            }
 
             throw;
         }
@@ -109,9 +137,7 @@ public class EventOutputsService : IEventOutputsService
         var output = await GetAsync(outputId, cancellationToken);
 
         if (output is null)
-        {
             return null;
-        }
 
         return await _fileStorage.GetAsync(output.ImagePath, cancellationToken);
     }
@@ -124,9 +150,7 @@ public class EventOutputsService : IEventOutputsService
         var output = await GetAsync(outputId, cancellationToken);
 
         if (output is null)
-        {
             return null;
-        }
 
         return await _fileStorage.GetAsync(output.VideoPath, cancellationToken);
     }

@@ -120,6 +120,7 @@ public class TemplatesService : ITemplatesService
                     stream,
                     blobName,
                     file.ContentType,
+                    overwrite: true,
                     cancellationToken
                 );
 
@@ -219,6 +220,7 @@ public class TemplatesService : ITemplatesService
                     stream,
                     newBlobName,
                     file.ContentType,
+                    overwrite: true,
                     cancellationToken
                 );
             }
