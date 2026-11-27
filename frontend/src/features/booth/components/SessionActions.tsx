@@ -42,9 +42,15 @@ function SessionActions({
     exportError,
   } = useBoothExport(template, photos, holdMs, eventId);
 
-  const { generateAndSave, retryUpload, status, error } = useEventOutput(
-    eventId ?? "",
-  );
+  const {
+    generateAndSave,
+    retryUpload,
+    downloadImage,
+    downloadVideo,
+    hasGeneratedFiles,
+    status,
+    error,
+  } = useEventOutput(eventId ?? "");
 
   const autoSaveStarted = useRef(false);
 
@@ -112,6 +118,28 @@ function SessionActions({
               >
                 <RotateCcw className="size-4" />
                 Retry
+              </Button>
+            </div>
+          )}
+
+          {hasGeneratedFiles && (
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={downloadImage}
+                variant="outline"
+                className="w-full"
+              >
+                <Image className="size-4" />
+                Download photo
+              </Button>
+
+              <Button
+                onClick={downloadVideo}
+                variant="outline"
+                className="w-full"
+              >
+                <Film className="size-4" />
+                Download video
               </Button>
             </div>
           )}

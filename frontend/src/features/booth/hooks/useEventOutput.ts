@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from "react";
 
 import { eventOutputsApi } from "@/features/events/services/eventsOutput.api";
+import { downloadBlob } from "../services/downloadBlob";
 
 import type { EventOutput } from "@/features/events/types/eventOutput";
 
@@ -16,12 +17,25 @@ export default function useEventOutput(eventId: string) {
   const [status, setStatus] = useState<EventOutputStatus>("idle");
   const [output, setOutput] = useState<EventOutput | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [hasGeneratedFiles, setHasGeneratedFiles] = useState(false);
 
   const imageRef = useRef<Blob | null>(null);
   const videoRef = useRef<Blob | null>(null);
 
   const isProcessing = useRef(false);
   const isSaved = useRef(false);
+
+  const downloadImage = useCallback(() => {
+    if (!imageRef.current) return;
+
+    downloadBlob(imageRef.current, "output.png");
+  }, []);
+
+  const downloadVideo = useCallback(() => {
+    if (!videoRef.current) return;
+
+    downloadBlob(videoRef.current, "output.mp4");
+  }, []);
 
   const uploadOutput = useCallback(
     async (image: Blob, video: Blob): Promise<boolean> => {
@@ -70,6 +84,8 @@ export default function useEventOutput(eventId: string) {
         imageRef.current = image;
         videoRef.current = video;
 
+        setHasGeneratedFiles(true);
+
         await uploadOutput(image, video);
       } catch (error) {
         setStatus("failed");
@@ -92,7 +108,6 @@ export default function useEventOutput(eventId: string) {
       isProcessing.current = true;
 
       try {
-        // Regenerate files only if generation previously failed.
         if (!imageRef.current || !videoRef.current) {
           if (!generators) return;
 
@@ -106,6 +121,8 @@ export default function useEventOutput(eventId: string) {
 
           imageRef.current = image;
           videoRef.current = video;
+
+          setHasGeneratedFiles(true);
         }
 
         await uploadOutput(imageRef.current, videoRef.current);
@@ -126,6 +143,9 @@ export default function useEventOutput(eventId: string) {
   return {
     generateAndSave,
     retryUpload,
+    downloadImage,
+    downloadVideo,
+    hasGeneratedFiles,
     status,
     output,
     error,
