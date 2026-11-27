@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   drawTemplate,
@@ -9,10 +9,10 @@ import {
 import { exportMotionVideo } from "@/features/booth/services/exportMotion";
 import { transcodeToMp4 } from "@/features/booth/services/transcodeToMp4";
 import { templatesApi } from "@/features/templates/services/templates.api";
+import { eventsApi } from "@/features/events/services/events.api";
 
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
-import { eventsApi } from "@/features/events/services/events.api";
 
 export type ExportStage = "idle" | "recording" | "converting";
 
@@ -24,7 +24,6 @@ function downloadBlob(blob: Blob, filename: string) {
   link.download = filename;
   link.click();
 
-  // Give the browser time to start the download.
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
@@ -38,17 +37,20 @@ export default function useBoothExport(
   const [exportProgress, setExportProgress] = useState(0);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  const getBackground = () =>
-    eventId
-      ? eventsApi.getBackground(eventId)
-      : templatesApi.getBackground(selectedTemplate.id);
+  const isGeneratingVideo = useRef(false);
 
-  const handleSaveImage = async () => {
+  const getBackground = useCallback(
+    () =>
+      eventId
+        ? eventsApi.getBackground(eventId)
+        : templatesApi.getBackground(selectedTemplate.id),
+    [eventId, selectedTemplate.id],
+  );
+
+  const generateImage = useCallback(async (): Promise<Blob> => {
     let backgroundUrl: string | null = null;
 
     try {
-      setExportError(null);
-
       const { layout } = selectedTemplate;
 
       const canvas = document.createElement("canvas");
@@ -61,12 +63,10 @@ export default function useBoothExport(
         throw new Error("Unable to create the image canvas.");
       }
 
-      // Retrieve the saved background Blob.
       const backgroundBlob = selectedTemplate.backgroundImage
         ? await getBackground()
         : null;
 
-      // Convert the Blob into a temporary object URL.
       backgroundUrl = backgroundBlob
         ? URL.createObjectURL(backgroundBlob)
         : null;
@@ -80,7 +80,7 @@ export default function useBoothExport(
 
       drawTemplate(ctx, selectedTemplate, images, background);
 
-      const blob = await new Promise<Blob>((resolve, reject) => {
+      return await new Promise<Blob>((resolve, reject) => {
         canvas.toBlob((result) => {
           if (result) {
             resolve(result);
@@ -89,22 +89,19 @@ export default function useBoothExport(
           }
         }, "image/png");
       });
-
-      downloadBlob(blob, `${selectedTemplate.id}.png`);
-    } catch (error) {
-      setExportError(
-        error instanceof Error ? error.message : "Failed to export the image.",
-      );
     } finally {
       if (backgroundUrl) {
         URL.revokeObjectURL(backgroundUrl);
       }
     }
-  };
+  }, [selectedTemplate, photos, getBackground]);
 
-  const handleSaveVideo = async () => {
-    if (exportStage !== "idle") return;
+  const generateVideo = useCallback(async (): Promise<Blob> => {
+    if (isGeneratingVideo.current) {
+      throw new Error("A video export is already in progress.");
+    }
 
+    isGeneratingVideo.current = true;
     setExportError(null);
     setExportProgress(0);
     setExportStage("recording");
@@ -132,17 +129,45 @@ export default function useBoothExport(
       }
 
       setExportProgress(100);
+
+      return blob;
+    } finally {
+      isGeneratingVideo.current = false;
+      setExportStage("idle");
+    }
+  }, [selectedTemplate, photos, holdMs, getBackground]);
+
+  const handleSaveImage = useCallback(async () => {
+    try {
+      setExportError(null);
+
+      const blob = await generateImage();
+
+      downloadBlob(blob, `${selectedTemplate.id}.png`);
+    } catch (error) {
+      setExportError(
+        error instanceof Error ? error.message : "Failed to export the image.",
+      );
+    }
+  }, [generateImage, selectedTemplate.id]);
+
+  const handleSaveVideo = useCallback(async () => {
+    try {
+      setExportError(null);
+
+      const blob = await generateVideo();
+
       downloadBlob(blob, `${selectedTemplate.id}.mp4`);
     } catch (error) {
       setExportError(
         error instanceof Error ? error.message : "Failed to export the video.",
       );
-    } finally {
-      setExportStage("idle");
     }
-  };
+  }, [generateVideo, selectedTemplate.id]);
 
   return {
+    generateImage,
+    generateVideo,
     handleSaveImage,
     handleSaveVideo,
     exportStage,
