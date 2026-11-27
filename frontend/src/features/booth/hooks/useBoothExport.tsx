@@ -14,18 +14,9 @@ import { eventsApi } from "@/features/events/services/events.api";
 import type { Photo } from "@/features/booth/types/photo";
 import type { Template } from "@/features/templates/types/template";
 
+import { downloadBlob } from "../services/downloadBlob";
+
 export type ExportStage = "idle" | "recording" | "converting";
-
-function downloadBlob(blob: Blob, filename: string) {
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = filename;
-  link.click();
-
-  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 export default function useBoothExport(
   selectedTemplate: Template,
