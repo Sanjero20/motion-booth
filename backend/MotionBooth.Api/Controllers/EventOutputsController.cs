@@ -6,7 +6,7 @@ using MotionBooth.Api.Services.Events;
 namespace MotionBooth.Api.Controllers;
 
 [ApiController]
-[Route("events/{eventId:guid}/outputs")]
+[Route("api/events/{eventId:guid}/outputs")]
 [Authorize]
 public class EventOutputsController : ControllerBase
 {
@@ -25,6 +25,8 @@ public class EventOutputsController : ControllerBase
         CancellationToken cancellationToken
     )
     {
+        Console.WriteLine("CREATE EVENT OUTPUT HIT");
+
         var output = await _eventOutputsService.CreateAsync(
             eventId,
             request,
